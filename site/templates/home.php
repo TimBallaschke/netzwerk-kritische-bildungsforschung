@@ -16,5 +16,7 @@
       </div>
     </div>
   </div>
+  <div class="scroll-overlay"></div>
+  <?= js('assets/script.js') ?>
 </body>
 </html>

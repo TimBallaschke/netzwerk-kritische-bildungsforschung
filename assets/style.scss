@@ -9,6 +9,10 @@ body {
     margin: 0;
 }
 
+.scroll-overlay {
+    height: 1000dvh;
+}
+
 *, *:before, *:after {
     box-sizing: inherit;
     scrollbar-width: none; /* Firefox */
@@ -30,13 +34,14 @@ body {
     padding-right: 1rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
 }
 
 .aktuelles-cards {
     display: grid;
     width: 100%;
+    margin-bottom: 2rem;
 
     > * {
         grid-area: 1 / 1 / 2 / 2;
