@@ -1,9 +1,9 @@
 const cards = document.querySelectorAll('.aktuelles-card');
 const overlay = document.querySelector('.scroll-overlay');
 
-const stackStep = 0.625;
+const stackStep = 1.25;
 const stackScale = 0.03;
-const exitDistance = 12;
+const exitDistance = 10.5;
 
 function update() {
   const scrollMax = document.documentElement.scrollHeight - window.innerHeight;
@@ -14,7 +14,7 @@ function update() {
     const eff = i - progress;
     let ty, sc;
     if (eff >= 0) {
-      ty = eff * stackStep;
+      ty = Math.sqrt(eff) * stackStep;
       sc = 1 - eff * stackScale;
     } else {
       ty = eff * exitDistance;
