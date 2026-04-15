@@ -9,15 +9,10 @@ body {
     margin: 0;
 }
 
-.scroll-spacer {
-    height: 2000vh;
-}
-        
 *, *:before, *:after {
     box-sizing: inherit;
     scrollbar-width: none; /* Firefox */
 }
-    
 
 .sidebar {
     position: fixed;
@@ -35,16 +30,13 @@ body {
     padding-right: 1rem;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
 }
 
 .aktuelles-cards {
-    padding: 0;
-    margin: 0;
     display: grid;
     width: 100%;
-    perspective: 1000px;
-    perspective-origin: center;
 
     > * {
         grid-area: 1 / 1 / 2 / 2;
@@ -56,4 +48,9 @@ body {
     border-radius: 1rem;
     height: 10rem;
     background: white;
+    transform-origin: top center;
+    transform:
+        translateY(calc(var(--i) * 0.625rem))
+        scale(calc(1 - var(--i) * 0.03));
+    z-index: calc(100 - var(--i));
 }
