@@ -41,7 +41,7 @@ body {
 .aktuelles-cards {
   display: grid;
   width: 100%;
-  margin-bottom: 2rem;
+  margin-bottom: 5rem;
 }
 .aktuelles-cards > * {
   grid-area: 1/1/2/2;

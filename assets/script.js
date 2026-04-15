@@ -2,7 +2,7 @@ const cards = document.querySelectorAll('.aktuelles-card');
 const overlay = document.querySelector('.scroll-overlay');
 
 const stackRange = 4;
-const stackMax = 3;
+const stackMax = 6;
 const stackScale = 0.03;
 const exitDistance = 10.5;
 
