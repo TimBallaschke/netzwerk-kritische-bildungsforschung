@@ -1,0 +1,57 @@
+html {
+  box-sizing: border-box;
+  font-size: 1vw;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+}
+
+.scroll-spacer {
+  height: 2000vh;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+  scrollbar-width: none; /* Firefox */
+}
+
+.sidebar {
+  position: fixed;
+  height: 100dvh;
+  width: 33vw;
+  top: 0;
+  left: 0;
+  padding: 1rem;
+}
+
+.sidebar-content {
+  height: 100%;
+  width: 100%;
+  border-right: solid 1px black;
+  padding-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.aktuelles-cards {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  width: 100%;
+  perspective: 1000px;
+  perspective-origin: center;
+}
+.aktuelles-cards > * {
+  grid-area: 1/1/2/2;
+}
+
+.aktuelles-card {
+  border: 1px solid black;
+  border-radius: 1rem;
+  height: 10rem;
+  background: white;
+}/*# sourceMappingURL=style.css.map */
