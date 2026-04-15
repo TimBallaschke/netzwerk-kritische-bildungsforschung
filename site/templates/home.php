@@ -11,7 +11,12 @@
     <div class="sidebar-content">
       <div class="aktuelles-cards">
         <?php for ($i = 0; $i < 20; $i++): ?>
-          <div class="aktuelles-card" style="--i: <?= $i ?>"></div>
+          <div class="aktuelles-card" style="--i: <?= $i ?>">
+            <div class="card-image"></div>
+            <div class="card-text">
+              <div class="card-title">Title</div>
+            </div>
+          </div>
         <?php endfor ?>
       </div>
     </div>

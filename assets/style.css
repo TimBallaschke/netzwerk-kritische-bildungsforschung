@@ -55,4 +55,16 @@ body {
   transform-origin: top center;
   transform: translateY(calc(var(--i) * 0.625rem)) scale(calc(1 - var(--i) * 0.03));
   z-index: calc(100 - var(--i));
+  padding: 0.75rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  -moz-column-gap: 1rem;
+       column-gap: 1rem;
+}
+
+.card-image {
+  height: 100%;
+  background-color: rgb(198, 198, 198);
+  aspect-ratio: 1;
+  border-radius: 0.5rem;
 }/*# sourceMappingURL=style.css.map */
