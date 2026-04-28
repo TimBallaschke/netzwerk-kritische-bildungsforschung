@@ -1,0 +1,137 @@
+<?php
+
+namespace AktuellesScraper;
+
+use Kirby\Http\Remote;
+
+class LLM
+{
+    private string $provider;
+    private string $apiKey;
+    private string $model;
+
+    public function __construct(string $provider, string $apiKey, ?string $model = null)
+    {
+        $this->provider = $provider;
+        $this->apiKey   = $apiKey;
+        $this->model    = $model ?? match ($provider) {
+            'anthropic' => 'claude-haiku-4-5',
+            default     => 'gpt-4o-mini',
+        };
+    }
+
+    public function classify(array $candidate): ?array
+    {
+        $system = $this->systemPrompt();
+        $user   = json_encode([
+            'title'   => $candidate['title']   ?? '',
+            'snippet' => $candidate['snippet'] ?? '',
+            'url'     => $candidate['url']     ?? '',
+            'source'  => $candidate['source']  ?? '',
+            'query'   => $candidate['query']   ?? '',
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+        return $this->provider === 'anthropic'
+            ? $this->callAnthropic($system, $user)
+            : $this->callOpenAI($system, $user);
+    }
+
+    private function systemPrompt(): string
+    {
+        return <<<TXT
+Du bist Redaktions-Assistent für ein deutschsprachiges Netzwerk
+kritischer Bildungsforschung. Bewerte den folgenden Webfund.
+
+Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Markdown, keine
+Code-Fences, keine Erklärungen) nach diesem Schema:
+
+{
+  "relevance": 1-5,
+  "type": "publication" | "cfp" | "podcast" | "event" | "news",
+  "title_de": "Bereinigter, prägnanter deutscher Titel (max. 120 Zeichen)",
+  "description_de": "2–3 sachliche Sätze auf Deutsch, ohne Marketing-Floskeln",
+  "date_iso": "YYYY-MM-DD oder null",
+  "date_label": "z. B. 'Einreichung bis' oder 'Veranstaltung am' oder null"
+}
+
+Bewertungsmaßstab für relevance:
+5 = direkt einschlägig (kritische Bildungsforschung / kritische Pädagogik)
+4 = klar verwandt (Bildungssoziologie, Bildungstheorie mit kritischem Bezug)
+3 = thematisch interessant aber nicht im Kern
+2 = randständig
+1 = irrelevant, Werbung, Spam, Boulevard
+
+Wenn keine sinnvollen Werte ableitbar sind: "type":"news", date_iso: null,
+date_label: null.
+TXT;
+    }
+
+    private function callOpenAI(string $system, string $user): ?array
+    {
+        $body = [
+            'model'           => $this->model,
+            'messages'        => [
+                ['role' => 'system', 'content' => $system],
+                ['role' => 'user',   'content' => $user],
+            ],
+            'response_format' => ['type' => 'json_object'],
+            'temperature'     => 0.2,
+        ];
+
+        $res = Remote::request('https://api.openai.com/v1/chat/completions', [
+            'method'  => 'POST',
+            'data'    => json_encode($body, JSON_UNESCAPED_UNICODE),
+            'headers' => [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $this->apiKey,
+            ],
+            'timeout' => 60,
+        ]);
+
+        if ($res->code() !== 200) {
+            throw new \RuntimeException('OpenAI ' . $res->code() . ': ' . substr((string) $res->content(), 0, 300));
+        }
+
+        $data    = json_decode((string) $res->content(), true);
+        $content = $data['choices'][0]['message']['content'] ?? null;
+        if ($content === null) {
+            return null;
+        }
+        return json_decode($content, true) ?: null;
+    }
+
+    private function callAnthropic(string $system, string $user): ?array
+    {
+        $body = [
+            'model'      => $this->model,
+            'max_tokens' => 1024,
+            'system'     => $system,
+            'messages'   => [
+                ['role' => 'user', 'content' => $user],
+            ],
+        ];
+
+        $res = Remote::request('https://api.anthropic.com/v1/messages', [
+            'method'  => 'POST',
+            'data'    => json_encode($body, JSON_UNESCAPED_UNICODE),
+            'headers' => [
+                'Content-Type: application/json',
+                'x-api-key: ' . $this->apiKey,
+                'anthropic-version: 2023-06-01',
+            ],
+            'timeout' => 60,
+        ]);
+
+        if ($res->code() !== 200) {
+            throw new \RuntimeException('Anthropic ' . $res->code() . ': ' . substr((string) $res->content(), 0, 300));
+        }
+
+        $data = json_decode((string) $res->content(), true);
+        $text = $data['content'][0]['text'] ?? null;
+        if ($text === null) {
+            return null;
+        }
+        $text = preg_replace('/^```(?:json)?\s*|\s*```$/m', '', trim($text));
+        return json_decode($text, true) ?: null;
+    }
+}

@@ -1,5 +1,10 @@
-title: Site
+title: Netzwerk Kritische Bildungsforschung
 
 sections:
   pages:
     type: pages
+    headline: Inhalte
+    templates:
+      - aktuelles
+    create:
+      - aktuelles

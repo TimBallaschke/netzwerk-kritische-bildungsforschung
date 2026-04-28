@@ -1,0 +1,99 @@
+.k-aktuelles-scraper {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--rounded);
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.k-aktuelles-scraper .k-section-header {
+  margin-bottom: 0.75rem;
+}
+
+.k-aktuelles-scraper-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.k-aktuelles-scraper-status {
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+.k-aktuelles-scraper-status--muted {
+  color: var(--color-gray-600);
+}
+
+.k-aktuelles-scraper-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.k-aktuelles-scraper-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--text-sm);
+  color: var(--color-gray-700);
+  cursor: pointer;
+}
+.k-aktuelles-scraper-checkbox input[type="checkbox"] {
+  margin: 0;
+}
+
+.k-aktuelles-scraper-hint {
+  font-size: var(--text-xs);
+  color: var(--color-gray-600);
+  font-style: italic;
+}
+
+.k-aktuelles-scraper-message {
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--rounded);
+  font-size: var(--text-sm);
+}
+.k-aktuelles-scraper-message--ok {
+  background: var(--color-green-300, #d6f5d6);
+  color: var(--color-green-900, #1a4d1a);
+}
+.k-aktuelles-scraper-message--error {
+  background: var(--color-red-300, #f9d6d6);
+  color: var(--color-red-900, #5a1a1a);
+}
+
+.k-aktuelles-scraper-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border);
+}
+.k-aktuelles-scraper-results li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+}
+.k-aktuelles-scraper-results-rel {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  width: 2rem;
+}
+.k-aktuelles-scraper-results-type {
+  color: var(--color-gray-600);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.k-aktuelles-scraper-results-title {
+  color: var(--color-text);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.k-aktuelles-scraper-results-title:hover {
+  border-bottom-color: currentColor;
+}

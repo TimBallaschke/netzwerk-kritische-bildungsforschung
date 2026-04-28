@@ -1,0 +1,58 @@
+title: Aktuelles-Eintrag
+icon: document
+
+options:
+  preview: false
+
+columns:
+  main:
+    width: 2/3
+    sections:
+      content:
+        type: fields
+        fields:
+          description:
+            label: Beschreibung
+            type: textarea
+            buttons: false
+            size: medium
+          url:
+            label: Externer Link
+            type: url
+          date:
+            label: Datum / Frist
+            type: date
+            time: false
+          dateLabel:
+            label: Datums-Bezeichnung
+            type: text
+            placeholder: "z. B. „Einreichung bis", „Veranstaltung am""
+  sidebar:
+    width: 1/3
+    sections:
+      meta:
+        type: fields
+        fields:
+          itemType:
+            label: Typ
+            type: select
+            required: true
+            options:
+              publication: Publikation
+              cfp: Call for Papers
+              podcast: Podcast
+              event: Veranstaltung
+              news: Nachricht
+          source:
+            label: Quelle
+            type: text
+            help: "Domain oder URL der Originalseite."
+          relevance:
+            label: Relevanz (KI-Bewertung)
+            type: number
+            disabled: true
+          discoveredAt:
+            label: Gefunden am
+            type: date
+            time: true
+            disabled: true
