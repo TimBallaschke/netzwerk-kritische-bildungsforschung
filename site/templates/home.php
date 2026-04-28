@@ -10,29 +10,27 @@
   <div class="sidebar">
     <div class="sidebar-content">
       <div class="aktuelles-cards">
+        <?php for ($i = 0; $i < 20; $i++): ?>
+          <div class="aktuelles-card" style="--i: <?= $i ?>">
+            <div class="card-image"></div>
+            <div class="card-text">
+              <div class="card-title">Title</div>
+            </div>
+          </div>
+        <?php endfor ?>
         <?php
           $aktuelles = page('aktuelles');
-          $items = $aktuelles ? $aktuelles->children()->listed()->sortBy('date', 'desc') : null;
+          $items = $aktuelles ? $aktuelles->children()->listed()->sortBy('date', 'desc') : [];
+          $offset = 20;
         ?>
-        <?php if (!$items || $items->count() === 0): ?>
-          <?php for ($i = 0; $i < 3; $i++): ?>
-            <div class="aktuelles-card" style="--i: <?= $i ?>">
-              <div class="card-image"></div>
-              <div class="card-text">
-                <div class="card-title">Noch keine Inhalte veröffentlicht</div>
-              </div>
+        <?php foreach ($items as $item): ?>
+          <div class="aktuelles-card" style="--i: <?= $offset++ ?>">
+            <div class="card-image"></div>
+            <div class="card-text">
+              <div class="card-title"><?= $item->title()->html() ?></div>
             </div>
-          <?php endfor ?>
-        <?php else: ?>
-          <?php $i = 0; foreach ($items as $item): ?>
-            <div class="aktuelles-card" style="--i: <?= $i++ ?>">
-              <div class="card-image"></div>
-              <div class="card-text">
-                <div class="card-title"><?= $item->title()->html() ?></div>
-              </div>
-            </div>
-          <?php endforeach ?>
-        <?php endif ?>
+          </div>
+        <?php endforeach ?>
       </div>
     </div>
   </div>
