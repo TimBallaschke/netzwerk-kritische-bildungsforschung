@@ -1,0 +1,37 @@
+Title: Jacques Rancière und emanzipatorische Bildung: Politisches Lehren neu denken
+
+----
+
+Description: Der Artikel untersucht emanzipatorische Bildung im Kontext von Jacques Rancière. Er analysiert, inwiefern Rancières Ansätze zur politischen Bildung deren mögliche Einschränkungen adressieren können und bietet Richtlinien für emanzipatorische Bildung an.
+
+----
+
+Url: https://doi.org/10.1007/s11217-026-10067-2
+
+----
+
+Date: 
+
+----
+
+Datelabel: 
+
+----
+
+Itemtype: publication
+
+----
+
+Source: doi.org
+
+----
+
+Relevance: 5
+
+----
+
+Discoveredat: 2026-04-28 07:16:58
+
+----
+
+Uuid: gxyehdudbj0p4dmq

@@ -12,7 +12,8 @@ panel.plugin("art-of-x/aktuelles-scraper", {
           dryRun: false,
           message: null,
           error: null,
-          items: []
+          items: [],
+          warnings: []
         };
       },
       methods: {
@@ -21,6 +22,7 @@ panel.plugin("art-of-x/aktuelles-scraper", {
           this.error = null;
           this.message = null;
           this.items = [];
+          this.warnings = [];
 
           try {
             const res = await this.$api.post("aktuelles-scraper/run", {
@@ -28,17 +30,29 @@ panel.plugin("art-of-x/aktuelles-scraper", {
             });
 
             if (res.ok) {
+              const s = res.sources || {};
+              const breakdown =
+                "Tavily: " + (s.tavily || 0) +
+                " · OpenAlex: " + (s.openalex || 0) +
+                " · RSS: " + (s.rss || 0);
               if (this.dryRun) {
                 this.message =
                   "Probelauf: " + res.kept + " relevante Treffer von " +
-                  res.candidates + " Kandidaten (nichts gespeichert).";
+                  res.candidates + " Kandidaten (" + breakdown + ").";
               } else {
                 this.message =
                   res.created + " Entwürfe angelegt · " +
-                  res.candidates + " Kandidaten geprüft · " +
-                  res.kept + " relevant.";
+                  res.candidates + " Kandidaten · " + breakdown;
               }
               this.items = res.items || [];
+              const errs = res.errors || {};
+              const flat = [];
+              for (const src of Object.keys(errs)) {
+                for (const m of (errs[src] || [])) {
+                  flat.push("[" + src + "] " + m);
+                }
+              }
+              this.warnings = flat.slice(0, 5);
               if (!this.dryRun && res.created > 0) {
                 this.$reload();
               }
@@ -46,7 +60,11 @@ panel.plugin("art-of-x/aktuelles-scraper", {
               this.error = res.error || "Unbekannter Fehler";
             }
           } catch (e) {
-            this.error = (e && e.message) ? e.message : String(e);
+            const status = e && (e.code || e.status);
+            const detail = e && (e.message || e.toString());
+            const data = e && e.response && e.response.data;
+            const dataMsg = data && (data.message || JSON.stringify(data));
+            this.error = [status, detail, dataMsg].filter(Boolean).join(" · ");
           } finally {
             this.loading = false;
           }
@@ -106,10 +124,15 @@ panel.plugin("art-of-x/aktuelles-scraper", {
               Fehler: {{ error }}
             </div>
 
+            <ul v-if="warnings.length" class="k-aktuelles-scraper-warnings">
+              <li v-for="(w, idx) in warnings" :key="idx">{{ w }}</li>
+            </ul>
+
             <ul v-if="items.length" class="k-aktuelles-scraper-results">
               <li v-for="item in items" :key="item.url">
                 <span class="k-aktuelles-scraper-results-rel">{{ item.relevance }}/5</span>
                 <span class="k-aktuelles-scraper-results-type">{{ typeLabel(item.type) }}</span>
+                <span class="k-aktuelles-scraper-results-origin" v-if="item.origin">{{ item.origin }}</span>
                 <a :href="item.url" target="_blank" rel="noopener" class="k-aktuelles-scraper-results-title">
                   {{ item.title }}
                 </a>

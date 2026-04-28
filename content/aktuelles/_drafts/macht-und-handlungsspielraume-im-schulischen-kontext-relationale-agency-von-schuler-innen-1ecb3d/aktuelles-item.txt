@@ -1,0 +1,37 @@
+Title: Macht und Handlungsspielräume im schulischen Kontext: Relationale Agency von Schüler:innen
+
+----
+
+Description: Die Publikation untersucht die relationalen Handlungsspielräume von Schüler:innen im schulischen Kontext und beleuchtet die Wechselwirkungen von Adultismus, Klassismus und Migrantismus. Sie bietet eine kritische Perspektive auf Machtverhältnisse in der Bildung.
+
+----
+
+Url: https://doi.org/10.1515/9783111676609-007
+
+----
+
+Date: 
+
+----
+
+Datelabel: 
+
+----
+
+Itemtype: publication
+
+----
+
+Source: doi.org
+
+----
+
+Relevance: 5
+
+----
+
+Discoveredat: 2026-04-28 07:16:58
+
+----
+
+Uuid: 4wv5i449t6f7aucp

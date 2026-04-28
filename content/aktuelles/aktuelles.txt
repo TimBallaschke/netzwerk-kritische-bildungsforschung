@@ -43,6 +43,14 @@ Quellen:
 
 ----
 
+Rssfeeds: 
+
+----
+
+Sourcesenabled: tavily, openalex, rss
+
+----
+
 Maxresults: 10
 
 ----
@@ -55,8 +63,8 @@ Uuid: blkrjb3s7iha5oxw
 
 ----
 
-Lastscrapedat: 2026-04-28 06:53:39
+Lastscrapedat: 2026-04-28 07:16:58
 
 ----
 
-Lastscrapedresult: 10 Entwürfe angelegt (20 Kandidaten geprüft)
+Lastscrapedresult: 10 Entwürfe · 30 Kandidaten geprüft (Tavily: 33, OpenAlex: 34, RSS: 0)

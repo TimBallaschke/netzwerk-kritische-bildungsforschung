@@ -1,0 +1,37 @@
+Title: Die Herstellung von Differenz in Vorbereitungsklassen: Eine Studie zu Bildungsungleichheit
+
+----
+
+Description: Die Studie von Lydia Heidrich untersucht die Entstehung von Differenz in Vorbereitungsklassen und deren Zusammenhang mit Bildungsungleichheit im Kontext neuer Migration. Sie bietet eine praxistheoretische und ethnographische Perspektive auf aktuelle Herausforderungen im Bildungsbereich.
+
+----
+
+Url: https://doi.org/10.3224/zem.v4i2.11
+
+----
+
+Date: 2024-01-01
+
+----
+
+Datelabel: 
+
+----
+
+Itemtype: publication
+
+----
+
+Source: doi.org
+
+----
+
+Relevance: 5
+
+----
+
+Discoveredat: 2026-04-28 07:16:58
+
+----
+
+Uuid: ycvpi5gevqmgycjx

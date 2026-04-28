@@ -50,11 +50,29 @@ columns:
             font: monospace
             help: "Eine pro Zeile. Wird an jedes Themen-Keyword angehängt (z. B. „Call for Papers 2026")."
           quellen:
-            label: Kuratierte Quellen (Domains)
+            label: Kuratierte Quellen (Domains, nur Tavily)
             type: textarea
             buttons: false
             font: monospace
-            help: "Eine Domain pro Zeile, ohne https://. Filtert die Suche zusätzlich auf diese Quellen."
+            help: "Eine Domain pro Zeile, ohne https://. Filtert die Tavily-Suche zusätzlich auf diese Quellen."
+          rssFeeds:
+            label: RSS-Feeds
+            type: textarea
+            buttons: false
+            font: monospace
+            help: "Eine Feed-URL pro Zeile (RSS oder Atom). Wird neben der Tavily-Suche zusätzlich abgefragt."
+          sourcesEnabled:
+            label: Aktive Quellen-Pipelines
+            type: checkboxes
+            columns: 1
+            options:
+              tavily: Tavily Web-Suche (Themen × Format-Trigger)
+              openalex: OpenAlex (akademische Publikationen, letzte 2 Jahre)
+              rss: RSS-Feeds (s. oben)
+            default:
+              - tavily
+              - openalex
+              - rss
           maxResults:
             label: Max. neue Einträge pro Lauf
             type: number
