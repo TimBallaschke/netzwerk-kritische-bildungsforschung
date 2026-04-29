@@ -5,7 +5,6 @@ load([
     'AktuellesScraper\\Status'   => __DIR__ . '/src/Status.php',
     'AktuellesScraper\\Tavily'   => __DIR__ . '/src/Tavily.php',
     'AktuellesScraper\\OpenAlex' => __DIR__ . '/src/OpenAlex.php',
-    'AktuellesScraper\\Rss'      => __DIR__ . '/src/Rss.php',
     'AktuellesScraper\\LLM'      => __DIR__ . '/src/LLM.php',
     'AktuellesScraper\\Writer'   => __DIR__ . '/src/Writer.php',
     'AktuellesScraper\\Scraper'  => __DIR__ . '/src/Scraper.php',
@@ -67,6 +66,28 @@ Kirby::plugin('art-of-x/aktuelles-scraper', [
                 'auth'    => false,
                 'action'  => function () {
                     return \AktuellesScraper\Status::read();
+                },
+            ],
+            [
+                'pattern' => 'aktuelles-scraper/delete-all',
+                'method'  => 'POST',
+                'action'  => function () {
+                    $page = kirby()->page('aktuelles');
+                    if (!$page) {
+                        return ['ok' => false, 'error' => 'Aktuelles-Seite nicht gefunden.'];
+                    }
+                    $deleted = 0;
+                    try {
+                        kirby()->impersonate('kirby', function () use ($page, &$deleted) {
+                            foreach ($page->childrenAndDrafts() as $child) {
+                                $child->delete(true);
+                                $deleted++;
+                            }
+                        });
+                    } catch (\Throwable $e) {
+                        return ['ok' => false, 'error' => $e->getMessage(), 'deleted' => $deleted];
+                    }
+                    return ['ok' => true, 'deleted' => $deleted];
                 },
             ],
         ],

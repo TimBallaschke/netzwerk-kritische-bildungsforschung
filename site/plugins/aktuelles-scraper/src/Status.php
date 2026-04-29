@@ -13,14 +13,20 @@ class Status
         return $dir . '/status.json';
     }
 
-    public static function set(string $message, ?int $current = null, ?int $total = null, ?string $phase = null): void
-    {
+    public static function set(
+        string $message,
+        ?int $current = null,
+        ?int $total = null,
+        ?string $phase = null,
+        ?array $items = null
+    ): void {
         $data = [
             'running' => true,
             'phase'   => $phase,
             'message' => $message,
             'current' => $current,
             'total'   => $total,
+            'items'   => $items ?? [],
             'ts'      => time(),
         ];
         @file_put_contents(self::path(), json_encode($data, JSON_UNESCAPED_UNICODE));

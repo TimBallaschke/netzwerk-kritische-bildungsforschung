@@ -9,7 +9,7 @@ panel.plugin("art-of-x/aktuelles-scraper", {
       data() {
         return {
           loading: false,
-          dryRun: false,
+          deleting: false,
           error: null,
           items: [],
           warnings: [],
@@ -30,9 +30,7 @@ panel.plugin("art-of-x/aktuelles-scraper", {
           this.startPolling();
 
           try {
-            const res = await this.$api.post("aktuelles-scraper/run", {
-              dryRun: this.dryRun
-            });
+            const res = await this.$api.post("aktuelles-scraper/run", {});
 
             if (res.ok) {
               this.items = res.items || [];
@@ -44,7 +42,7 @@ panel.plugin("art-of-x/aktuelles-scraper", {
                 }
               }
               this.warnings = flat.slice(0, 5);
-              if (!this.dryRun && res.created > 0) {
+              if (res.created > 0) {
                 this.$reload();
               }
             } else {
@@ -69,6 +67,9 @@ panel.plugin("art-of-x/aktuelles-scraper", {
               const p = await this.$api.get("aktuelles-scraper/status");
               if (p && p.running) {
                 this.progress = p;
+                if (Array.isArray(p.items) && p.items.length > 0) {
+                  this.items = p.items;
+                }
               }
             } catch (e) {
               // ignore — the run endpoint will surface real failures
@@ -92,6 +93,28 @@ panel.plugin("art-of-x/aktuelles-scraper", {
             news: "Nachricht"
           };
           return labels[type] || type;
+        },
+        async removeAll() {
+          if (!window.confirm("Wirklich alle Einträge (Entwürfe und veröffentlicht) löschen? Das lässt sich nicht rückgängig machen.")) {
+            return;
+          }
+          this.deleting = true;
+          this.error = null;
+          try {
+            const res = await this.$api.post("aktuelles-scraper/delete-all", {});
+            if (res.ok) {
+              this.items = [];
+              this.$reload();
+            } else {
+              this.error = res.error || "Konnte nicht löschen";
+            }
+          } catch (e) {
+            const status = e && (e.code || e.status);
+            const detail = e && (e.message || e.toString());
+            this.error = [status, detail].filter(Boolean).join(" · ");
+          } finally {
+            this.deleting = false;
+          }
         }
       },
       template: `
@@ -115,15 +138,20 @@ panel.plugin("art-of-x/aktuelles-scraper", {
                 theme="positive"
                 variant="filled"
                 size="lg"
-                :disabled="loading"
+                :disabled="loading || deleting"
                 @click="run">
                 {{ loading ? "Suche läuft …" : "Neue Inhalte suchen" }}
               </k-button>
 
-              <label class="k-aktuelles-scraper-checkbox">
-                <input type="checkbox" v-model="dryRun" :disabled="loading" />
-                <span>Probelauf (nichts speichern)</span>
-              </label>
+              <k-button
+                icon="trash"
+                theme="negative"
+                variant="filled"
+                size="lg"
+                :disabled="loading || deleting"
+                @click="removeAll">
+                {{ deleting ? "Lösche …" : "Alle Einträge löschen" }}
+              </k-button>
             </div>
 
             <div v-if="loading" class="k-aktuelles-scraper-progress">

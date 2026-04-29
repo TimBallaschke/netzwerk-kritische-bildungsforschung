@@ -20,27 +20,67 @@ class LLM
         };
     }
 
+    /**
+     * Cheap relevance-only rating. Returns the relevance score (1–5) or null on failure.
+     */
+    public function rate(array $candidate): ?int
+    {
+        $user   = $this->candidatePayload($candidate);
+        $result = $this->call($this->ratePrompt(), $user, 64);
+        if (!is_array($result)) {
+            return null;
+        }
+        $score = (int) ($result['relevance'] ?? 0);
+        return $score > 0 ? $score : null;
+    }
+
+    /**
+     * Full classification: relevance + type + German title + description + date.
+     * Use only on candidates that already passed `rate()`.
+     */
     public function classify(array $candidate): ?array
     {
-        $system = $this->systemPrompt();
-        $user   = json_encode([
+        $user = $this->candidatePayload($candidate);
+        return $this->call($this->classifyPrompt(), $user, 1024);
+    }
+
+    private function candidatePayload(array $candidate): string
+    {
+        return json_encode([
             'title'   => $candidate['title']   ?? '',
             'snippet' => $candidate['snippet'] ?? '',
             'url'     => $candidate['url']     ?? '',
             'source'  => $candidate['source']  ?? '',
             'query'   => $candidate['query']   ?? '',
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-
-        return $this->provider === 'anthropic'
-            ? $this->callAnthropic($system, $user)
-            : $this->callOpenAI($system, $user);
     }
 
-    private function systemPrompt(): string
+    private function ratePrompt(): string
     {
         return <<<TXT
 Du bist Redaktions-Assistent für ein deutschsprachiges Netzwerk
-kritischer Bildungsforschung. Bewerte den folgenden Webfund.
+kritischer Bildungsforschung. Bewerte ausschließlich die Relevanz
+des folgenden Webfunds.
+
+Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Markdown, keine
+Code-Fences, keine Erklärungen) nach diesem Schema:
+
+{ "relevance": 1-5 }
+
+Bewertungsmaßstab:
+5 = direkt einschlägig (kritische Bildungsforschung / kritische Pädagogik)
+4 = klar verwandt (Bildungssoziologie, Bildungstheorie mit kritischem Bezug)
+3 = thematisch interessant aber nicht im Kern
+2 = randständig
+1 = irrelevant, Werbung, Spam, Boulevard
+TXT;
+    }
+
+    private function classifyPrompt(): string
+    {
+        return <<<TXT
+Du bist Redaktions-Assistent für ein deutschsprachiges Netzwerk
+kritischer Bildungsforschung. Klassifiziere den folgenden Webfund.
 
 Antworte AUSSCHLIESSLICH mit gültigem JSON (kein Markdown, keine
 Code-Fences, keine Erklärungen) nach diesem Schema:
@@ -66,7 +106,14 @@ date_label: null.
 TXT;
     }
 
-    private function callOpenAI(string $system, string $user): ?array
+    private function call(string $system, string $user, int $maxTokens): ?array
+    {
+        return $this->provider === 'anthropic'
+            ? $this->callAnthropic($system, $user, $maxTokens)
+            : $this->callOpenAI($system, $user, $maxTokens);
+    }
+
+    private function callOpenAI(string $system, string $user, int $maxTokens): ?array
     {
         $body = [
             'model'           => $this->model,
@@ -76,6 +123,7 @@ TXT;
             ],
             'response_format' => ['type' => 'json_object'],
             'temperature'     => 0.2,
+            'max_tokens'      => $maxTokens,
         ];
 
         $res = Remote::request('https://api.openai.com/v1/chat/completions', [
@@ -100,11 +148,11 @@ TXT;
         return json_decode($content, true) ?: null;
     }
 
-    private function callAnthropic(string $system, string $user): ?array
+    private function callAnthropic(string $system, string $user, int $maxTokens): ?array
     {
         $body = [
             'model'      => $this->model,
-            'max_tokens' => 1024,
+            'max_tokens' => $maxTokens,
             'system'     => $system,
             'messages'   => [
                 ['role' => 'user', 'content' => $user],

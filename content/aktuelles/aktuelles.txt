@@ -47,15 +47,15 @@ Rssfeeds:
 
 ----
 
-Sourcesenabled: tavily, openalex, rss
+Sourcesenabled: tavily, openalex
 
 ----
 
-Maxresults: 10
+Maxresults: 20
 
 ----
 
-Minrelevance: 3
+Minrelevance: 5
 
 ----
 

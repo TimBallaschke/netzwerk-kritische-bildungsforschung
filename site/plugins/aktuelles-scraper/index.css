@@ -30,18 +30,6 @@
   flex-wrap: wrap;
 }
 
-.k-aktuelles-scraper-checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: var(--text-sm);
-  color: var(--color-gray-700);
-  cursor: pointer;
-}
-.k-aktuelles-scraper-checkbox input[type="checkbox"] {
-  margin: 0;
-}
-
 .k-aktuelles-scraper-hint {
   font-size: var(--text-xs);
   color: var(--color-gray-600);

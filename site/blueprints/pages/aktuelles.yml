@@ -52,11 +52,6 @@ columns:
             type: textarea
             buttons: false
             font: monospace
-          rssFeeds:
-            label: RSS-Feeds
-            type: textarea
-            buttons: false
-            font: monospace
           sourcesEnabled:
             label: Aktive Quellen-Pipelines
             type: checkboxes
@@ -64,17 +59,16 @@ columns:
             options:
               tavily: Tavily Web-Suche
               openalex: OpenAlex
-              rss: RSS-Feeds
             default:
               - tavily
               - openalex
-              - rss
           maxResults:
             label: Max. neue Einträge pro Lauf
             type: number
             default: 10
             min: 1
-            max: 30
+            max: 50
+            help: "Lauf stoppt, sobald so viele passende Einträge gespeichert wurden."
           minRelevance:
             label: Mindest-Relevanz (1–5)
             type: number
