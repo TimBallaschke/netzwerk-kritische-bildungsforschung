@@ -13,8 +13,13 @@ panel.plugin("art-of-x/aktuelles-scraper", {
           message: null,
           error: null,
           items: [],
-          warnings: []
+          warnings: [],
+          progress: null,
+          pollHandle: null
         };
+      },
+      beforeDestroy() {
+        this.stopPolling();
       },
       methods: {
         async run() {
@@ -23,6 +28,8 @@ panel.plugin("art-of-x/aktuelles-scraper", {
           this.message = null;
           this.items = [];
           this.warnings = [];
+          this.progress = null;
+          this.startPolling();
 
           try {
             const res = await this.$api.post("aktuelles-scraper/run", {
@@ -54,7 +61,7 @@ panel.plugin("art-of-x/aktuelles-scraper", {
               }
               this.warnings = flat.slice(0, 5);
               if (!this.dryRun && res.created > 0) {
-                this.$reload();
+                this.$panel.view.refresh();
               }
             } else {
               this.error = res.error || "Unbekannter Fehler";
@@ -66,7 +73,30 @@ panel.plugin("art-of-x/aktuelles-scraper", {
             const dataMsg = data && (data.message || JSON.stringify(data));
             this.error = [status, detail, dataMsg].filter(Boolean).join(" · ");
           } finally {
+            this.stopPolling();
+            this.progress = null;
             this.loading = false;
+          }
+        },
+        startPolling() {
+          this.stopPolling();
+          const tick = async () => {
+            try {
+              const p = await this.$api.get("aktuelles-scraper/status");
+              if (p && p.running) {
+                this.progress = p;
+              }
+            } catch (e) {
+              // ignore — the run endpoint will surface real failures
+            }
+          };
+          tick();
+          this.pollHandle = setInterval(tick, 1200);
+        },
+        stopPolling() {
+          if (this.pollHandle) {
+            clearInterval(this.pollHandle);
+            this.pollHandle = null;
           }
         },
         typeLabel(type) {
@@ -102,7 +132,7 @@ panel.plugin("art-of-x/aktuelles-scraper", {
                 variant="filled"
                 size="lg"
                 :disabled="loading"
-                @click="run">
+                @click.prevent="run">
                 {{ loading ? "Suche läuft …" : "Neue Inhalte suchen" }}
               </k-button>
 
@@ -112,8 +142,25 @@ panel.plugin("art-of-x/aktuelles-scraper", {
               </label>
             </div>
 
-            <div v-if="loading" class="k-aktuelles-scraper-hint">
-              Das kann eine Weile dauern (Tavily-Suche + KI-Bewertung pro Treffer) …
+            <div v-if="loading" class="k-aktuelles-scraper-progress">
+              <div class="k-aktuelles-scraper-progress-message">
+                <span class="k-aktuelles-scraper-spinner" aria-hidden="true"></span>
+                <span v-if="progress && progress.message">
+                  {{ progress.message }}
+                  <span v-if="progress.current && progress.total" class="k-aktuelles-scraper-progress-count">
+                    ({{ progress.current }}/{{ progress.total }})
+                  </span>
+                </span>
+                <span v-else>Suche läuft …</span>
+              </div>
+              <div
+                v-if="progress && progress.current && progress.total"
+                class="k-aktuelles-scraper-progress-bar">
+                <div
+                  class="k-aktuelles-scraper-progress-bar-fill"
+                  :style="{ width: Math.round((progress.current / progress.total) * 100) + '%' }">
+                </div>
+              </div>
             </div>
 
             <div v-if="message" class="k-aktuelles-scraper-message k-aktuelles-scraper-message--ok">

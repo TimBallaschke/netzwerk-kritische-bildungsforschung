@@ -1,0 +1,37 @@
+Title: Ökonomisierungstendenzen im Schulwesen
+
+----
+
+Description: Die Veröffentlichung behandelt die Auswirkungen der Ökonomisierung auf das Schulwesen, einschließlich der Veränderungen in der Berufsorientierung und der Finanzierung. Sie analysiert die weitreichenden Folgen dieser Tendenzen auf die Bildungsinhalte und -strukturen.
+
+----
+
+Url: https://doi.org/10.3224/gwp.v75i1.08
+
+----
+
+Date: 
+
+----
+
+Datelabel: 
+
+----
+
+Itemtype: publication
+
+----
+
+Source: doi.org
+
+----
+
+Relevance: 5
+
+----
+
+Discoveredat: 2026-04-29 08:17:08
+
+----
+
+Uuid: sqcajph85oeurdue

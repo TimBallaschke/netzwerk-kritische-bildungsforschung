@@ -17,6 +17,8 @@ class Scraper
     {
         @set_time_limit(240);
 
+        Status::set('Initialisiere …', null, null, 'init');
+
         $dryRun       = (bool) ($opts['dryRun'] ?? false);
         $themen       = $this->lines('themen');
         $formate      = $this->lines('formate');
@@ -78,8 +80,12 @@ class Scraper
                     }
                 }
             }
-            $queries = array_slice($queries, 0, 12);
+            $queries    = array_slice($queries, 0, 12);
+            $totalQ     = count($queries);
+            $idxQ       = 0;
             foreach ($queries as $q) {
+                $idxQ++;
+                Status::set('Tavily-Suche: „' . $q . '"', $idxQ, $totalQ, 'tavily');
                 try {
                     $results = $tavily->search($q, [
                         'max'            => 3,
@@ -109,9 +115,13 @@ class Scraper
 
         // --- OpenAlex ---
         if (in_array('openalex', $enabled, true)) {
-            $openAlex     = new OpenAlex(Env::get('OPENALEX_MAILTO'));
-            $alexThemen   = array_slice($themen, 0, 8);
+            $openAlex   = new OpenAlex(Env::get('OPENALEX_MAILTO'));
+            $alexThemen = array_slice($themen, 0, 8);
+            $totalA     = count($alexThemen);
+            $idxA       = 0;
             foreach ($alexThemen as $thema) {
+                $idxA++;
+                Status::set('OpenAlex: „' . $thema . '"', $idxA, $totalA, 'openalex');
                 try {
                     $results = $openAlex->search($thema, ['max' => 5]);
                 } catch (\Throwable $e) {
@@ -133,8 +143,13 @@ class Scraper
 
         // --- RSS ---
         if (in_array('rss', $enabled, true) && !empty($rssFeeds)) {
-            $rss = new Rss();
+            $rss     = new Rss();
+            $totalR  = count($rssFeeds);
+            $idxR    = 0;
             foreach ($rssFeeds as $feedUrl) {
+                $idxR++;
+                $host = parse_url($feedUrl, PHP_URL_HOST) ?: $feedUrl;
+                Status::set('RSS: ' . $host, $idxR, $totalR, 'rss');
                 try {
                     $items = $rss->fetch($feedUrl, ['max' => 8]);
                 } catch (\Throwable $e) {
@@ -172,9 +187,13 @@ class Scraper
         $candidates = array_slice($candidates, 0, $cap);
 
         // --- LLM classification ---
-        $llm   = new LLM($provider, $llmKey);
-        $items = [];
+        $llm     = new LLM($provider, $llmKey);
+        $items   = [];
+        $totalC  = count($candidates);
+        $idxC    = 0;
         foreach ($candidates as $c) {
+            $idxC++;
+            Status::set('KI bewertet Kandidaten', $idxC, $totalC, 'llm');
             try {
                 $rated = $llm->classify($c);
             } catch (\Throwable $e) {
@@ -196,25 +215,26 @@ class Scraper
         $writer  = new Writer();
         $created = 0;
         if (!$dryRun) {
+            $totalI = count($items);
+            $idxI   = 0;
             foreach ($items as $item) {
+                $idxI++;
+                Status::set('Entwürfe werden gespeichert', $idxI, $totalI, 'write');
                 if ($writer->createDraft($this->page, $item)) {
                     $created++;
                 }
             }
-            $page = $this->page;
-            kirby()->impersonate('kirby', function () use ($page, $created, $candidates, $sourceStats) {
-                $page->update([
-                    'lastScrapedAt'     => date('Y-m-d H:i:s'),
-                    'lastScrapedResult' => sprintf(
-                        '%d Entwürfe · %d Kandidaten geprüft (Tavily: %d, OpenAlex: %d, RSS: %d)',
-                        $created,
-                        count($candidates),
-                        $sourceStats['tavily'],
-                        $sourceStats['openalex'],
-                        $sourceStats['rss']
-                    ),
-                ]);
-            });
+            $this->page->update([
+                'lastScrapedAt'     => date('Y-m-d H:i:s'),
+                'lastScrapedResult' => sprintf(
+                    '%d Entwürfe · %d Kandidaten geprüft (Tavily: %d, OpenAlex: %d, RSS: %d)',
+                    $created,
+                    count($candidates),
+                    $sourceStats['tavily'],
+                    $sourceStats['openalex'],
+                    $sourceStats['rss']
+                ),
+            ]);
         }
 
         return [

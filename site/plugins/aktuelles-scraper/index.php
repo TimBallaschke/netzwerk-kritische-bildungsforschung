@@ -2,6 +2,7 @@
 
 load([
     'AktuellesScraper\\Env'      => __DIR__ . '/src/Env.php',
+    'AktuellesScraper\\Status'   => __DIR__ . '/src/Status.php',
     'AktuellesScraper\\Tavily'   => __DIR__ . '/src/Tavily.php',
     'AktuellesScraper\\OpenAlex' => __DIR__ . '/src/OpenAlex.php',
     'AktuellesScraper\\Rss'      => __DIR__ . '/src/Rss.php',
@@ -49,18 +50,23 @@ Kirby::plugin('art-of-x/aktuelles-scraper', [
                     $body   = kirby()->request()->body()->toArray();
                     $dryRun = (bool) ($body['dryRun'] ?? false);
 
-                    // Release the session lock early so the panel can keep
-                    // serving other API requests while the scrape runs.
-                    if (session_status() === PHP_SESSION_ACTIVE) {
-                        session_write_close();
-                    }
-
                     try {
                         $scraper = new \AktuellesScraper\Scraper($page);
-                        return $scraper->run(['dryRun' => $dryRun]);
+                        $result  = $scraper->run(['dryRun' => $dryRun]);
+                        \AktuellesScraper\Status::done('Fertig');
+                        return $result;
                     } catch (\Throwable $e) {
+                        \AktuellesScraper\Status::done('Abgebrochen: ' . $e->getMessage());
                         return ['ok' => false, 'error' => $e->getMessage()];
                     }
+                },
+            ],
+            [
+                'pattern' => 'aktuelles-scraper/status',
+                'method'  => 'GET',
+                'auth'    => false,
+                'action'  => function () {
+                    return \AktuellesScraper\Status::read();
                 },
             ],
         ],

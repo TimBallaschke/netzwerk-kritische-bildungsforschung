@@ -63,8 +63,8 @@ Uuid: blkrjb3s7iha5oxw
 
 ----
 
-Lastscrapedat: 2026-04-28 08:30:57
+Lastscrapedat: 2026-04-29 08:17:08
 
 ----
 
-Lastscrapedresult: 10 Entwürfe · 30 Kandidaten geprüft (Tavily: 33, OpenAlex: 34, RSS: 0)
+Lastscrapedresult: 10 Entwürfe · 30 Kandidaten geprüft (Tavily: 31, OpenAlex: 35, RSS: 0)

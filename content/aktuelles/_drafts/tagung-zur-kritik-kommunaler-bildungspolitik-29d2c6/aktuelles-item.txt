@@ -1,0 +1,37 @@
+Title: Tagung zur Kritik kommunaler Bildungspolitik
+
+----
+
+Description: Die Tagung an der Goethe-Universität Frankfurt am Main thematisiert die Aufwertung der kommunalen Ebene in der Bildungsorganisation und das geringe Interesse der kritischen Bildungsforschung an kommunalen Bildungspolitiken. Sie findet vom 5.-6. März 2026 statt.
+
+----
+
+Url: https://www.fb03.uni-frankfurt.de/f7/tagung-bildungsforschung-vor-ort-zur-kritik-kommunaler-bildungspolitik-183037169
+
+----
+
+Date: 2026-03-05
+
+----
+
+Datelabel: Veranstaltung am
+
+----
+
+Itemtype: event
+
+----
+
+Source: www.fb03.uni-frankfurt.de
+
+----
+
+Relevance: 5
+
+----
+
+Discoveredat: 2026-04-29 08:17:08
+
+----
+
+Uuid: 5qf4w1sdkaa4zphm

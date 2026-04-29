@@ -1,0 +1,37 @@
+Title: Maria Montessori – Die Unantastbare? Warum der Mythos Montessori zerbröckelt
+
+----
+
+Description: Der Band thematisiert die kritischen Debatten um die Pädagogik von Maria Montessori und deren anthropologische Grundlagen. Er beleuchtet die Diskrepanz zwischen akademischer Kritik und der praktischen Umsetzung in Montessori-Schulen.
+
+----
+
+Url: https://doi.org/10.3726/pr012026.0007
+
+----
+
+Date: 2025-01-01
+
+----
+
+Datelabel: 
+
+----
+
+Itemtype: publication
+
+----
+
+Source: doi.org
+
+----
+
+Relevance: 4
+
+----
+
+Discoveredat: 2026-04-29 08:17:08
+
+----
+
+Uuid: xjjdc0tbz32ceipt
