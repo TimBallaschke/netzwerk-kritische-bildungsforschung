@@ -224,17 +224,20 @@ class Scraper
                     $created++;
                 }
             }
-            $this->page->update([
-                'lastScrapedAt'     => date('Y-m-d H:i:s'),
-                'lastScrapedResult' => sprintf(
-                    '%d Entwürfe · %d Kandidaten geprüft (Tavily: %d, OpenAlex: %d, RSS: %d)',
-                    $created,
-                    count($candidates),
-                    $sourceStats['tavily'],
-                    $sourceStats['openalex'],
-                    $sourceStats['rss']
-                ),
-            ]);
+            $page = $this->page;
+            kirby()->impersonate('kirby', function () use ($page, $created, $candidates, $sourceStats) {
+                $page->update([
+                    'lastScrapedAt'     => date('Y-m-d H:i:s'),
+                    'lastScrapedResult' => sprintf(
+                        '%d Entwürfe · %d Kandidaten geprüft (Tavily: %d, OpenAlex: %d, RSS: %d)',
+                        $created,
+                        count($candidates),
+                        $sourceStats['tavily'],
+                        $sourceStats['openalex'],
+                        $sourceStats['rss']
+                    ),
+                ]);
+            });
         }
 
         return [

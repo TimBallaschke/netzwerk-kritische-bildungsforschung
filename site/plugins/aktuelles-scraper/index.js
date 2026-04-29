@@ -10,7 +10,6 @@ panel.plugin("art-of-x/aktuelles-scraper", {
         return {
           loading: false,
           dryRun: false,
-          message: null,
           error: null,
           items: [],
           warnings: [],
@@ -25,7 +24,6 @@ panel.plugin("art-of-x/aktuelles-scraper", {
         async run() {
           this.loading = true;
           this.error = null;
-          this.message = null;
           this.items = [];
           this.warnings = [];
           this.progress = null;
@@ -37,20 +35,6 @@ panel.plugin("art-of-x/aktuelles-scraper", {
             });
 
             if (res.ok) {
-              const s = res.sources || {};
-              const breakdown =
-                "Tavily: " + (s.tavily || 0) +
-                " · OpenAlex: " + (s.openalex || 0) +
-                " · RSS: " + (s.rss || 0);
-              if (this.dryRun) {
-                this.message =
-                  "Probelauf: " + res.kept + " relevante Treffer von " +
-                  res.candidates + " Kandidaten (" + breakdown + ").";
-              } else {
-                this.message =
-                  res.created + " Entwürfe angelegt · " +
-                  res.candidates + " Kandidaten · " + breakdown;
-              }
               this.items = res.items || [];
               const errs = res.errors || {};
               const flat = [];
@@ -61,7 +45,7 @@ panel.plugin("art-of-x/aktuelles-scraper", {
               }
               this.warnings = flat.slice(0, 5);
               if (!this.dryRun && res.created > 0) {
-                this.$panel.view.refresh();
+                this.$reload();
               }
             } else {
               this.error = res.error || "Unbekannter Fehler";
@@ -132,7 +116,7 @@ panel.plugin("art-of-x/aktuelles-scraper", {
                 variant="filled"
                 size="lg"
                 :disabled="loading"
-                @click.prevent="run">
+                @click="run">
                 {{ loading ? "Suche läuft …" : "Neue Inhalte suchen" }}
               </k-button>
 
@@ -161,10 +145,6 @@ panel.plugin("art-of-x/aktuelles-scraper", {
                   :style="{ width: Math.round((progress.current / progress.total) * 100) + '%' }">
                 </div>
               </div>
-            </div>
-
-            <div v-if="message" class="k-aktuelles-scraper-message k-aktuelles-scraper-message--ok">
-              {{ message }}
             </div>
 
             <div v-if="error" class="k-aktuelles-scraper-message k-aktuelles-scraper-message--error">
