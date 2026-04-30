@@ -25,6 +25,9 @@ class Scraper
         $quellen      = $this->lines('quellen');
         $minRelevance = (int) ($this->page->minRelevance()->value() ?: 3);
         $maxResults   = (int) ($this->page->maxResults()->value() ?: 10);
+        $maxAgeMonths = (int) ($this->page->maxAgeMonths()->value() ?: 2);
+        $cutoffTs     = strtotime('-' . $maxAgeMonths . ' months') ?: null;
+        $cutoffDate   = $cutoffTs ? date('Y-m-d', $cutoffTs) : null;
 
         $enabled = $this->page->content()->get('sourcesEnabled')->split();
         if (empty($enabled)) {
@@ -105,6 +108,7 @@ class Scraper
                         'source'  => parse_url($url, PHP_URL_HOST) ?: '',
                         'query'   => $q,
                         'origin'  => 'tavily',
+                        'date'    => $r['published_date'] ?? null,
                     ];
                 }
             }
@@ -121,7 +125,10 @@ class Scraper
                 $idxA++;
                 Status::set('OpenAlex: „' . $thema . '"', $idxA, $totalA, 'openalex');
                 try {
-                    $results = $openAlex->search($thema, ['max' => 5]);
+                    $results = $openAlex->search($thema, [
+                        'max'      => 5,
+                        'fromDate' => $cutoffDate,
+                    ]);
                 } catch (\Throwable $e) {
                     $sourceErrors['openalex'][] = $e->getMessage();
                     continue;
@@ -211,6 +218,15 @@ class Scraper
             if (!$rated || (int) ($rated['relevance'] ?? 0) < $minRelevance) {
                 continue;
             }
+
+            $detectedDate = $rated['date_iso'] ?? $c['date'] ?? null;
+            if ($cutoffTs && $detectedDate) {
+                $entryTs = strtotime($detectedDate);
+                if ($entryTs && $entryTs < $cutoffTs) {
+                    continue;
+                }
+            }
+
             $rated['url']    = $c['url'];
             $rated['source'] = $c['source'];
             $rated['origin'] = $c['origin'] ?? 'tavily';

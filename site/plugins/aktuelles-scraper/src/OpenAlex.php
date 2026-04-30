@@ -17,12 +17,18 @@ class OpenAlex
     public function search(string $query, array $opts = []): array
     {
         $perPage = $opts['max'] ?? 5;
-        $sinceYear = $opts['sinceYear'] ?? (int) date('Y') - 1;
-        $thisYear = (int) date('Y');
+
+        if (!empty($opts['fromDate'])) {
+            $filter = 'from_publication_date:' . $opts['fromDate'];
+        } else {
+            $sinceYear = $opts['sinceYear'] ?? (int) date('Y') - 1;
+            $thisYear  = (int) date('Y');
+            $filter    = 'publication_year:' . $sinceYear . '|' . $thisYear;
+        }
 
         $params = [
             'search'   => $query,
-            'filter'   => 'publication_year:' . $sinceYear . '|' . $thisYear,
+            'filter'   => $filter,
             'per_page' => $perPage,
             'sort'     => 'publication_date:desc',
         ];
@@ -61,6 +67,7 @@ class OpenAlex
                 'source'  => parse_url($url, PHP_URL_HOST) ?: 'openalex.org',
                 'query'   => $query,
                 'origin'  => 'openalex',
+                'date'    => $r['publication_date'] ?? null,
             ];
         }
 

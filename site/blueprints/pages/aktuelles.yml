@@ -76,3 +76,10 @@ columns:
             min: 1
             max: 5
             help: "Treffer mit niedrigerer Bewertung werden verworfen."
+          maxAgeMonths:
+            label: Max. Alter (Monate)
+            type: number
+            default: 2
+            min: 1
+            max: 24
+            help: "Einträge mit erkennbarem Datum, das älter ist, werden verworfen."
