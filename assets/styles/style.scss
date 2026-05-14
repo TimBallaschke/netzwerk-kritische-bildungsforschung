@@ -26,7 +26,7 @@ body {
 
 body {
 	background: #ffffff;
-	color: #0a0a0a;
+	color: #612C00;
 	font-family: "HAL Timezone", system-ui, sans-serif;
 }
 
@@ -55,14 +55,15 @@ body {
 .card {
 	position: absolute;
 	inset: 0;
-	border: 1px solid #000;
+	background: #A3FF98;
+	border: 1px solid #612C00;
 	border-radius: 12px;
 	backface-visibility: hidden;
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 10px 30px rgba(97, 44, 0, 0.2);
 	padding: 1rem;
-	color: #000;
+	color: #612C00;
 	transition: opacity 0.3s ease;
-	// background set inline by JS, transform set inline by JS
+	// transform set inline by JS
 }
 
 .card-title {
@@ -77,7 +78,7 @@ body {
 	left: 50%;
 	width: 14px;
 	height: 14px;
-	background: #000;
+	background: #612C00;
 	border-radius: 50%;
 	// transform set by JS to match the auto-centered offset
 }
@@ -86,7 +87,7 @@ body {
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	background: #000;
+	background: #612C00;
 	color: #fff;
 	padding: 0.75rem 1.5rem;
 	font-size: 2.25rem;
@@ -99,8 +100,8 @@ body {
 // Corner pills override: white pill, black text, black outline; smaller than centered
 .corner-label {
 	background: #fff;
-	color: #000;
-	border: 1px solid #000;
+	color: #612C00;
+	border: 1px solid #612C00;
 	padding: 0.5rem 1rem;
 	font-size: 1.5rem;
 	cursor: pointer;
@@ -111,7 +112,7 @@ body {
 // Hover and active states — both flip to inverted (black pill, white text)
 .corner-label:hover,
 .corner-label.is-active {
-	background: #000;
+	background: #612C00;
 	color: #fff;
 }
 
@@ -123,7 +124,7 @@ body {
 	pointer-events: none;
 
 	line {
-		stroke: #000;
+		stroke: #612C00;
 		stroke-width: 1;
 		vector-effect: non-scaling-stroke;
 		transition: opacity 0.3s ease;

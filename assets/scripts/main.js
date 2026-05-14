@@ -12,7 +12,8 @@ const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-sc
 const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
 const MAX_BLUR = 5;      // blur (px) on back-most card — only applied to back half
 const CORNER_INSET = 30; // px inset of corner dots from the scene edge
-const LABEL_INSET_Y = 30;// px gap between corner labels and top/bottom of scene
+const LABEL_INSET_Y = 30;// px gap between top of scene and first stacked label
+const LABEL_STACK_GAP = 8; // px gap between stacked label pills
 const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
@@ -85,7 +86,6 @@ const prevBlur = new Array(CARDS).fill(-1);
 for (let i = 0; i < CARDS; i++) {
 	const card = document.createElement("div");
 	card.className = "card";
-	card.style.background = cardColors[i];
 
 	const title = document.createElement("h3");
 	title.className = "card-title";
@@ -272,31 +272,32 @@ function recomputeFit() {
 	// (z=1 so it's always in front of the dot regardless of card depth ordering)
 	centerLabel.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 1px)`;
 
-	// Labels go flush to the scene edges, anchored by their own corner
+	// Lay all 4 label+dot pairs in a horizontal row in the upper-left of the scene.
+	// Pills run left → right; each dot sits at the bottom edge of its pill,
+	// horizontally centered.
 	const edgeW = sceneW / 2;
 	const edgeH = sceneH / 2;
-	cornerSigns.forEach(([sx, sy], c) => {
-		// Label first — anchored so its matching corner aligns to the scene edge,
-		// pulled in vertically by LABEL_INSET_Y so it doesn't sit flush to top/bottom
-		// sx = -1 → label's left edge at scene left (tx = 0%)
-		// sx = +1 → label's right edge at scene right (tx = -100%)
-		const tx = sx > 0 ? -100 : 0;
-		const ty = sy > 0 ? -100 : 0;
-		const lx = sx * edgeW;
-		const ly = sy * (edgeH - LABEL_INSET_Y);
-		cornerLabels[c].style.transform =
-			`translate(${tx}%, ${ty}%) translate3d(${lx}px, ${ly}px, 1px)`;
+	let stackX = -edgeW; // start at scene left edge
+	const rowY = -edgeH + LABEL_INSET_Y; // top of scene + inset
+	cornerLabels.forEach((label, c) => {
+		const lx = stackX;
+		const ly = rowY;
+		label.style.transform =
+			`translate(0, 0) translate3d(${lx}px, ${ly}px, 1px)`;
 
-		// Dot — at the label's inner side edge (vertically centered).
-		// Reading offsetWidth/Height forces a layout flush so we get accurate values.
-		const labelW = cornerLabels[c].offsetWidth;
-		const labelH = cornerLabels[c].offsetHeight;
-		const dx = sx * (edgeW - labelW);
-		const dy = sy * (edgeH - LABEL_INSET_Y - labelH / 2);
+		// Reading offsetWidth/Height forces a layout flush
+		const labelW = label.offsetWidth;
+		const labelH = label.offsetHeight;
+
+		// Dot at bottom edge of this label, horizontally centered
+		const dx = stackX + labelW / 2;
+		const dy = rowY + labelH;
 		cornerDotPositions[c].x = dx;
 		cornerDotPositions[c].y = dy;
 		cornerDots[c].style.transform =
 			`translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 2px)`;
+
+		stackX += labelW + LABEL_STACK_GAP;
 	});
 }
 
