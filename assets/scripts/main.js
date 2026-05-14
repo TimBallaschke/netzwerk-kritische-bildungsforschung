@@ -10,8 +10,6 @@ const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
 const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
 const MIN_SCALE = 0.7;   // scale of back-most card (front-most stays at 1.0)
-const MIN_OPACITY = 0.7; // opacity of back-most card (front-most stays at 1.0)
-const MAX_BLUR = 6;      // blur (px) on back-most card (front-most has none)
 const CORNER_INSET = 30; // px inset of corner dots from the scene edge
 const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
@@ -48,7 +46,7 @@ for (let i = jitterNorm.length - 1; i > 0; i--) {
 
 // Stratified color distribution: cycle through palette, then shuffle so each
 // color appears roughly CARDS/COLORS.length times in a randomized order.
-const COLORS = ["#fd6300", "#fd9fd5", "#00c053", "#00abe7"];
+const COLORS = ["#005436", "#4965e6", "#fcbacd", "#f3511c"];
 const cardColors = Array.from({ length: CARDS }, (_, i) => COLORS[i % COLORS.length]);
 for (let i = cardColors.length - 1; i > 0; i--) {
 	const j = Math.floor(Math.random() * (i + 1));
@@ -234,17 +232,13 @@ function tick() {
 		const fx = x + offX;
 		const fy = y + offY;
 
-		// scale / opacity / blur all driven by orbital position
+		// scale driven by orbital position
 		// tNorm: 0 (back of orbit) → 1 (front of orbit)
 		const tNorm = (Math.sin(t) + 1) / 2;
-		const cardScale   = MIN_SCALE   + tNorm * (1 - MIN_SCALE);
-		const cardOpacity = MIN_OPACITY + tNorm * (1 - MIN_OPACITY);
-		const cardBlur    = (1 - tNorm) * MAX_BLUR;
+		const cardScale = MIN_SCALE + tNorm * (1 - MIN_SCALE);
 
 		cards[i].style.transform =
 			`translate3d(${fx}px, ${fy}px, ${z}px) scale(${cardScale})`;
-		cards[i].style.opacity = cardOpacity;
-		cards[i].style.filter = `blur(${cardBlur}px)`;
 
 		const scale = PERSPECTIVE / (PERSPECTIVE - z);
 		const cardSX = cx + fx * scale;
