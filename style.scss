@@ -1,19 +1,7 @@
 // =============================================================================
-// Network Nodes — base styles
+// Modern CSS reset
 // =============================================================================
 
-// Design tokens
-:root {
-	--bg: #0a0a0a;
-	--fg: #f5f5f5;
-	--muted: #888;
-	--accent: #00d4ff;
-
-	--font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-	--font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-
-// Modern reset
 *,
 *::before,
 *::after {
@@ -24,46 +12,47 @@
 	margin: 0;
 }
 
-html,
-body {
-	height: 100%;
-}
+// =============================================================================
+// 3D ring carousel
+// =============================================================================
 
 body {
-	font-family: var(--font-sans);
-	background: var(--bg);
-	color: var(--fg);
-	line-height: 1.5;
-	-webkit-font-smoothing: antialiased;
-	text-rendering: optimizeLegibility;
+	background: #0a0a0a;
+	color: #f5f5f5;
+	font-family: system-ui, sans-serif;
 }
 
-img,
-picture,
-video,
-canvas,
-svg {
-	display: block;
-	max-width: 100%;
+.scroll-area {
+	position: relative;
+	height: 500vh;       // scroll distance drives rotation
 }
 
-input,
-button,
-textarea,
-select {
-	font: inherit;
-}
-
-// Layout
-main {
-	min-height: 100dvh;
+.stage {
+	position: sticky;
+	top: 0;
+	height: 100vh;
 	display: grid;
 	place-items: center;
-	padding: 2rem;
+	perspective: 1600px;
+	overflow: hidden;
 }
 
-h1 {
-	font-size: clamp(2rem, 6vw, 4rem);
-	font-weight: 600;
-	letter-spacing: -0.02em;
+.ring {
+	position: relative;
+	width: 240px;
+	height: 320px;
+	transform-style: preserve-3d;
+	transform: rotateY(var(--ring-rotation, 0deg));
+	will-change: transform;
+}
+
+.card {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(135deg, #1a1a1a, #303030);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 12px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+	backface-visibility: hidden;
+	// per-card transform set inline by JS
 }
