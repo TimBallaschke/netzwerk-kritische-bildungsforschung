@@ -10,6 +10,8 @@ const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
 const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
 const MIN_SCALE = 0.7;   // scale of back-most card (front-most stays at 1.0)
+const MIN_OPACITY = 0.7; // opacity of back-most card (front-most stays at 1.0)
+const MAX_BLUR = 6;      // blur (px) on back-most card (front-most has none)
 const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
@@ -43,11 +45,21 @@ for (let i = jitterNorm.length - 1; i > 0; i--) {
 	[jitterNorm[i], jitterNorm[j]] = [jitterNorm[j], jitterNorm[i]];
 }
 
+// Stratified color distribution: cycle through palette, then shuffle so each
+// color appears roughly CARDS/COLORS.length times in a randomized order.
+const COLORS = ["#fd6300", "#fd9fd5", "#00c053", "#00abe7"];
+const cardColors = Array.from({ length: CARDS }, (_, i) => COLORS[i % COLORS.length]);
+for (let i = cardColors.length - 1; i > 0; i--) {
+	const j = Math.floor(Math.random() * (i + 1));
+	[cardColors[i], cardColors[j]] = [cardColors[j], cardColors[i]];
+}
+
 const cards = [];
 const lines = [];
 for (let i = 0; i < CARDS; i++) {
 	const card = document.createElement("div");
 	card.className = "card";
+	card.style.background = cardColors[i];
 	ring.appendChild(card);
 	cards.push(card);
 
@@ -183,12 +195,17 @@ function tick() {
 		const fx = x + offX;
 		const fy = y + offY;
 
-		// scale by orbital position only: sin(t) ∈ [-1,+1] → scale ∈ [MIN_SCALE, 1]
-		// (jitter doesn't affect scale — only how far around the circle the card is)
-		const orbitDepth = Math.sin(t);
-		const cardScale = MIN_SCALE + ((orbitDepth + 1) / 2) * (1 - MIN_SCALE);
+		// scale / opacity / blur all driven by orbital position
+		// tNorm: 0 (back of orbit) → 1 (front of orbit)
+		const tNorm = (Math.sin(t) + 1) / 2;
+		const cardScale   = MIN_SCALE   + tNorm * (1 - MIN_SCALE);
+		const cardOpacity = MIN_OPACITY + tNorm * (1 - MIN_OPACITY);
+		const cardBlur    = (1 - tNorm) * MAX_BLUR;
+
 		cards[i].style.transform =
 			`translate3d(${fx}px, ${fy}px, ${z}px) scale(${cardScale})`;
+		cards[i].style.opacity = cardOpacity;
+		cards[i].style.filter = `blur(${cardBlur}px)`;
 
 		const scale = PERSPECTIVE / (PERSPECTIVE - z);
 		lines[i].setAttribute("x1", dotX);

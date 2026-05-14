@@ -49,12 +49,9 @@ body {
 .card {
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(135deg, #1a1a1a, #303030);
-	border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 12px;
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 	backface-visibility: hidden;
-	// per-card transform set inline by JS
+	// background set inline by JS, transform set inline by JS
 }
 
 .dot {
