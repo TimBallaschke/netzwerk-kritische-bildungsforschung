@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+
+# Generated artifacts
+*.css.map
+.sass-cache/
+
+# Local env
+.env
+.env.local
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Kirby CMS data from other branches in the shared working tree
+# (Not part of network-nodes — gitignored to keep `git status` clean)
+.claude/
+media/
+site/
