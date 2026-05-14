@@ -65,9 +65,7 @@ body {
 	height: 12px;
 	background: #000;
 	border-radius: 50%;
-	// center, then match the JS OFFSET_Y so the dot sits at the cards'
-	// visual center (not the geometric center of .ring)
-	transform: translate(-50%, -50%) translate3d(0, -60px, 0);
+	// transform set by JS to match the auto-centered offset
 }
 
 .connectors {

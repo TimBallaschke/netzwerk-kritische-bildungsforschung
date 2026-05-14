@@ -5,12 +5,12 @@
 const CARDS = 14;        // number of cards
 const RADIUS = 400;      // preferred circle radius (px) — actual radius is fit
 const TILT_X_DEG = -30;  // tilt around X axis (negative = front down, back up)
-const TILT_Z_DEG = -15;  // tilt around Z axis (diagonal lean)
-const OFFSET_X = 0;      // horizontal nudge for visual centering
-const OFFSET_Y = -60;    // vertical nudge for visual centering
-const JITTER_Y = 700;    // preferred max Y offset per card (px) — also fit-scaled
-const SCENE_W = 80;      // scene width as % of viewport
-const SCENE_H = 75;      // scene height as % of viewport
+const TILT_Z_DEG = 0;    // tilt around Z axis (diagonal lean) — disabled
+const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
+const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
+const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
+const SCENE_W = 94;      // scene width as % of viewport
+const SCENE_H = 100;     // scene height as % of viewport
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
 const TURNS = 1;         // full rotations across the entire scroll
 const EASE = 0.08;       // smoothing factor (lower = smoother)
@@ -26,6 +26,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const stage = document.querySelector(".stage");
 const ring = document.querySelector(".ring");
 const svg = document.querySelector(".connectors");
+const dot = document.querySelector(".dot");
 
 const CARD_W = ring.offsetWidth || 140;
 const CARD_H = ring.offsetHeight || 180;
@@ -94,12 +95,19 @@ function computeBounds(Rx, Rz, jitter) {
 			if (py + halfH > maxY) maxY = py + halfH;
 		}
 	}
-	return { width: maxX - minX, height: maxY - minY };
+	return {
+		width: maxX - minX,
+		height: maxY - minY,
+		centerX: (maxX + minX) / 2,
+		centerY: (maxY + minY) / 2,
+	};
 }
 
 let fitRx = RADIUS;
 let fitRz = RADIUS;
 let fitJitter = JITTER_Y;
+let autoOffsetX = 0;
+let autoOffsetY = 0;
 
 function recomputeFit() {
 	const sceneW = (window.innerWidth * SCENE_W) / 100;
@@ -120,6 +128,16 @@ function recomputeFit() {
 	fitRx = Rx;
 	fitRz = Rz;
 	fitJitter = j;
+
+	// Auto-center: shift world coords so projected bbox center sits at origin
+	const final = computeBounds(fitRx, fitRz, fitJitter);
+	autoOffsetX = -final.centerX;
+	autoOffsetY = -final.centerY;
+
+	// Move the dot to match (in CSS world space)
+	const dx = autoOffsetX + OFFSET_X;
+	const dy = autoOffsetY + OFFSET_Y;
+	dot.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 0)`;
 }
 
 let target = 0;
@@ -141,8 +159,10 @@ function tick() {
 	const cx = stageRect.width / 2;
 	const cy = stageRect.height / 2;
 
-	const dotX = cx + OFFSET_X;
-	const dotY = cy + OFFSET_Y;
+	const offX = autoOffsetX + OFFSET_X;
+	const offY = autoOffsetY + OFFSET_Y;
+	const dotX = cx + offX;
+	const dotY = cy + offY;
 
 	for (let i = 0; i < CARDS; i++) {
 		const t = step * i + baseRot;
@@ -159,8 +179,8 @@ function tick() {
 		const y2 = x * sinZ + y * cosZ;
 		x = x2; y = y2;
 
-		const fx = x + OFFSET_X;
-		const fy = y + OFFSET_Y;
+		const fx = x + offX;
+		const fy = y + offY;
 
 		cards[i].style.transform = `translate3d(${fx}px, ${fy}px, ${z}px)`;
 
