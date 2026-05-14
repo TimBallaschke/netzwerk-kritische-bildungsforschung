@@ -45,7 +45,7 @@ body {
 
 .ring {
   position: relative;
-  width: 140px;
+  width: 280px;
   height: 180px;
   transform-style: preserve-3d;
 }
@@ -55,8 +55,15 @@ body {
   inset: 0;
   border-radius: 12px;
   backface-visibility: hidden;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  color: #000;
+}
+
+.card-title {
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 1.15;
 }
 
 .dot {

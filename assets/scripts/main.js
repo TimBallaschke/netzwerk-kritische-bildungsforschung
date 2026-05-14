@@ -9,7 +9,7 @@ const TILT_Z_DEG = 0;    // tilt around Z axis (diagonal lean) — disabled
 const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
 const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
-const MIN_SCALE = 0.7;   // scale of back-most card (front-most stays at 1.0)
+const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
 const CORNER_INSET = 30; // px inset of corner dots from the scene edge
 const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
@@ -53,12 +53,36 @@ for (let i = cardColors.length - 1; i > 0; i--) {
 	[cardColors[i], cardColors[j]] = [cardColors[j], cardColors[i]];
 }
 
+// Card titles — short Lorem Ipsum snippets (2–3 words each)
+const TITLES = [
+	"Lorem ipsum",
+	"Dolor sit amet",
+	"Consectetur adipiscing",
+	"Sed do eiusmod",
+	"Tempor incididunt",
+	"Labore dolore",
+	"Magna aliqua",
+	"Ut enim ad",
+	"Minim veniam",
+	"Quis nostrud",
+	"Exercitation ullamco",
+	"Laboris nisi",
+	"Aliquip ex ea",
+	"Commodo consequat",
+];
+
 const cards = [];
 const lines = [];
 for (let i = 0; i < CARDS; i++) {
 	const card = document.createElement("div");
 	card.className = "card";
 	card.style.background = cardColors[i];
+
+	const title = document.createElement("h3");
+	title.className = "card-title";
+	title.textContent = TITLES[i];
+	card.appendChild(title);
+
 	ring.appendChild(card);
 	cards.push(card);
 
