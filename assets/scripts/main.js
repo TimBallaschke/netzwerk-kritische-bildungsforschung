@@ -9,6 +9,7 @@ const TILT_Z_DEG = 0;    // tilt around Z axis (diagonal lean) — disabled
 const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
 const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
+const MIN_SCALE = 0.7;   // scale of back-most card (front-most stays at 1.0)
 const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
@@ -182,7 +183,12 @@ function tick() {
 		const fx = x + offX;
 		const fy = y + offY;
 
-		cards[i].style.transform = `translate3d(${fx}px, ${fy}px, ${z}px)`;
+		// scale by orbital position only: sin(t) ∈ [-1,+1] → scale ∈ [MIN_SCALE, 1]
+		// (jitter doesn't affect scale — only how far around the circle the card is)
+		const orbitDepth = Math.sin(t);
+		const cardScale = MIN_SCALE + ((orbitDepth + 1) / 2) * (1 - MIN_SCALE);
+		cards[i].style.transform =
+			`translate3d(${fx}px, ${fy}px, ${z}px) scale(${cardScale})`;
 
 		const scale = PERSPECTIVE / (PERSPECTIVE - z);
 		lines[i].setAttribute("x1", dotX);
