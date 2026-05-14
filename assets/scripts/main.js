@@ -92,22 +92,35 @@ for (let i = 0; i < CARDS; i++) {
 }
 
 // Four corner dots — one in each corner of the scene.
-// Each connects to every card with its own line.
+// Each connects ONLY to cards of one specific color.
 // Sign pairs: [x-sign, y-sign] → [-1,-1]=TL, [+1,-1]=TR, [-1,+1]=BL, [+1,+1]=BR
 const cornerSigns = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+const CORNER_COLORS = [
+	"#fcbacd", // top-left → pink
+	"#005436", // top-right → green
+	"#4965e6", // bottom-left → blue
+	"#f3511c", // bottom-right → orange
+];
 const cornerDots = cornerSigns.map(() => {
 	const d = document.createElement("div");
 	d.className = "dot corner-dot";
 	ring.appendChild(d);
 	return d;
 });
-const cornerLines = cornerSigns.map(() =>
-	Array.from({ length: CARDS }, () => {
-		const line = document.createElementNS(SVG_NS, "line");
-		svg.appendChild(line);
-		return line;
-	})
-);
+// For each corner, only create lines to cards whose color matches.
+// Each entry: { line, cardIndex } so we know which card to point at.
+const cornerLines = cornerSigns.map((_, c) => {
+	const match = CORNER_COLORS[c];
+	const arr = [];
+	for (let i = 0; i < CARDS; i++) {
+		if (cardColors[i] === match) {
+			const line = document.createElementNS(SVG_NS, "line");
+			svg.appendChild(line);
+			arr.push({ line, cardIndex: i });
+		}
+	}
+	return arr;
+});
 
 // -----------------------------------------------------------------------------
 // Fit: scale RADIUS and JITTER_Y so the projected bounding box (including card
@@ -238,6 +251,10 @@ function tick() {
 		y: cy + sy * halfH,
 	}));
 
+	// Card screen positions (cached so corner lines can reference them after the loop)
+	const cardSX = new Array(CARDS);
+	const cardSY = new Array(CARDS);
+
 	for (let i = 0; i < CARDS; i++) {
 		const t = step * i + baseRot;
 
@@ -265,19 +282,23 @@ function tick() {
 			`translate3d(${fx}px, ${fy}px, ${z}px) scale(${cardScale})`;
 
 		const scale = PERSPECTIVE / (PERSPECTIVE - z);
-		const cardSX = cx + fx * scale;
-		const cardSY = cy + fy * scale;
+		cardSX[i] = cx + fx * scale;
+		cardSY[i] = cy + fy * scale;
 
 		lines[i].setAttribute("x1", dotX);
 		lines[i].setAttribute("y1", dotY);
-		lines[i].setAttribute("x2", cardSX);
-		lines[i].setAttribute("y2", cardSY);
+		lines[i].setAttribute("x2", cardSX[i]);
+		lines[i].setAttribute("y2", cardSY[i]);
+	}
 
-		for (let c = 0; c < 4; c++) {
-			cornerLines[c][i].setAttribute("x1", cornerScreens[c].x);
-			cornerLines[c][i].setAttribute("y1", cornerScreens[c].y);
-			cornerLines[c][i].setAttribute("x2", cardSX);
-			cornerLines[c][i].setAttribute("y2", cardSY);
+	// Corner lines: each corner only connects to its color-matched cards
+	for (let c = 0; c < 4; c++) {
+		const { x: csx, y: csy } = cornerScreens[c];
+		for (const { line, cardIndex } of cornerLines[c]) {
+			line.setAttribute("x1", csx);
+			line.setAttribute("y1", csy);
+			line.setAttribute("x2", cardSX[cardIndex]);
+			line.setAttribute("y2", cardSY[cardIndex]);
 		}
 	}
 
