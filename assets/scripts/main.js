@@ -2,7 +2,7 @@
 // Tilted ring carousel — cards orbit a tilted circle, always facing the camera
 // =============================================================================
 
-const CARDS = 14;        // number of cards
+const CARDS = 16;        // number of cards
 const RADIUS = 400;      // preferred circle radius (px) — actual radius is fit
 const TILT_X_DEG = -30;  // tilt around X axis (negative = front down, back up)
 const TILT_Z_DEG = 0;    // tilt around Z axis (diagonal lean) — disabled
@@ -17,6 +17,8 @@ const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
 const SCROLL_FACTOR = 0.1; // degrees of rotation per pixel of wheel/touch delta
+const AUTO_ROTATE_SPEED = 0.05; // deg per frame when idle (positive = leftward drift)
+const IDLE_BEFORE_AUTO_MS = 800;// ms of inactivity before auto-rotation resumes
 const EASE = 0.08;       // smoothing factor (lower = smoother)
 
 const TILT_X = (TILT_X_DEG * Math.PI) / 180;
@@ -72,6 +74,8 @@ const TITLES = [
 	"Laboris nisi",
 	"Aliquip ex ea",
 	"Commodo consequat",
+	"Duis aute irure",
+	"In reprehenderit",
 ];
 
 const cards = [];
@@ -124,6 +128,44 @@ const cornerLabels = cornerSigns.map((_, c) => {
 	label.textContent = CORNER_LABELS[c];
 	ring.appendChild(label);
 	return label;
+});
+
+// Active corner filter: clicking corner pills toggles them into a multi-select.
+// Empty set = no filter, show everything. Any active corner = show only cards
+// whose color matches one of the active corners.
+const activeCorners = new Set();
+function applyFilter() {
+	const noFilter = activeCorners.size === 0;
+	const activeColors = new Set();
+	for (const c of activeCorners) activeColors.add(CORNER_COLORS[c]);
+
+	for (let i = 0; i < CARDS; i++) {
+		const matches = noFilter || activeColors.has(cardColors[i]);
+		const op = matches ? "1" : "0";
+		cards[i].style.opacity = op;
+		lines[i].style.opacity = op; // center line going to this card
+	}
+	// Corner lines: visible if their corner is active (or no filter at all)
+	cornerLines.forEach((cornerSet, c) => {
+		const visible = noFilter || activeCorners.has(c);
+		const op = visible ? "1" : "0";
+		for (const { line } of cornerSet) {
+			line.style.opacity = op;
+		}
+	});
+	// Toggle active visual state on the corner pills themselves
+	cornerLabels.forEach((label, c) => {
+		label.classList.toggle("is-active", activeCorners.has(c));
+	});
+}
+cornerLabels.forEach((label, c) => {
+	label.addEventListener("click", () => {
+		if (activeCorners.has(c)) activeCorners.delete(c);
+		else activeCorners.add(c);
+		// Selecting all is functionally identical to selecting none — collapse to none
+		if (activeCorners.size === cornerSigns.length) activeCorners.clear();
+		applyFilter();
+	});
 });
 // For each corner, only create lines to cards whose color matches.
 // Each entry: { line, cardIndex } so we know which card to point at.
@@ -262,26 +304,39 @@ let target = 0;
 let current = 0;
 
 // Infinite "scroll": wheel + touch events accumulate the rotation target
-// directly, so the rotation never hits a maximum.
+// directly, so the rotation never hits a maximum. Auto-rotation runs by default
+// and pauses for IDLE_BEFORE_AUTO_MS after any user input.
+let lastUserInput = -Infinity;
+function markInteraction() {
+	lastUserInput = performance.now();
+}
+
 function onWheel(e) {
 	target += e.deltaY * SCROLL_FACTOR;
+	markInteraction();
 }
 
 let lastTouchY = null;
 function onTouchStart(e) {
 	lastTouchY = e.touches[0].clientY;
+	markInteraction();
 }
 function onTouchMove(e) {
 	if (lastTouchY === null) return;
 	const dy = lastTouchY - e.touches[0].clientY;
 	target += dy * SCROLL_FACTOR;
 	lastTouchY = e.touches[0].clientY;
+	markInteraction();
 }
 function onTouchEnd() {
 	lastTouchY = null;
 }
 
 function tick() {
+	// Auto-rotate when user has been idle long enough
+	if (performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS) {
+		target += AUTO_ROTATE_SPEED;
+	}
 	current += (target - current) * EASE;
 
 	const step = (Math.PI * 2) / CARDS;

@@ -18,6 +18,12 @@
 // 3D ring carousel
 // =============================================================================
 
+html,
+body {
+	overscroll-behavior: none;  // disable rubber-band, pull-to-refresh, etc.
+	overflow: hidden;           // belt-and-braces — page never scrolls
+}
+
 body {
 	background: #ffffff;
 	color: #0a0a0a;
@@ -55,6 +61,7 @@ body {
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 	padding: 1rem;
 	color: #000;
+	transition: opacity 0.3s ease;
 	// background set inline by JS, transform set inline by JS
 }
 
@@ -81,19 +88,31 @@ body {
 	left: 50%;
 	background: #000;
 	color: #fff;
-	padding: 0.5rem 1rem;
-	font-size: 1.5rem;
+	padding: 0.75rem 1.5rem;
+	font-size: 2.25rem;
 	line-height: 1;
 	white-space: nowrap;
 	border-radius: 9999px;
 	// transform set by JS to match the auto-centered offset (with z lift to sit on top of dot)
 }
 
-// Corner pills override: white pill, black text, black outline
+// Corner pills override: white pill, black text, black outline; smaller than centered
 .corner-label {
 	background: #fff;
 	color: #000;
 	border: 1px solid #000;
+	padding: 0.5rem 1rem;
+	font-size: 1.5rem;
+	cursor: pointer;
+	user-select: none;
+	transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+// Hover and active states — both flip to inverted (black pill, white text)
+.corner-label:hover,
+.corner-label.is-active {
+	background: #000;
+	color: #fff;
 }
 
 .connectors {
@@ -107,5 +126,6 @@ body {
 		stroke: #000;
 		stroke-width: 1;
 		vector-effect: non-scaling-stroke;
+		transition: opacity 0.3s ease;
 	}
 }
