@@ -10,12 +10,13 @@ const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
 const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
 const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
+const MAX_BLUR = 5;      // blur (px) on back-most card — only applied to back half
 const CORNER_INSET = 30; // px inset of corner dots from the scene edge
 const LABEL_INSET_Y = 30;// px gap between corner labels and top/bottom of scene
 const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
-const TURNS = 1;         // full rotations across the entire scroll
+const SCROLL_FACTOR = 0.1; // degrees of rotation per pixel of wheel/touch delta
 const EASE = 0.08;       // smoothing factor (lower = smoother)
 
 const TILT_X = (TILT_X_DEG * Math.PI) / 180;
@@ -75,6 +76,8 @@ const TITLES = [
 
 const cards = [];
 const lines = [];
+// Last-applied (integer) blur per card — only re-write style.filter when this changes
+const prevBlur = new Array(CARDS).fill(-1);
 for (let i = 0; i < CARDS; i++) {
 	const card = document.createElement("div");
 	card.className = "card";
@@ -258,10 +261,24 @@ function recomputeFit() {
 let target = 0;
 let current = 0;
 
-function readScroll() {
-	const max = document.documentElement.scrollHeight - window.innerHeight;
-	const progress = max > 0 ? window.scrollY / max : 0;
-	target = progress * 360 * TURNS;
+// Infinite "scroll": wheel + touch events accumulate the rotation target
+// directly, so the rotation never hits a maximum.
+function onWheel(e) {
+	target += e.deltaY * SCROLL_FACTOR;
+}
+
+let lastTouchY = null;
+function onTouchStart(e) {
+	lastTouchY = e.touches[0].clientY;
+}
+function onTouchMove(e) {
+	if (lastTouchY === null) return;
+	const dy = lastTouchY - e.touches[0].clientY;
+	target += dy * SCROLL_FACTOR;
+	lastTouchY = e.touches[0].clientY;
+}
+function onTouchEnd() {
+	lastTouchY = null;
 }
 
 function tick() {
@@ -316,6 +333,15 @@ function tick() {
 		cards[i].style.transform =
 			`translate3d(${fx}px, ${fy}px, ${z}px) scale(${cardScale})`;
 
+		// Blur on the back half only; throttle writes by rounding to integer px
+		// (each update triggers GPU re-rasterization, so we want to write rarely)
+		const blurAmount = tNorm < 0.5 ? (1 - tNorm * 2) * MAX_BLUR : 0;
+		const blurRounded = Math.round(blurAmount);
+		if (blurRounded !== prevBlur[i]) {
+			cards[i].style.filter = blurRounded > 0 ? `blur(${blurRounded}px)` : "";
+			prevBlur[i] = blurRounded;
+		}
+
 		const scale = PERSPECTIVE / (PERSPECTIVE - z);
 		cardSX[i] = cx + fx * scale;
 		cardSY[i] = cy + fy * scale;
@@ -340,11 +366,11 @@ function tick() {
 	requestAnimationFrame(tick);
 }
 
-window.addEventListener("scroll", readScroll, { passive: true });
-window.addEventListener("resize", () => {
-	readScroll();
-	recomputeFit();
-}, { passive: true });
+window.addEventListener("wheel", onWheel, { passive: true });
+window.addEventListener("touchstart", onTouchStart, { passive: true });
+window.addEventListener("touchmove", onTouchMove, { passive: true });
+window.addEventListener("touchend", onTouchEnd, { passive: true });
+window.addEventListener("resize", recomputeFit, { passive: true });
 
 recomputeFit();
 // Re-run once custom fonts have loaded — label widths change when HAL Timezone
@@ -352,5 +378,4 @@ recomputeFit();
 if (document.fonts && document.fonts.ready) {
 	document.fonts.ready.then(recomputeFit);
 }
-readScroll();
 tick();

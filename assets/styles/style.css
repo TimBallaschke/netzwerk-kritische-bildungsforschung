@@ -30,7 +30,7 @@ body {
 
 .scroll-area {
   position: relative;
-  height: 500vh;
+  height: 100vh;
 }
 
 .stage {

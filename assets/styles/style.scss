@@ -26,7 +26,7 @@ body {
 
 .scroll-area {
 	position: relative;
-	height: 500vh;       // scroll distance drives rotation
+	height: 100vh;       // no page scroll — wheel/touch drives rotation directly
 }
 
 .stage {
