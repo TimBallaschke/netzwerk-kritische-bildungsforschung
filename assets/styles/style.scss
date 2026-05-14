@@ -56,3 +56,30 @@ body {
 	backface-visibility: hidden;
 	// per-card transform set inline by JS
 }
+
+.dot {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 12px;
+	height: 12px;
+	background: #000;
+	border-radius: 50%;
+	// center, then match the JS OFFSET_Y so the dot sits at the cards'
+	// visual center (not the geometric center of .ring)
+	transform: translate(-50%, -50%) translate3d(0, -60px, 0);
+}
+
+.connectors {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+
+	line {
+		stroke: #000;
+		stroke-width: 1;
+		vector-effect: non-scaling-stroke;
+	}
+}
