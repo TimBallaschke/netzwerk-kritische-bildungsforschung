@@ -49,9 +49,10 @@ body {
 .card {
 	position: absolute;
 	inset: 0;
+	border: 1px solid #000;
 	border-radius: 12px;
 	backface-visibility: hidden;
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 	padding: 1rem;
 	color: #000;
 	// background set inline by JS, transform set inline by JS
