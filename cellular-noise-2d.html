@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Cellular Noise — pure p5.js</title>
+<style>
+  body { margin: 0; overflow: hidden; background: #000; }
+  canvas { display: block; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+</head>
+<body>
+<script>
+const NUM_SEEDS = 35;
+const STEP = 2;          // pixel block size — raise to 3/4 if it lags
+const WALL_WIDTH = 6;    // membrane thickness in pixels
+
+let seeds = [];
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  pixelDensity(1);
+  for (let i = 0; i < NUM_SEEDS; i++) {
+    seeds.push({ ox: random(1000), oy: random(1000), x: 0, y: 0 });
+  }
+}
+
+function draw() {
+  const t = millis() * 0.0003;
+
+  // organic drift via Perlin noise
+  for (const s of seeds) {
+    s.x = noise(s.ox + t) * width;
+    s.y = noise(s.oy + t) * height;
+  }
+
+  loadPixels();
+  const w = width;
+  const h = height;
+
+  for (let y = 0; y < h; y += STEP) {
+    for (let x = 0; x < w; x += STEP) {
+
+      // find F1 (nearest seed) and F2 (second-nearest), squared distances
+      let f1 = Infinity, f2 = Infinity;
+      for (let i = 0; i < NUM_SEEDS; i++) {
+        const ddx = x - seeds[i].x;
+        const ddy = y - seeds[i].y;
+        const d = ddx * ddx + ddy * ddy;
+        if (d < f1)      { f2 = f1; f1 = d; }
+        else if (d < f2) { f2 = d; }
+      }
+
+      // F2 - F1 is small along cell walls -> bright
+      const edge = Math.sqrt(f2) - Math.sqrt(f1);
+      const lines = Math.max(0, 1 - edge / WALL_WIDTH);
+
+      const r = 5  + lines * 75;
+      const g = 10 + lines * 180;
+      const b = 18 + lines * 255;
+
+      // fill the STEP x STEP pixel block
+      for (let by = 0; by < STEP; by++) {
+        for (let bx = 0; bx < STEP; bx++) {
+          const idx = 4 * ((y + by) * w + (x + bx));
+          pixels[idx]     = r;
+          pixels[idx + 1] = g;
+          pixels[idx + 2] = b;
+          pixels[idx + 3] = 255;
+        }
+      }
+    }
+  }
+  updatePixels();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>

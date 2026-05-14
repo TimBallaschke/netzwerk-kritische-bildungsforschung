@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Particle Cloud — flow field</title>
+<style>
+  body { margin: 0; overflow: hidden; background: #000; }
+  canvas { display: block; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+</head>
+<body>
+<script>
+const NUM_PARTICLES = 4000;
+const NOISE_SCALE   = 0.003;   // smaller = larger, smoother flow regions
+const NOISE_SPEED   = 0.0008;  // how fast the flow field morphs
+const FORCE         = 0.12;    // how hard the field pushes particles
+const PULL          = 0.0009;  // gravitational pull toward center
+const FRICTION      = 0.95;
+const MAX_SPEED     = 2.5;
+const TRAIL_FADE    = 18;      // 0 = infinite trails, 255 = no trails
+const RESET_RADIUS  = 600;     // particles further than this respawn
+const POINT_SIZE    = 1.2;
+
+let particles = [];
+let zoff = 0;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(0);
+  for (let i = 0; i < NUM_PARTICLES; i++) particles.push(spawn());
+}
+
+function spawn() {
+  const a = random(TWO_PI);
+  const r = random(20, 180);
+  return {
+    x: width / 2 + cos(a) * r,
+    y: height / 2 + sin(a) * r,
+    vx: 0,
+    vy: 0
+  };
+}
+
+function draw() {
+  // semi-transparent black -> particle trails fade slowly
+  noStroke();
+  fill(0, TRAIL_FADE);
+  rect(0, 0, width, height);
+
+  stroke(255, 200);
+  strokeWeight(POINT_SIZE);
+
+  zoff += NOISE_SPEED;
+  const cx = width / 2;
+  const cy = height / 2;
+  const resetSq = RESET_RADIUS * RESET_RADIUS;
+
+  for (const p of particles) {
+    // 3D Perlin noise -> angle of flow at this position
+    const n = noise(p.x * NOISE_SCALE, p.y * NOISE_SCALE, zoff);
+    const angle = n * TWO_PI * 2;
+
+    p.vx += cos(angle) * FORCE;
+    p.vy += sin(angle) * FORCE;
+
+    // pull back toward the center so the cloud stays cohesive
+    p.vx += (cx - p.x) * PULL;
+    p.vy += (cy - p.y) * PULL;
+
+    p.vx *= FRICTION;
+    p.vy *= FRICTION;
+
+    // clamp speed
+    const sp = Math.hypot(p.vx, p.vy);
+    if (sp > MAX_SPEED) {
+      p.vx = (p.vx / sp) * MAX_SPEED;
+      p.vy = (p.vy / sp) * MAX_SPEED;
+    }
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    // respawn stragglers
+    const dx = p.x - cx;
+    const dy = p.y - cy;
+    if (dx * dx + dy * dy > resetSq) Object.assign(p, spawn());
+
+    point(p.x, p.y);
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  background(0);
+}
+</script>
+</body>
+</html>
