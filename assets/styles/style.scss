@@ -75,6 +75,21 @@ body {
 	// transform set by JS to match the auto-centered offset
 }
 
+.center-label {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	background: #fff;
+	color: #000;
+	border: 1px solid #000;
+	padding: 0.5rem 1rem;
+	font-size: 1.25rem;
+	line-height: 1;
+	white-space: nowrap;
+	border-radius: 9999px;
+	// transform set by JS to match the auto-centered offset (with z lift to sit on top of dot)
+}
+
 .connectors {
 	position: absolute;
 	inset: 0;

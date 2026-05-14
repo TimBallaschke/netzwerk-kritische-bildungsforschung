@@ -11,6 +11,7 @@ const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
 const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
 const CORNER_INSET = 30; // px inset of corner dots from the scene edge
+const LABEL_INSET_Y = 30;// px gap between corner labels and top/bottom of scene
 const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
@@ -29,6 +30,7 @@ const stage = document.querySelector(".stage");
 const ring = document.querySelector(".ring");
 const svg = document.querySelector(".connectors");
 const dot = document.querySelector(".dot");
+const centerLabel = document.querySelector(".center-label");
 
 const CARD_W = ring.offsetWidth || 140;
 const CARD_H = ring.offsetHeight || 180;
@@ -101,11 +103,24 @@ const CORNER_COLORS = [
 	"#4965e6", // bottom-left → blue
 	"#f3511c", // bottom-right → orange
 ];
+const CORNER_LABELS = [
+	"Blog",              // top-left
+	"Veranstaltungen",   // top-right
+	"Publications",      // bottom-left
+	"Call for Papers",   // bottom-right
+];
 const cornerDots = cornerSigns.map(() => {
 	const d = document.createElement("div");
 	d.className = "dot corner-dot";
 	ring.appendChild(d);
 	return d;
+});
+const cornerLabels = cornerSigns.map((_, c) => {
+	const label = document.createElement("div");
+	label.className = "center-label corner-label";
+	label.textContent = CORNER_LABELS[c];
+	ring.appendChild(label);
+	return label;
 });
 // For each corner, only create lines to cards whose color matches.
 // Each entry: { line, cardIndex } so we know which card to point at.
@@ -175,6 +190,8 @@ let fitRz = RADIUS;
 let fitJitter = JITTER_Y;
 let autoOffsetX = 0;
 let autoOffsetY = 0;
+// Cached world-space positions of the 4 corner dots (updated by recomputeFit)
+const cornerDotPositions = cornerSigns.map(() => ({ x: 0, y: 0 }));
 
 function recomputeFit() {
 	const sceneW = (window.innerWidth * SCENE_W) / 100;
@@ -206,14 +223,35 @@ function recomputeFit() {
 	const dy = autoOffsetY + OFFSET_Y;
 	dot.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 0)`;
 
-	// Place corner dots at scene corners (independent of auto-center)
-	const halfW = sceneW / 2 - CORNER_INSET;
-	const halfH = sceneH / 2 - CORNER_INSET;
+	// Place the "Aktuelles" label at the center, sitting on top of the dot
+	// (z=1 so it's always in front of the dot regardless of card depth ordering)
+	centerLabel.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 1px)`;
+
+	// Labels go flush to the scene edges, anchored by their own corner
+	const edgeW = sceneW / 2;
+	const edgeH = sceneH / 2;
 	cornerSigns.forEach(([sx, sy], c) => {
-		const x = sx * halfW;
-		const y = sy * halfH;
+		// Label first — anchored so its matching corner aligns to the scene edge,
+		// pulled in vertically by LABEL_INSET_Y so it doesn't sit flush to top/bottom
+		// sx = -1 → label's left edge at scene left (tx = 0%)
+		// sx = +1 → label's right edge at scene right (tx = -100%)
+		const tx = sx > 0 ? -100 : 0;
+		const ty = sy > 0 ? -100 : 0;
+		const lx = sx * edgeW;
+		const ly = sy * (edgeH - LABEL_INSET_Y);
+		cornerLabels[c].style.transform =
+			`translate(${tx}%, ${ty}%) translate3d(${lx}px, ${ly}px, 1px)`;
+
+		// Dot — at the label's inner side edge (vertically centered).
+		// Reading offsetWidth/Height forces a layout flush so we get accurate values.
+		const labelW = cornerLabels[c].offsetWidth;
+		const labelH = cornerLabels[c].offsetHeight;
+		const dx = sx * (edgeW - labelW);
+		const dy = sy * (edgeH - LABEL_INSET_Y - labelH / 2);
+		cornerDotPositions[c].x = dx;
+		cornerDotPositions[c].y = dy;
 		cornerDots[c].style.transform =
-			`translate(-50%, -50%) translate3d(${x}px, ${y}px, 0)`;
+			`translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 2px)`;
 	});
 }
 
@@ -241,14 +279,11 @@ function tick() {
 	const dotX = cx + offX;
 	const dotY = cy + offY;
 
-	// Corner dot screen positions (z=0, so no perspective scaling)
-	const sceneW = (window.innerWidth * SCENE_W) / 100;
-	const sceneH = (window.innerHeight * SCENE_H) / 100;
-	const halfW = sceneW / 2 - CORNER_INSET;
-	const halfH = sceneH / 2 - CORNER_INSET;
-	const cornerScreens = cornerSigns.map(([sx, sy]) => ({
-		x: cx + sx * halfW,
-		y: cy + sy * halfH,
+	// Corner dot screen positions — read from cached world coords (z=0, so no
+	// perspective scaling needed; positions come from recomputeFit / label sizes)
+	const cornerScreens = cornerDotPositions.map((p) => ({
+		x: cx + p.x,
+		y: cy + p.y,
 	}));
 
 	// Card screen positions (cached so corner lines can reference them after the loop)
@@ -312,5 +347,10 @@ window.addEventListener("resize", () => {
 }, { passive: true });
 
 recomputeFit();
+// Re-run once custom fonts have loaded — label widths change when HAL Timezone
+// replaces the system-ui fallback, which would otherwise leave dots off the edges.
+if (document.fonts && document.fonts.ready) {
+	document.fonts.ready.then(recomputeFit);
+}
 readScroll();
 tick();
