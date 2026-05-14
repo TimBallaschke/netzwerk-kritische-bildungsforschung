@@ -1,5 +1,5 @@
 // =============================================================================
-// 3D ring carousel — scroll-driven rotation
+// Billboarded ring carousel — cards orbit a circle but always face the camera
 // =============================================================================
 
 const CARDS = 12;       // number of cards around the ring
@@ -9,13 +9,13 @@ const EASE = 0.08;      // smoothing factor (0..1, lower = smoother)
 
 const ring = document.querySelector(".ring");
 
-// Build the cards
+// Create cards
+const cards = [];
 for (let i = 0; i < CARDS; i++) {
 	const card = document.createElement("div");
 	card.className = "card";
-	const angle = (360 / CARDS) * i;
-	card.style.transform = `rotateY(${angle}deg) translateZ(${RADIUS}px)`;
 	ring.appendChild(card);
+	cards.push(card);
 }
 
 // Scroll → target rotation
@@ -30,7 +30,15 @@ function readScroll() {
 
 function tick() {
 	current += (target - current) * EASE;
-	ring.style.setProperty("--ring-rotation", `${current}deg`);
+
+	const step = 360 / CARDS;
+	for (let i = 0; i < CARDS; i++) {
+		const angle = step * i + current;
+		// place at angle on the circle, then counter-rotate to face camera
+		cards[i].style.transform =
+			`rotateY(${angle}deg) translateZ(${RADIUS}px) rotateY(${-angle}deg)`;
+	}
+
 	requestAnimationFrame(tick);
 }
 

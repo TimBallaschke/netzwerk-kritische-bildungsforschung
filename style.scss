@@ -42,8 +42,6 @@ body {
 	width: 240px;
 	height: 320px;
 	transform-style: preserve-3d;
-	transform: rotateY(var(--ring-rotation, 0deg));
-	will-change: transform;
 }
 
 .card {
