@@ -31,8 +31,8 @@ body {
 
 .ring {
   position: relative;
-  width: 240px;
-  height: 320px;
+  width: 140px;
+  height: 180px;
   transform-style: preserve-3d;
 }
 

@@ -3,7 +3,7 @@
 // =============================================================================
 
 const CARDS = 12;       // number of cards around the ring
-const RADIUS = 480;     // distance from center (px)
+const RADIUS = 320;     // distance from center (px)
 const TURNS = 1;        // full rotations across the entire scroll
 const EASE = 0.08;      // smoothing factor (0..1, lower = smoother)
 
