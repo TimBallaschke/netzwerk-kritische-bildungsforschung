@@ -12,6 +12,7 @@ const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-sc
 const MIN_SCALE = 0.7;   // scale of back-most card (front-most stays at 1.0)
 const MIN_OPACITY = 0.7; // opacity of back-most card (front-most stays at 1.0)
 const MAX_BLUR = 6;      // blur (px) on back-most card (front-most has none)
+const CORNER_INSET = 30; // px inset of corner dots from the scene edge
 const SCENE_W = 94;      // scene width as % of viewport
 const SCENE_H = 100;     // scene height as % of viewport
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
@@ -67,6 +68,24 @@ for (let i = 0; i < CARDS; i++) {
 	svg.appendChild(line);
 	lines.push(line);
 }
+
+// Four corner dots — one in each corner of the scene.
+// Each connects to every card with its own line.
+// Sign pairs: [x-sign, y-sign] → [-1,-1]=TL, [+1,-1]=TR, [-1,+1]=BL, [+1,+1]=BR
+const cornerSigns = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+const cornerDots = cornerSigns.map(() => {
+	const d = document.createElement("div");
+	d.className = "dot corner-dot";
+	ring.appendChild(d);
+	return d;
+});
+const cornerLines = cornerSigns.map(() =>
+	Array.from({ length: CARDS }, () => {
+		const line = document.createElementNS(SVG_NS, "line");
+		svg.appendChild(line);
+		return line;
+	})
+);
 
 // -----------------------------------------------------------------------------
 // Fit: scale RADIUS and JITTER_Y so the projected bounding box (including card
@@ -147,10 +166,20 @@ function recomputeFit() {
 	autoOffsetX = -final.centerX;
 	autoOffsetY = -final.centerY;
 
-	// Move the dot to match (in CSS world space)
+	// Move the center dot to match (in CSS world space)
 	const dx = autoOffsetX + OFFSET_X;
 	const dy = autoOffsetY + OFFSET_Y;
 	dot.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 0)`;
+
+	// Place corner dots at scene corners (independent of auto-center)
+	const halfW = sceneW / 2 - CORNER_INSET;
+	const halfH = sceneH / 2 - CORNER_INSET;
+	cornerSigns.forEach(([sx, sy], c) => {
+		const x = sx * halfW;
+		const y = sy * halfH;
+		cornerDots[c].style.transform =
+			`translate(-50%, -50%) translate3d(${x}px, ${y}px, 0)`;
+	});
 }
 
 let target = 0;
@@ -176,6 +205,16 @@ function tick() {
 	const offY = autoOffsetY + OFFSET_Y;
 	const dotX = cx + offX;
 	const dotY = cy + offY;
+
+	// Corner dot screen positions (z=0, so no perspective scaling)
+	const sceneW = (window.innerWidth * SCENE_W) / 100;
+	const sceneH = (window.innerHeight * SCENE_H) / 100;
+	const halfW = sceneW / 2 - CORNER_INSET;
+	const halfH = sceneH / 2 - CORNER_INSET;
+	const cornerScreens = cornerSigns.map(([sx, sy]) => ({
+		x: cx + sx * halfW,
+		y: cy + sy * halfH,
+	}));
 
 	for (let i = 0; i < CARDS; i++) {
 		const t = step * i + baseRot;
@@ -208,10 +247,20 @@ function tick() {
 		cards[i].style.filter = `blur(${cardBlur}px)`;
 
 		const scale = PERSPECTIVE / (PERSPECTIVE - z);
+		const cardSX = cx + fx * scale;
+		const cardSY = cy + fy * scale;
+
 		lines[i].setAttribute("x1", dotX);
 		lines[i].setAttribute("y1", dotY);
-		lines[i].setAttribute("x2", cx + fx * scale);
-		lines[i].setAttribute("y2", cy + fy * scale);
+		lines[i].setAttribute("x2", cardSX);
+		lines[i].setAttribute("y2", cardSY);
+
+		for (let c = 0; c < 4; c++) {
+			cornerLines[c][i].setAttribute("x1", cornerScreens[c].x);
+			cornerLines[c][i].setAttribute("y1", cornerScreens[c].y);
+			cornerLines[c][i].setAttribute("x2", cardSX);
+			cornerLines[c][i].setAttribute("y2", cardSY);
+		}
 	}
 
 	requestAnimationFrame(tick);
