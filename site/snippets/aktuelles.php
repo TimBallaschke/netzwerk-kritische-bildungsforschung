@@ -13,7 +13,12 @@ $typeMeta = [
 $container     = page('aktuelles');
 $cardEntries   = $container ? $container->children()->listed() : [];
 ?>
-<section class="aktuelles" aria-label="Aktuelles" x-data="{ view: 'grafik' }">
+<section
+  class="aktuelles"
+  aria-label="Aktuelles"
+  x-data="{ view: 'grafik' }"
+  x-effect="window.dispatchEvent(new CustomEvent('aktuelles:view', { detail: { list: view === 'liste' } }))"
+>
   <div class="aktuelles__switch" role="group" aria-label="Ansicht wechseln">
     <span class="aktuelles__switch-thumb" :class="`is-${view}`" aria-hidden="true"></span>
     <button type="button" class="aktuelles__switch-option" :class="{ 'is-active': view === 'grafik' }" :aria-pressed="view === 'grafik'" @click="view = 'grafik'">Grafik</button>

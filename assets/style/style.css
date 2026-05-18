@@ -176,7 +176,7 @@ body::before {
   transition: transform 0.35s ease;
 }
 
-.is-locked .site-header:hover ~ main .intro-text {
+.is-locked:not(.is-list-view) .site-header:hover ~ main .intro-text {
   transform: translateY(100%);
 }
 
@@ -212,9 +212,21 @@ body::before {
   overscroll-behavior: contain;
 }
 
+.is-list-view .aktuelles {
+  height: auto;
+  overflow: visible;
+}
+
+.is-list-view .aktuelles__list {
+  position: static;
+  inset: auto;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
 .aktuelles__ring {
   position: relative;
-  width: 440px;
+  width: 30rem;
   height: 180px;
 }
 

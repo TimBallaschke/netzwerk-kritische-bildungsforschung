@@ -36,9 +36,25 @@
   overscroll-behavior: contain;
 }
 
+// List view joins the normal page scroll (same scroller as the intro):
+// the section grows with its content instead of being a fixed, clipped,
+// internally-scrolling box. `.is-list-view` is set on <html> by
+// script.js when the Liste view is active.
+.is-list-view .aktuelles {
+  height: auto;
+  overflow: visible;
+}
+
+.is-list-view .aktuelles__list {
+  position: static;
+  inset: auto;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
 .aktuelles__ring {
   position: relative;
-  width: 440px;
+  width: 30rem; // responsive (root font-size is 1vw → scales with viewport)
   height: 180px;
   // Not a stacking context: cards' z-index resolves in the stage so they
   // interleave with the connectors svg (also a child of the stage).

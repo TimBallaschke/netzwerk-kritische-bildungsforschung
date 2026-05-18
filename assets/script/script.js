@@ -23,17 +23,21 @@
 
   // One-way scroll: once .aktuelles has snapped under the header, freeze
   // the page so the user can't scroll back up to the intro text.
+  //
+  // Exception — the Liste view shares the normal page scroller (like the
+  // intro), so while it's active the lock is disabled and the page scrolls
+  // freely. Switching back to Grafik re-pins the carousel.
   function initScrollLock() {
     var aktuelles = document.querySelector(".aktuelles");
     if (!aktuelles) return;
+    var docEl = document.documentElement;
     var locked = false;
+    var listView = false;
 
     function headerHeight() {
       return (
         parseFloat(
-          getComputedStyle(document.documentElement).getPropertyValue(
-            "--header-height"
-          )
+          getComputedStyle(docEl).getPropertyValue("--header-height")
         ) || 0
       );
     }
@@ -46,24 +50,54 @@
       );
     }
 
-    function maybeLock() {
-      if (locked) return;
-      var headerH = headerHeight();
-      // Scroll position at which aktuelles' top reaches the header's bottom.
-      var lockY =
-        aktuelles.getBoundingClientRect().top + window.scrollY - headerH;
-      if (window.scrollY >= lockY - 1) {
-        locked = true;
-        window.removeEventListener("scroll", maybeLock);
-        // Pin exactly to the snap point, then disable page scrolling.
-        window.scrollTo(0, lockY);
-        document.documentElement.style.overflow = "hidden";
-        document.body.style.overflow = "hidden";
-        // Enables the header-hover intro reveal (see _intro-text.scss).
-        document.documentElement.classList.add("is-locked");
-        setCarouselInteractive(true);
-      }
+    // Scroll position at which aktuelles' top reaches the header's bottom.
+    function lockTargetY() {
+      return (
+        aktuelles.getBoundingClientRect().top + window.scrollY - headerHeight()
+      );
     }
+
+    function freeze() {
+      locked = true;
+      window.removeEventListener("scroll", maybeLock);
+      // Pin exactly to the snap point, then disable page scrolling.
+      window.scrollTo(0, lockTargetY());
+      docEl.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      // Enables the header-hover intro reveal (see _intro-text.scss).
+      docEl.classList.add("is-locked");
+      setCarouselInteractive(true);
+    }
+
+    function unfreeze() {
+      locked = false;
+      docEl.style.overflow = "";
+      document.body.style.overflow = "";
+      docEl.classList.remove("is-locked");
+      setCarouselInteractive(false);
+    }
+
+    function maybeLock() {
+      if (locked || listView) return;
+      if (window.scrollY >= lockTargetY() - 1) freeze();
+    }
+
+    // Grafik/Liste switch (dispatched from aktuelles.php via Alpine).
+    window.addEventListener("aktuelles:view", function (e) {
+      var list = !!(e.detail && e.detail.list);
+      if (list === listView) return; // ignore the initial Grafik signal
+      listView = list;
+      docEl.classList.toggle("is-list-view", list);
+
+      if (list) {
+        // Join the page scroller: drop the freeze and stop locking.
+        if (locked) unfreeze();
+        window.removeEventListener("scroll", maybeLock);
+      } else {
+        // Back to Grafik: layout reverts to the fixed carousel — pin it.
+        freeze();
+      }
+    });
 
     window.addEventListener("scroll", maybeLock, { passive: true });
   }

@@ -18,7 +18,9 @@
 
 // Once the carousel has scroll-snapped/locked (JS adds .is-locked to
 // <html>), hovering the header slides the intro down by its own height.
-.is-locked .site-header:hover ~ main .intro-text {
+// Strictly the locked Grafik state: `:not(.is-list-view)` guarantees the
+// reveal is dead in the Liste view (page scrolls normally, no lock).
+.is-locked:not(.is-list-view) .site-header:hover ~ main .intro-text {
   transform: translateY(100%);
 }
 
