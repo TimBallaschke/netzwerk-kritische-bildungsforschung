@@ -17,6 +17,12 @@ body {
   overscroll-behavior: none;
 }
 
+// Alpine: keep x-show/x-if elements hidden until Alpine initializes,
+// so toggled views don't flash on first paint.
+[x-cloak] {
+  display: none !important;
+}
+
 body {
   line-height: 1.2;
   -webkit-font-smoothing: antialiased;

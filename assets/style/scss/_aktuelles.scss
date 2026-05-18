@@ -7,6 +7,7 @@
   position: relative;
   overflow: hidden;
   height: calc(100dvh - var(--header-height, 0px)); // viewport minus header
+  scroll-snap-align: start; // snaps its top to the header's bottom edge
 }
 
 .aktuelles__stage {
@@ -20,6 +21,16 @@
   // hub and filter pills all interleave here by z-index (set in JS), and
   // these large z-indexes can't leak onto the page.
   isolation: isolate;
+}
+
+// Liste view — scrollable layer occupying the same box as the carousel,
+// toggled against .aktuelles__stage by the Grafik/Liste switch.
+.aktuelles__list {
+  position: absolute;
+  inset: 0;
+  z-index: 1; // above the stage, below the switch (z-index 2)
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .aktuelles__ring {
@@ -145,7 +156,7 @@
   position: relative; // above the thumb
   appearance: none;
   margin: 0;
-  padding: 0.5rem 1.25rem;
+  padding: 0.5rem 0.85rem;
   background: transparent;
   border: 0;
   font: inherit;

@@ -24,6 +24,10 @@ body {
   overscroll-behavior: none;
 }
 
+[x-cloak] {
+  display: none !important;
+}
+
 body {
   line-height: 1.2;
   -webkit-font-smoothing: antialiased;
@@ -67,8 +71,31 @@ h6 {
   font-style: italic;
   font-display: swap;
 }
+html {
+  scroll-snap-type: y proximity;
+  scroll-padding-top: var(--header-height, 0px);
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
 main {
   padding-top: var(--header-height, 0px);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height, 0px);
+  z-index: 900;
+  background-color: white;
+  pointer-events: none;
 }
 
 .site-header {
@@ -153,6 +180,7 @@ main {
   position: relative;
   overflow: hidden;
   height: calc(100dvh - var(--header-height, 0px));
+  scroll-snap-align: start;
 }
 
 .aktuelles__stage {
@@ -163,6 +191,14 @@ main {
   overflow: hidden;
   font-family: "HAL Timezone", system-ui, sans-serif;
   isolation: isolate;
+}
+
+.aktuelles__list {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .aktuelles__ring {
@@ -241,6 +277,65 @@ main {
   color: #fff;
 }
 
+.aktuelles__switch {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid #612c00;
+  border-radius: 9999px;
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: var(--font-size-small-sans-serif);
+  line-height: 1;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+.aktuelles__switch-thumb {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 50%;
+  background: #612c00;
+  border-radius: 9999px;
+  transition: transform 0.25s ease;
+}
+.aktuelles__switch-thumb.is-grafik {
+  transform: translateX(0);
+}
+.aktuelles__switch-thumb.is-liste {
+  transform: translateX(100%);
+}
+
+.aktuelles__switch-option {
+  position: relative;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  margin: 0;
+  padding: 0.5rem 0.85rem;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  color: #612c00;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.aktuelles__switch-option.is-active {
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aktuelles__switch-thumb {
+    transition: none;
+  }
+}
 .aktuelles__connectors {
   position: absolute;
   inset: 0;
@@ -305,7 +400,7 @@ main {
 .aktuelles-item__description {
   font-family: "Geist", system-ui, sans-serif;
   font-size: var(--font-size-small-sans-serif);
-  line-height: 1.2;
+  line-height: 1.3;
 }
 
 .aktuelles-item__toggle {

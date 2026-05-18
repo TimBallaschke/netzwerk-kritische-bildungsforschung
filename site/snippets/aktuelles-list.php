@@ -6,11 +6,15 @@
  * aktuelles-list-item snippet.
  *
  * Data source (in order of precedence):
- *   1. `items`  — an explicit array of associative arrays (type, date,
- *                  title, subinfo, description). Use this to reuse the
- *                  list with a hand-picked / pre-filtered set.
- *   2. `pages`  — a Kirby Pages collection of `aktuelles` entries.
- *   3. default  — children of the `aktuelles` container page.
+ *   1. `items`        — an explicit array of associative arrays (type,
+ *                        date, title, subinfo, description). Use this to
+ *                        reuse the list with a hand-picked set.
+ *   2. `entriesPages` — a Kirby Pages collection of `aktuelles` entries
+ *                        (e.g. a pre-filtered selection).
+ *   3. default        — children of the `aktuelles` container page.
+ *
+ * NOTE: do not name the collection param `$pages` — that is a built-in
+ * Kirby snippet variable (the site's top-level pages) and would shadow it.
  *
  * Entry pages use the `aktuelles` blueprint, so this same content can be
  * surfaced elsewhere (e.g. Beiträge) without going through this snippet.
@@ -27,7 +31,7 @@ $typeLabels = [
 $items = $items ?? null;
 
 if ($items === null) {
-  $entries = $pages ?? null;
+  $entries = $entriesPages ?? null;
 
   if ($entries === null && $container = page('aktuelles')) {
     $entries = $container->children()->listed();

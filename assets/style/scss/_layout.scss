@@ -3,6 +3,38 @@
 // below it by --header-height (the header's measured occupied height,
 // set in script.js and updated on resize / font load).
 
+// Root is the page scroller. Snap points align below the fixed header
+// (scroll-padding-top = header height), so .aktuelles snaps so its top
+// sits exactly at the header's bottom edge.
+html {
+  scroll-snap-type: y proximity;
+  scroll-padding-top: var(--header-height, 0px);
+  scroll-behavior: smooth; // glide into the snap point instead of jumping
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 main {
   padding-top: var(--header-height, 0px);
+}
+
+// Opaque backdrop spanning the whole header zone (viewport top → header
+// bottom, full width incl. the header's margin band). Sits below the
+// header (z-index 1000) but above the scrolling page content, so nothing
+// shows through around the header — and the header's own borders stay
+// fully visible because the header paints on top of this.
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height, 0px);
+  z-index: 900;
+  background-color: white;
+  pointer-events: none;
 }
