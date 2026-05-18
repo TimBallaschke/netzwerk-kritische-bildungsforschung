@@ -157,7 +157,7 @@ main {
   overflow: hidden;
 }
 
-.stage {
+.aktuelles__stage {
   position: absolute;
   inset: 0;
   display: grid;
@@ -167,13 +167,13 @@ main {
   isolation: isolate;
 }
 
-.ring {
+.aktuelles__ring {
   position: relative;
   width: 280px;
   height: 180px;
 }
 
-.card {
+.aktuelles__card {
   position: absolute;
   inset: 0;
   background: #a3ff98;
@@ -185,13 +185,13 @@ main {
   transition: opacity 0.3s ease;
 }
 
-.card-title {
+.aktuelles__card-title {
   font-weight: 400;
   font-size: 1.75rem;
   line-height: 1.15;
 }
 
-.card-overlay {
+.aktuelles__card-overlay {
   position: absolute;
   inset: 0;
   background: #fff;
@@ -200,7 +200,7 @@ main {
   pointer-events: none;
 }
 
-.dot {
+.aktuelles__dot {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -210,7 +210,7 @@ main {
   border-radius: 50%;
 }
 
-.center-label {
+.aktuelles__label {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -223,7 +223,7 @@ main {
   border-radius: 9999px;
 }
 
-.corner-label {
+.aktuelles__label--corner {
   background: #fff;
   color: #612c00;
   border: 1px solid #612c00;
@@ -234,20 +234,20 @@ main {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.corner-label:hover,
-.corner-label.is-active {
+.aktuelles__label--corner:hover,
+.aktuelles__label--corner.aktuelles__label--active {
   background: #612c00;
   color: #fff;
 }
 
-.connectors {
+.aktuelles__connectors {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
 }
-.connectors line {
+.aktuelles__connectors line {
   stroke: #612c00;
   stroke-width: 1;
   vector-effect: non-scaling-stroke;

@@ -1,7 +1,7 @@
 // Aktuelles
 // Container under the header holding the 3D ring carousel.
-// The .stage fills .aktuelles and the JS fits the carousel to that box
-// (the .stage size — not the viewport).
+// The stage fills .aktuelles and the JS fits the carousel to that box
+// (the stage size — not the viewport).
 
 .aktuelles {
   flex: 1; // fill main's width; height comes from flex stretch
@@ -9,28 +9,28 @@
   overflow: hidden;
 }
 
-.stage {
+.aktuelles__stage {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
   overflow: hidden;
   font-family: "HAL Timezone", system-ui, sans-serif;
-  // Single stacking context for the whole carousel: cards, per-line
-  // connector svgs, hub and corner pills all interleave here by z-index
-  // (set in JS), and these large z-indexes can't leak onto the page.
+  // Single stacking context for the whole carousel: cards, connectors,
+  // hub and filter pills all interleave here by z-index (set in JS), and
+  // these large z-indexes can't leak onto the page.
   isolation: isolate;
 }
 
-.ring {
+.aktuelles__ring {
   position: relative;
   width: 280px;
   height: 180px;
-  // Not a stacking context: cards' z-index resolves in .stage so they
-  // interleave with the connector svgs (also children of .stage).
+  // Not a stacking context: cards' z-index resolves in the stage so they
+  // interleave with the connectors svg (also a child of the stage).
 }
 
-.card {
+.aktuelles__card {
   position: absolute;
   inset: 0;
   background: #a3ff98;
@@ -43,7 +43,7 @@
   // transform set inline by JS
 }
 
-.card-title {
+.aktuelles__card-title {
   font-weight: 400;
   font-size: 1.75rem;
   line-height: 1.15;
@@ -51,7 +51,7 @@
 
 // White veil over the card; opacity driven by depth in JS (0 front → 0.2 back).
 // Sits above the title so the whole card fades, but stays opaque (not see-through).
-.card-overlay {
+.aktuelles__card-overlay {
   position: absolute;
   inset: 0;
   background: #fff;
@@ -60,7 +60,7 @@
   pointer-events: none;
 }
 
-.dot {
+.aktuelles__dot {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -68,12 +68,11 @@
   height: 14px;
   background: #612c00;
   border-radius: 50%;
-  // z-index set per element in JS: centre hub at orbit mid-depth so cards
-  // interleave with it; corner dots forced above all cards.
+  // z-index set in JS: centre hub at orbit mid-depth so cards interleave.
   // transform set by JS to match the auto-centered offset
 }
 
-.center-label {
+.aktuelles__label {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -84,12 +83,12 @@
   line-height: 1;
   white-space: nowrap;
   border-radius: 9999px;
-  // z-index set per element in JS (see .dot note)
+  // z-index set in JS (see __dot note)
   // transform set by JS to match the auto-centered offset
 }
 
-// Corner pills: white pill, brown text, brown outline; smaller than centered
-.corner-label {
+// Filter pills: white pill, brown text, brown outline; smaller than the hub.
+.aktuelles__label--corner {
   background: #fff;
   color: #612c00;
   border: 1px solid #612c00;
@@ -101,15 +100,15 @@
 }
 
 // Hover and active states — both flip to inverted (brown pill, white text)
-.corner-label:hover,
-.corner-label.is-active {
+.aktuelles__label--corner:hover,
+.aktuelles__label--corner.aktuelles__label--active {
   background: #612c00;
   color: #fff;
 }
 
 // Single svg holding every connector line. z-index set in JS below all
 // cards, so every card always paints over the lines.
-.connectors {
+.aktuelles__connectors {
   position: absolute;
   inset: 0;
   width: 100%;

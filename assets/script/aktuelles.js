@@ -13,8 +13,8 @@ const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
 const MAX_OVERLAY = 0.2; // white veil opacity on the back-most card (0 at front)
 const LABEL_INSET_Y = 30;// px gap between top of scene and first stacked label
 const LABEL_STACK_GAP = 8; // px gap between stacked label pills
-const SCENE_W = 94;      // scene width as % of the .stage container
-const SCENE_H = 100;     // scene height as % of the .stage container
+const SCENE_W = 94;      // scene width as % of the stage container
+const SCENE_H = 100;     // scene height as % of the stage container
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
 const SCROLL_FACTOR = 0.1; // degrees of rotation per pixel of wheel/touch delta
 const AUTO_ROTATE_SPEED = 0.05; // deg per frame when idle (positive = leftward drift)
@@ -29,11 +29,11 @@ const cosZ = Math.cos(TILT_Z);
 const sinZ = Math.sin(TILT_Z);
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-const stage = document.querySelector(".stage");
-const ring = document.querySelector(".ring");
-const svg = document.querySelector(".connectors");
-const dot = document.querySelector(".dot");
-const centerLabel = document.querySelector(".center-label");
+const stage = document.querySelector(".aktuelles__stage");
+const ring = document.querySelector(".aktuelles__ring");
+const svg = document.querySelector(".aktuelles__connectors");
+const dot = document.querySelector(".aktuelles__dot");
+const centerLabel = document.querySelector(".aktuelles__label");
 
 const CARD_W = ring.offsetWidth || 140;
 const CARD_H = ring.offsetHeight || 180;
@@ -107,15 +107,15 @@ const overlays = [];
 const prevOverlay = new Array(CARDS).fill(-1);
 for (let i = 0; i < CARDS; i++) {
 	const card = document.createElement("div");
-	card.className = "card";
+	card.className = "aktuelles__card";
 
 	const title = document.createElement("h3");
-	title.className = "card-title";
+	title.className = "aktuelles__card-title";
 	title.textContent = TITLES[i];
 	card.appendChild(title);
 
 	const overlay = document.createElement("div");
-	overlay.className = "card-overlay";
+	overlay.className = "aktuelles__card-overlay";
 	card.appendChild(overlay);
 	overlays.push(overlay);
 
@@ -146,7 +146,7 @@ const CORNER_LABELS = [
 ];
 const cornerLabels = Array.from({ length: CORNERS }, (_, c) => {
 	const label = document.createElement("div");
-	label.className = "center-label corner-label";
+	label.className = "aktuelles__label aktuelles__label--corner";
 	label.textContent = CORNER_LABELS[c];
 	ring.appendChild(label);
 	return label;
@@ -181,7 +181,7 @@ function applyFilter() {
 	});
 	// Toggle active visual state on the corner pills themselves
 	cornerLabels.forEach((label, c) => {
-		label.classList.toggle("is-active", activeCorners.has(c));
+		label.classList.toggle("aktuelles__label--active", activeCorners.has(c));
 	});
 }
 cornerLabels.forEach((label, c) => {
@@ -467,7 +467,7 @@ stage.addEventListener("touchstart", onTouchStart, { passive: true });
 stage.addEventListener("touchmove", onTouchMove, { passive: true });
 stage.addEventListener("touchend", onTouchEnd, { passive: true });
 
-// Adapt to the .aktuelles/.stage container size, not the viewport.
+// Adapt to the stage container size, not the viewport.
 const resizeObserver = new ResizeObserver(recomputeFit);
 resizeObserver.observe(stage);
 
