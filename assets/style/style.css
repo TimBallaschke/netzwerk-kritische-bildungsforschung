@@ -19,6 +19,11 @@
   margin: 0;
 }
 
+html,
+body {
+  overscroll-behavior: none;
+}
+
 body {
   line-height: 1.2;
   -webkit-font-smoothing: antialiased;
@@ -159,13 +164,13 @@ main {
   place-items: center;
   overflow: hidden;
   font-family: "HAL Timezone", system-ui, sans-serif;
+  isolation: isolate;
 }
 
 .ring {
   position: relative;
   width: 280px;
   height: 180px;
-  isolation: isolate;
 }
 
 .card {
@@ -225,9 +230,7 @@ main {
   padding: 0.5rem 1rem;
   font-size: 1.5rem;
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -249,4 +252,84 @@ main {
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
   transition: opacity 0.3s ease;
-}/*# sourceMappingURL=style.css.map */
+}
+
+.aktuelles-list {
+  background-color: var(--color-green);
+  border-top: 1px solid var(--color-brown);
+}
+
+.aktuelles-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: start;
+  gap: 4rem;
+  padding: 1.75rem 1.5rem;
+  color: var(--color-brown);
+  background-color: var(--color-green);
+  border-bottom: 1px solid var(--color-brown);
+}
+
+.aktuelles-item__main {
+  font-family: "HAL Timezone", serif;
+  font-style: normal;
+  font-synthesis: none;
+}
+
+.aktuelles-item__type {
+  font-size: var(--font-size-large-serif);
+  line-height: 1.15;
+}
+
+.aktuelles-item__type-label {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.aktuelles-item__title {
+  margin: 0.1em 0 0.35em 0;
+  font-size: var(--font-size-large-serif);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.aktuelles-item__subinfo {
+  font-size: 1.4rem;
+  line-height: 1.25;
+}
+.aktuelles-item__subinfo em {
+  font-style: italic;
+}
+
+.aktuelles-item__description {
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.35;
+}
+
+.aktuelles-item__toggle {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  color: var(--color-brown);
+  background: transparent;
+  border: 1px solid var(--color-brown);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aktuelles-item__toggle-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.aktuelles-item__toggle:hover,
+.aktuelles-item__toggle:focus-visible {
+  background-color: var(--color-brown);
+  color: var(--color-green);
+}
+
+/*# sourceMappingURL=style.css.map */

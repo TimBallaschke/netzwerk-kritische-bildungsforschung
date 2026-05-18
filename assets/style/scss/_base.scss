@@ -11,6 +11,12 @@
   margin: 0;
 }
 
+html,
+body {
+  // No bounce / rubber-band overscroll anywhere on the page.
+  overscroll-behavior: none;
+}
+
 body {
   line-height: 1.2;
   -webkit-font-smoothing: antialiased;

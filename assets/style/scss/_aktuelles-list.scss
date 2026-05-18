@@ -1,0 +1,8 @@
+// Aktuelles list
+// Stacks aktuelles-list-item rows. Each row carries its own bottom rule;
+// the list adds the top rule so the first row is closed off too.
+
+.aktuelles-list {
+  background-color: var(--color-green);
+  border-top: 1px solid var(--color-brown);
+}

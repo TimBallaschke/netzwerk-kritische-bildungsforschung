@@ -45,6 +45,7 @@ const CARD_H = ring.offsetHeight || 180;
 const CENTER_Z = Math.round(((1 + MIN_SCALE) / 2) * 1000);
 dot.style.zIndex = CENTER_Z;
 centerLabel.style.zIndex = CENTER_Z + 1; // label just above its own dot
+svg.style.zIndex = 0; // lines always behind every card
 
 // Stratified Y offsets in [-1, 1] — scaled by `fitJitter` at render time.
 // The vertical range is split into CARDS equal bands. Each card's ORBITAL
@@ -97,9 +98,8 @@ const TITLES = [
 
 const cards = [];
 const lines = [];
-// Last-applied z-index per card. opacity (from the corner filter) flattens
-// elements inside a preserve-3d context, so we can't rely on true 3D depth
-// sorting — paint order is set explicitly from each card's orbital depth.
+// Last-applied z-index per card (paint order = on-screen size) — only
+// written when the integer value changes.
 const prevZ = new Array(CARDS).fill(-1);
 // White veil per card; opacity raised as the card moves toward the back.
 const overlays = [];
@@ -391,7 +391,7 @@ function tick() {
 		y: cy + p.y,
 	}));
 
-	// Card screen positions (cached so corner lines can reference them after the loop)
+	// Card screen positions + depth (cached so corner lines can reference them)
 	const cardSX = new Array(CARDS);
 	const cardSY = new Array(CARDS);
 
@@ -455,8 +455,9 @@ function tick() {
 		lines[i].setAttribute("y2", cardSY[i]);
 	}
 
-	// Corner lines: each corner only connects to its color-matched cards
-	for (let c = 0; c < 4; c++) {
+	// Corner lines: each corner only connects to its color-matched cards.
+	// Each line is depth-sorted to its target card, same as the centre lines.
+	for (let c = 0; c < CORNERS; c++) {
 		const { x: csx, y: csy } = cornerScreens[c];
 		for (const { line, cardIndex } of cornerLines[c]) {
 			line.setAttribute("x1", csx);

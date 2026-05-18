@@ -1,0 +1,81 @@
+// Aktuelles list item
+// One row of the Aktuelles list: serif type/title/subinfo (left),
+// sans-serif description (middle), round toggle (right). Brown on green,
+// separated by a bottom rule.
+
+.aktuelles-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: start;
+  gap: 4rem;
+  padding: 1.75rem 1.5rem;
+  color: var(--color-brown);
+  background-color: var(--color-green);
+  border-bottom: 1px solid var(--color-brown);
+}
+
+// Left column — HAL Timezone serif
+.aktuelles-item__main {
+  font-family: "HAL Timezone", serif;
+  font-style: normal;
+  font-synthesis: none; // never fake bold/italic from the regular cut
+}
+
+.aktuelles-item__type {
+  font-size: var(--font-size-large-serif);
+  line-height: 1.15;
+}
+
+.aktuelles-item__type-label {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.aktuelles-item__title {
+  margin: 0.1em 0 0.35em 0;
+  font-size: var(--font-size-large-serif);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.aktuelles-item__subinfo {
+  font-size: 1.4rem; // visibly smaller than the title — placeholder size
+  line-height: 1.25;
+
+  em {
+    font-style: italic;
+  }
+}
+
+// Middle column — Geist sans-serif description
+.aktuelles-item__description {
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: 1.15rem; // placeholder size — smaller than the serif column
+  line-height: 1.35;
+}
+
+// Right column — round "+" toggle
+.aktuelles-item__toggle {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  color: var(--color-brown);
+  background: transparent;
+  border: 1px solid var(--color-brown);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.aktuelles-item__toggle-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.aktuelles-item__toggle:hover,
+.aktuelles-item__toggle:focus-visible {
+  background-color: var(--color-brown);
+  color: var(--color-green);
+}

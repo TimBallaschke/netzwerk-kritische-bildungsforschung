@@ -1,0 +1,15 @@
+title: Aktuelles
+
+# Holds all Aktuelles entries. The entries themselves use the
+# `aktuelles` blueprint and are reused across the site.
+
+options:
+  template: aktuelles-container
+
+sections:
+  entries:
+    label: Einträge
+    type: pages
+    template: aktuelles
+    create: aktuelles
+    sortBy: date desc
