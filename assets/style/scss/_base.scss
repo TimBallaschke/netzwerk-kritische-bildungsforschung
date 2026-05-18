@@ -1,0 +1,45 @@
+// Base
+// Resets and global element defaults.
+
+@use 'variables' as *;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin-inline: auto;
+  padding: $spacing;
+  max-width: $max-width;
+  background: $color-bg;
+  color: $color-text;
+  font-family: $font-sans;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: $color-accent;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+}
