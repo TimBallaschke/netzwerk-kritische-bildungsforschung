@@ -10,6 +10,7 @@ const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
 const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
 const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
+const MAX_OVERLAY = 0.2; // white veil opacity on the back-most card (0 at front)
 const LABEL_INSET_Y = 30;// px gap between top of scene and first stacked label
 const LABEL_STACK_GAP = 8; // px gap between stacked label pills
 const SCENE_W = 94;      // scene width as % of the .stage container
@@ -83,6 +84,10 @@ const lines = [];
 // elements inside a preserve-3d context, so we can't rely on true 3D depth
 // sorting — paint order is set explicitly from each card's orbital depth.
 const prevZ = new Array(CARDS).fill(-1);
+// White veil per card; opacity raised as the card moves toward the back.
+const overlays = [];
+// Last-applied veil opacity (×100, integer) — only write style when it changes.
+const prevOverlay = new Array(CARDS).fill(-1);
 for (let i = 0; i < CARDS; i++) {
 	const card = document.createElement("div");
 	card.className = "card";
@@ -91,6 +96,11 @@ for (let i = 0; i < CARDS; i++) {
 	title.className = "card-title";
 	title.textContent = TITLES[i];
 	card.appendChild(title);
+
+	const overlay = document.createElement("div");
+	overlay.className = "card-overlay";
+	card.appendChild(overlay);
+	overlays.push(overlay);
 
 	ring.appendChild(card);
 	cards.push(card);
@@ -381,25 +391,41 @@ function tick() {
 		const fx = x + offX;
 		const fy = y + offY;
 
-		// scale driven by orbital position
+		// Orbital position → base size (independent of tilt/jitter).
 		// tNorm: 0 (back of orbit) → 1 (front of orbit)
 		const tNorm = (Math.sin(t) + 1) / 2;
 		const cardScale = MIN_SCALE + tNorm * (1 - MIN_SCALE);
 
-		cards[i].style.transform =
-			`translate3d(${fx}px, ${fy}px, ${z}px) scale(${cardScale})`;
+		// Project the 3D point to 2D ourselves (perspective foreshorten),
+		// then render flat — no preserve-3d. Paint order is then fully
+		// controlled by z-index instead of GPU 3D depth sorting, which
+		// disagreed with apparent size (tilt + jitter skew the real z).
+		const persp = PERSPECTIVE / (PERSPECTIVE - z);
+		const screenX = fx * persp;
+		const screenY = fy * persp;
+		const renderScale = cardScale * persp; // actual on-screen size factor
 
-		// Explicit paint order from depth: front (tNorm→1) stacks above back.
-		// Throttled to integer changes to avoid redundant style writes.
-		const zi = Math.round(tNorm * 10000);
+		cards[i].style.transform =
+			`translate3d(${screenX}px, ${screenY}px, 0) scale(${renderScale})`;
+
+		// Paint order strictly follows on-screen size: a larger card can
+		// never sit behind a smaller one. Quantized to limit DOM writes.
+		const zi = Math.round(renderScale * 1000);
 		if (zi !== prevZ[i]) {
 			cards[i].style.zIndex = zi;
 			prevZ[i] = zi;
 		}
 
-		const scale = PERSPECTIVE / (PERSPECTIVE - z);
-		cardSX[i] = cx + fx * scale;
-		cardSY[i] = cy + fy * scale;
+		// White veil fades the card toward the back (full at back, none at
+		// front). Quantized to 1% steps so we rarely touch the DOM.
+		const veil = Math.round((1 - tNorm) * MAX_OVERLAY * 100);
+		if (veil !== prevOverlay[i]) {
+			overlays[i].style.opacity = veil / 100;
+			prevOverlay[i] = veil;
+		}
+
+		cardSX[i] = cx + screenX;
+		cardSY[i] = cy + screenY;
 
 		lines[i].setAttribute("x1", dotX);
 		lines[i].setAttribute("y1", dotY);
