@@ -118,6 +118,38 @@
   color: #fff;
 }
 
+// Static copy of the filter pills shown above the Liste view. Same visual
+// language as the carousel pills, but laid out in a normal flex row and
+// NOT wired to any filtering logic yet.
+.aktuelles__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 1rem 1.5rem;
+}
+
+.aktuelles__filter {
+  appearance: none;
+  font: inherit;
+  background: #fff;
+  color: #612c00;
+  border: 1px solid #612c00;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: var(--font-size-small-sans-serif);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background: #612c00;
+    color: #fff;
+  }
+}
+
 // View switch (Grafik / Liste) — segmented toggle pinned to the top-right.
 // Same visual language as the filter pills: white, 1px brown, pill shape.
 // A filled brown thumb slides between the two equal-width options.

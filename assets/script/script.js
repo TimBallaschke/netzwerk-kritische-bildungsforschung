@@ -2,6 +2,13 @@
 (function () {
   "use strict";
 
+  // Always start at the top on (re)load. Without this the browser restores
+  // the previous scroll position, leaving the page parked past the intro
+  // (and re-triggering the scroll lock with the intro out of view).
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
   // The header is position:fixed, so it's out of flow. Expose its occupied
   // height (viewport top → header bottom, incl. its top margin) as a CSS
   // custom property so the layout can offset content and size .aktuelles.
@@ -77,6 +84,10 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
+    // Belt-and-suspenders: if the browser restored a position before the
+    // manual setting took effect, jump back to the top (no animation).
+    window.scrollTo({ top: 0, behavior: "instant" });
+
     syncHeaderHeight();
 
     var header = document.querySelector(".site-header");

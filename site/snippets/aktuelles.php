@@ -14,6 +14,16 @@
   </div>
 
   <div class="aktuelles__list" x-show="view === 'liste'" x-cloak>
+    <?php /* Static visual copy of the carousel's filter pills — not wired
+             to any filtering yet. Keep labels in sync with CORNER_LABELS
+             in aktuelles.js. */ ?>
+    <div class="aktuelles__filters" role="group" aria-label="Filter">
+      <button type="button" class="aktuelles__filter">Veranstaltungen</button>
+      <button type="button" class="aktuelles__filter">Notizen</button>
+      <button type="button" class="aktuelles__filter">Beiträge</button>
+      <button type="button" class="aktuelles__filter">Call for Papers</button>
+      <button type="button" class="aktuelles__filter">Publikationen</button>
+    </div>
     <?php snippet('aktuelles-list') ?>
   </div>
 </section>

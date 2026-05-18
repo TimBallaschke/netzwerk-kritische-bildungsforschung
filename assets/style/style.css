@@ -266,14 +266,40 @@ body::before {
   font-family: "Geist", system-ui, sans-serif;
   font-size: var(--font-size-small-sans-serif);
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .aktuelles__label--filter:hover,
 .aktuelles__label--filter.aktuelles__label--active {
+  background: #612c00;
+  color: #fff;
+}
+
+.aktuelles__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 1rem 1.5rem;
+}
+
+.aktuelles__filter {
+  appearance: none;
+  font: inherit;
+  background: #fff;
+  color: #612c00;
+  border: 1px solid #612c00;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: var(--font-size-small-sans-serif);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.aktuelles__filter:hover {
   background: #612c00;
   color: #fff;
 }
@@ -293,9 +319,7 @@ body::before {
   font-family: "Geist", system-ui, sans-serif;
   font-size: var(--font-size-small-sans-serif);
   line-height: 1;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
 }
 
 .aktuelles__switch-thumb {
@@ -315,9 +339,7 @@ body::before {
 
 .aktuelles__switch-option {
   position: relative;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  appearance: none;
   margin: 0;
   padding: 0.5rem 0.85rem;
   background: transparent;
@@ -443,4 +465,6 @@ body::before {
 .aktuelles-item__toggle:focus-visible {
   background-color: var(--color-brown);
   color: var(--color-green);
-}/*# sourceMappingURL=style.css.map */
+}
+
+/*# sourceMappingURL=style.css.map */
