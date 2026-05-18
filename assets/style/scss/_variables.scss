@@ -1,19 +1,17 @@
-// Variables
-// Single source of truth for design tokens.
 
-// Colors
-$color-bg:     #ffffff;
-$color-text:   #1a1a1a;
-$color-accent: #0057ff;
-$color-muted:  #6b7280;
+:root {
+  // Root font size — 1% of viewport width.
+  // All rem-based sizes below scale with the viewport.
+  font-size: 1vw;
 
-// Typography
-$font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-$font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  // Colors
+  --color-brown: #733400;
+  --color-green: #a3ff98;
 
-$font-size-base:   1rem;
-$line-height-base: 1.6;
-
-// Layout
-$spacing:   1rem;
-$max-width: 60rem;
+  // Font sizes (placeholder values — adjust to taste)
+  --font-size-headline:           5rem;
+  --font-size-large-serif:        2rem;
+  --font-size-large-sans-serif:   4rem;
+  --font-size-small-serif:        2rem;
+  --font-size-small-sans-serif:   2rem;
+}

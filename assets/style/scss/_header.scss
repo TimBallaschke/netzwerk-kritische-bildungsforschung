@@ -1,0 +1,43 @@
+// Site header
+// Title (left) + main menu (right), brown.
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 4rem;
+  padding: 0.75rem 0 1.1rem 0;
+  margin: 1.5rem;
+  color: var(--color-brown);
+  border-top: 1px solid var(--color-brown);
+  border-bottom: 1px solid var(--color-brown);
+  font-family: "HAL Timezone", serif;
+  font-style: normal;
+  font-synthesis: none; // never fake bold/italic from the regular cut
+}
+
+.site-header__title {
+  margin: 0;
+  font-size: var(--font-size-headline);
+  line-height: 0.95;
+  text-align: left;
+}
+
+.site-header__nav ul {
+  display: flex;
+  gap: 2rem; // gap between menu options
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-header__nav a {
+  color: var(--color-brown);
+  font-size: var(--font-size-large-serif);
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+}
