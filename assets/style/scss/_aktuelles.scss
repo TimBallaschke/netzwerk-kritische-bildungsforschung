@@ -63,33 +63,68 @@
   color: #612c00;
   overflow: hidden;
   cursor: pointer;
-  transition: opacity 0.3s ease, background-color 0.2s ease;
+  // No opacity transition: filtering toggles opacity on every card at once
+  // inside the composited 3D stage; animating it repaints the whole stage
+  // and reads as a flash. Filtering is instant.
+  transition: background-color 0.2s ease;
   // transform set inline by JS
 
-  &:hover {
+  // Inverted while hovered, and kept inverted while open (until closed).
+  &:hover,
+  &.is-open {
     background: #612c00;
   }
 }
 
-// (i) info marker, top-right — 1px brown circle, serif italic glyph.
+// Plus marker, top-right — 1px brown circle (same idea as the list item's
+// toggle): the plus is drawn as two 1px strokes, not a glyph.
 .aktuelles__card-info {
   position: absolute;
   top: 0.6rem;
   right: 0.6rem;
   display: grid;
   place-items: center;
-  width: 1.4rem;
-  height: 1.4rem;
+  width: 2rem;
+  height: 2rem;
   border: 1px solid #612c00;
   border-radius: 50%;
-  font-size: 0.85rem;
-  font-style: italic;
-  line-height: 1;
   transition: color 0.2s ease, border-color 0.2s ease;
 
-  .aktuelles__card:hover & {
+  .aktuelles__card:hover &,
+  .aktuelles__card.is-open & {
     color: #fff;
     border-color: #fff;
+  }
+}
+
+.aktuelles__card-info-icon {
+  position: relative;
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform 0.2s ease;
+
+  // When the card is open the plus rotates into an ✕ (close affordance).
+  .aktuelles__card.is-open & {
+    transform: rotate(45deg);
+  }
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    background-color: currentColor; // follows the circle's color (inverts)
+  }
+
+  &::before { // horizontal stroke
+    inset: 50% 0 auto 0;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  &::after { // vertical stroke
+    inset: 0 auto 0 50%;
+    width: 1px;
+    transform: translateX(-50%);
   }
 }
 
@@ -99,7 +134,8 @@
   padding-right: 1.8rem; // clear the info circle
   transition: color 0.2s ease;
 
-  .aktuelles__card:hover & {
+  .aktuelles__card:hover &,
+  .aktuelles__card.is-open & {
     color: #fff;
   }
 }
@@ -120,7 +156,8 @@
   overflow: hidden;
   transition: color 0.2s ease;
 
-  .aktuelles__card:hover & {
+  .aktuelles__card:hover &,
+  .aktuelles__card.is-open & {
     color: #fff;
   }
 }
@@ -138,7 +175,8 @@
     font-style: italic;
   }
 
-  .aktuelles__card:hover & {
+  .aktuelles__card:hover &,
+  .aktuelles__card.is-open & {
     color: #fff;
   }
 }
@@ -167,7 +205,8 @@
   opacity: 1;
 }
 
-.aktuelles__card:hover .aktuelles__card-desc {
+.aktuelles__card:hover .aktuelles__card-desc,
+.aktuelles__card.is-open .aktuelles__card-desc {
   color: #fff;
 }
 
@@ -353,6 +392,7 @@
     stroke: #612c00;
     stroke-width: 1;
     vector-effect: non-scaling-stroke;
-    transition: opacity 0.3s ease;
+    // No opacity transition — see .aktuelles__card note (avoids the
+    // stage-wide repaint flash when filtering toggles many lines).
   }
 }

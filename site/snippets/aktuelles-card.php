@@ -31,6 +31,8 @@ $color       = $color       ?? '#612c00';
       <div class="aktuelles__card-desc-inner"><?= html($description) ?></div>
     </div>
   <?php endif ?>
-  <span class="aktuelles__card-info" aria-hidden="true">i</span>
+  <span class="aktuelles__card-info" aria-hidden="true">
+    <span class="aktuelles__card-info-icon"></span>
+  </span>
   <span class="aktuelles__card-overlay" aria-hidden="true"></span>
 </article>

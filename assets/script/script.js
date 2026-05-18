@@ -23,11 +23,9 @@
 
   // One-way scroll: once .aktuelles has snapped under the header, freeze
   // the page so the user can't scroll back up to the intro text.
-  // Clicking the site title undoes this and brings the intro back.
   function initScrollLock() {
     var aktuelles = document.querySelector(".aktuelles");
     if (!aktuelles) return;
-    var title = document.querySelector(".site-header__title");
     var locked = false;
 
     function headerHeight() {
@@ -61,36 +59,13 @@
         window.scrollTo(0, lockY);
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
+        // Enables the header-hover intro reveal (see _intro-text.scss).
+        document.documentElement.classList.add("is-locked");
         setCarouselInteractive(true);
       }
     }
 
-    function unlock() {
-      // Re-enable scrolling, scroll the intro back into view, and re-arm
-      // the lock so scrolling down locks again.
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-      locked = false;
-      setCarouselInteractive(false);
-      window.removeEventListener("scroll", maybeLock);
-      window.addEventListener("scroll", maybeLock, { passive: true });
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
     window.addEventListener("scroll", maybeLock, { passive: true });
-
-    if (title) {
-      title.style.cursor = "pointer";
-      title.setAttribute("role", "button");
-      title.setAttribute("tabindex", "0");
-      title.addEventListener("click", unlock);
-      title.addEventListener("keydown", function (e) {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          unlock();
-        }
-      });
-    }
   }
 
   document.addEventListener("DOMContentLoaded", function () {

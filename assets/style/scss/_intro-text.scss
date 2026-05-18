@@ -2,14 +2,24 @@
 // Large serif paragraph placed directly under the site header.
 
 .intro-text {
+  position: relative;
+  z-index: 2; // sits above .aktuelles so it covers the carousel when slid in
   margin: 0 1.5rem;
   padding: 0.9rem 0 1rem 0;
   scroll-snap-align: start; // top snap point — keeps page put on load
+  background-color: #fff; // opaque so it covers the carousel when revealed
   border-bottom: 1px solid var(--color-brown);
   color: var(--color-brown);
   font-family: "HAL Timezone", serif;
   font-style: normal;
   font-synthesis: none; // never fake bold/italic from the regular cut
+  transition: transform 0.35s ease;
+}
+
+// Once the carousel has scroll-snapped/locked (JS adds .is-locked to
+// <html>), hovering the header slides the intro down by its own height.
+.is-locked .site-header:hover ~ main .intro-text {
+  transform: translateY(100%);
 }
 
 .intro-text__body {

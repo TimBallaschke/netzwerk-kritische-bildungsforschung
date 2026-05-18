@@ -126,6 +126,12 @@ for (let c = 0; c < CORNERS; c++) {
 // already-active pill clears the filter (back to showing everything).
 const activeCorners = new Set();
 function applyFilter() {
+	// Changing the filter releases any clicked/centred card and resumes
+	// rotation — otherwise the ring stays frozen on a card that the new
+	// filter just hid, and the carousel looks empty.
+	clearFocus();
+	locked = false;
+
 	const noFilter = activeCorners.size === 0;
 	const activeColors = new Set();
 	for (const c of activeCorners) activeColors.add(CORNER_COLORS[c]);
@@ -240,22 +246,28 @@ function layoutFilters() {
 	const rect = stage.getBoundingClientRect();
 	const rem =
 		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-	let stackX = rem - rect.width / 2;
 	const rowY = rem - rect.height / 2;
+
+	// READ pass: measure every pill first (one layout flush). Mixing reads
+	// and writes per-iteration forces a reflow each loop and, racing the
+	// rAF render, makes the carousel flash on every filter toggle.
+	const sizes = cornerLabels.map((label) => ({
+		w: label.offsetWidth,
+		h: label.offsetHeight,
+	}));
+
+	// WRITE pass: position the row (no reads in between → no thrash).
+	let stackX = rem - rect.width / 2;
 	cornerLabels.forEach((label, c) => {
 		label.style.transform =
 			`translate(0, 0) translate3d(${stackX}px, ${rowY}px, 1px)`;
 
-		// Reading offsetWidth/Height forces a layout flush
-		const labelW = label.offsetWidth;
-		const labelH = label.offsetHeight;
-
 		// Connector lines anchor at the bottom-centre of this pill, nudged
 		// a few px up so the join sits just inside the pill shape.
-		cornerDotPositions[c].x = stackX + labelW / 2;
-		cornerDotPositions[c].y = rowY + labelH - 6;
+		cornerDotPositions[c].x = stackX + sizes[c].w / 2;
+		cornerDotPositions[c].y = rowY + sizes[c].h - 6;
 
-		stackX += labelW + LABEL_STACK_GAP;
+		stackX += sizes[c].w + LABEL_STACK_GAP;
 	});
 }
 
@@ -305,6 +317,10 @@ let current = 0;
 // releases the lock and hands control back to the user.
 let locked = false;
 let focusedIndex = null;
+// Index of the card currently hovered (null = none). Used to lift a
+// hovered card to the front — but only while it's on the front half of
+// the orbit (see tick()).
+let hoveredIndex = null;
 // 0 → card sits at its orbital spot; 1 → pulled to the stage centre
 // (= .aktuelles centre) at FOCUS_SCALE. Eased each frame in tick().
 let focusBlend = 0;
@@ -467,11 +483,17 @@ function tick() {
 
 		// Paint order strictly follows on-screen size: a larger card can
 		// never sit behind a smaller one. Quantized to limit DOM writes.
-		// The focused card is forced on top while it's pulled in.
-		const zi =
-			i === focusedIndex && focusBlend > 0.01
-				? 1000000
-				: Math.round(renderScale * 1000);
+		// The focused card is forced on top while it's pulled in; a hovered
+		// card jumps to the front too, but only while it's on the front
+		// half of the orbit (tNorm > 0.5 → sin(t) > 0).
+		let zi;
+		if (i === focusedIndex && focusBlend > 0.01) {
+			zi = 1000000;
+		} else if (i === hoveredIndex && tNorm > 0.5) {
+			zi = 100000;
+		} else {
+			zi = Math.round(renderScale * 1000);
+		}
 		if (zi !== prevZ[i]) {
 			cards[i].style.zIndex = zi;
 			prevZ[i] = zi;
@@ -515,8 +537,28 @@ stage.addEventListener("touchmove", onTouchMove, { passive: true });
 stage.addEventListener("touchend", onTouchEnd, { passive: true });
 
 // Click a card → lock the ring and rotate it to the front-centre.
+// Hover → remember it so tick() can lift it to the front (front half only).
 cards.forEach((card, i) => {
 	card.addEventListener("click", () => focusCard(i));
+	card.addEventListener("mouseenter", () => {
+		hoveredIndex = i;
+	});
+	card.addEventListener("mouseleave", () => {
+		if (hoveredIndex === i) hoveredIndex = null;
+	});
+
+	// While this card is the focused/open one, its plus marker acts as a
+	// close button: collapse the card and let the ring resume.
+	const info = card.querySelector(".aktuelles__card-info");
+	if (info) {
+		info.addEventListener("click", (e) => {
+			if (focusedIndex === i) {
+				e.stopPropagation(); // don't let the card re-focus
+				clearFocus();
+				locked = false;
+			}
+		});
+	}
 });
 
 // Adapt to the stage container size, not the viewport.
