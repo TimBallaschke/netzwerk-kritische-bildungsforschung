@@ -202,7 +202,9 @@ main {
   padding: 0.5rem 1rem;
   font-size: 1.5rem;
   cursor: pointer;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -224,6 +226,4 @@ main {
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
   transition: opacity 0.3s ease;
-}
-
-/*# sourceMappingURL=style.css.map */
+}/*# sourceMappingURL=style.css.map */

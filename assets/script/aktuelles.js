@@ -10,12 +10,10 @@ const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
 const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
 const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
-const MAX_BLUR = 5;      // blur (px) on back-most card — only applied to back half
-const CORNER_INSET = 30; // px inset of corner dots from the scene edge
 const LABEL_INSET_Y = 30;// px gap between top of scene and first stacked label
 const LABEL_STACK_GAP = 8; // px gap between stacked label pills
-const SCENE_W = 94;      // scene width as % of viewport
-const SCENE_H = 100;     // scene height as % of viewport
+const SCENE_W = 94;      // scene width as % of the .stage container
+const SCENE_H = 100;     // scene height as % of the .stage container
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
 const SCROLL_FACTOR = 0.1; // degrees of rotation per pixel of wheel/touch delta
 const AUTO_ROTATE_SPEED = 0.05; // deg per frame when idle (positive = leftward drift)
@@ -81,8 +79,10 @@ const TITLES = [
 
 const cards = [];
 const lines = [];
-// Last-applied (integer) blur per card — only re-write style.filter when this changes
-const prevBlur = new Array(CARDS).fill(-1);
+// Last-applied z-index per card. opacity (from the corner filter) flattens
+// elements inside a preserve-3d context, so we can't rely on true 3D depth
+// sorting — paint order is set explicitly from each card's orbital depth.
+const prevZ = new Array(CARDS).fill(-1);
 for (let i = 0; i < CARDS; i++) {
 	const card = document.createElement("div");
 	card.className = "card";
@@ -100,10 +100,9 @@ for (let i = 0; i < CARDS; i++) {
 	lines.push(line);
 }
 
-// Four corner dots — one in each corner of the scene.
+// Four corner pills/dots — laid out in a horizontal row by recomputeFit().
 // Each connects ONLY to cards of one specific color.
-// Sign pairs: [x-sign, y-sign] → [-1,-1]=TL, [+1,-1]=TR, [-1,+1]=BL, [+1,+1]=BR
-const cornerSigns = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+const CORNERS = 4;
 const CORNER_COLORS = [
 	"#fcbacd", // top-left → pink
 	"#005436", // top-right → green
@@ -116,13 +115,13 @@ const CORNER_LABELS = [
 	"Publications",      // bottom-left
 	"Call for Papers",   // bottom-right
 ];
-const cornerDots = cornerSigns.map(() => {
+const cornerDots = Array.from({ length: CORNERS }, () => {
 	const d = document.createElement("div");
 	d.className = "dot corner-dot";
 	ring.appendChild(d);
 	return d;
 });
-const cornerLabels = cornerSigns.map((_, c) => {
+const cornerLabels = Array.from({ length: CORNERS }, (_, c) => {
 	const label = document.createElement("div");
 	label.className = "center-label corner-label";
 	label.textContent = CORNER_LABELS[c];
@@ -163,13 +162,13 @@ cornerLabels.forEach((label, c) => {
 		if (activeCorners.has(c)) activeCorners.delete(c);
 		else activeCorners.add(c);
 		// Selecting all is functionally identical to selecting none — collapse to none
-		if (activeCorners.size === cornerSigns.length) activeCorners.clear();
+		if (activeCorners.size === CORNERS) activeCorners.clear();
 		applyFilter();
 	});
 });
 // For each corner, only create lines to cards whose color matches.
 // Each entry: { line, cardIndex } so we know which card to point at.
-const cornerLines = cornerSigns.map((_, c) => {
+const cornerLines = Array.from({ length: CORNERS }, (_, c) => {
 	const match = CORNER_COLORS[c];
 	const arr = [];
 	for (let i = 0; i < CARDS; i++) {
@@ -236,7 +235,7 @@ let fitJitter = JITTER_Y;
 let autoOffsetX = 0;
 let autoOffsetY = 0;
 // Cached world-space positions of the 4 corner dots (updated by recomputeFit)
-const cornerDotPositions = cornerSigns.map(() => ({ x: 0, y: 0 }));
+const cornerDotPositions = Array.from({ length: CORNERS }, () => ({ x: 0, y: 0 }));
 
 function recomputeFit() {
 	const rect = stage.getBoundingClientRect();
@@ -390,13 +389,12 @@ function tick() {
 		cards[i].style.transform =
 			`translate3d(${fx}px, ${fy}px, ${z}px) scale(${cardScale})`;
 
-		// Blur on the back half only; throttle writes by rounding to integer px
-		// (each update triggers GPU re-rasterization, so we want to write rarely)
-		const blurAmount = tNorm < 0.5 ? (1 - tNorm * 2) * MAX_BLUR : 0;
-		const blurRounded = Math.round(blurAmount);
-		if (blurRounded !== prevBlur[i]) {
-			cards[i].style.filter = blurRounded > 0 ? `blur(${blurRounded}px)` : "";
-			prevBlur[i] = blurRounded;
+		// Explicit paint order from depth: front (tNorm→1) stacks above back.
+		// Throttled to integer changes to avoid redundant style writes.
+		const zi = Math.round(tNorm * 10000);
+		if (zi !== prevZ[i]) {
+			cards[i].style.zIndex = zi;
+			prevZ[i] = zi;
 		}
 
 		const scale = PERSPECTIVE / (PERSPECTIVE - z);
