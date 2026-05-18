@@ -72,8 +72,8 @@
   transition: background-color 0.2s ease;
   // transform set inline by JS
 
-  // Inverted while hovered, and kept inverted while open (until closed).
-  &:hover,
+  // Kept inverted (brown) only while open (until closed). Hover no longer
+  // recolors the card — it grows slightly instead (scale handled in JS).
   &.is-open {
     background: #612c00;
   }
@@ -93,7 +93,6 @@
   border-radius: 50%;
   transition: color 0.2s ease, border-color 0.2s ease;
 
-  .aktuelles__card:hover &,
   .aktuelles__card.is-open & {
     color: #fff;
     border-color: #fff;
@@ -176,7 +175,6 @@
   padding-right: 1.8rem; // clear the info circle
   transition: color 0.2s ease;
 
-  .aktuelles__card:hover &,
   .aktuelles__card.is-open & {
     color: #fff;
   }
@@ -198,7 +196,6 @@
   overflow: hidden;
   transition: color 0.2s ease;
 
-  .aktuelles__card:hover &,
   .aktuelles__card.is-open & {
     color: #fff;
   }
@@ -217,7 +214,6 @@
     font-style: italic;
   }
 
-  .aktuelles__card:hover &,
   .aktuelles__card.is-open & {
     color: #fff;
   }
@@ -247,7 +243,6 @@
   opacity: 1;
 }
 
-.aktuelles__card:hover .aktuelles__card-desc,
 .aktuelles__card.is-open .aktuelles__card-desc {
   color: #fff;
 }

@@ -86,6 +86,9 @@ const lines = [];
 const prevZ = new Array(CARDS).fill(-1);
 // Last-applied veil opacity (×100, integer) — only write style when it changes.
 const prevOverlay = new Array(CARDS).fill(-1);
+// Per-card hover-grow blend (0 → 1), eased each frame so the scale-up on
+// hover (and shrink on leave) is smooth despite the per-frame transform.
+const hoverBlend = new Array(CARDS).fill(0);
 for (let i = 0; i < CARDS; i++) {
 	const line = document.createElementNS(SVG_NS, "line");
 	svg.appendChild(line);
@@ -275,8 +278,16 @@ function layoutFilters() {
 
 function recomputeFit() {
 	const rect = stage.getBoundingClientRect();
+	// Reserve a top safe area (the filter pill row) so cards never overlap
+	// the filter menu: shrink the vertical fit by that band; the cluster is
+	// then pushed down by half of it (see autoOffsetY below).
+	const rem =
+		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+	const safeInsetY = rem * 0.75; // must match insetY in layoutFilters()
+	const pillH = cornerLabels[0] ? cornerLabels[0].offsetHeight : 0;
+	const safeTop = pillH; // band = just the pill height
 	const sceneW = (rect.width * SCENE_W) / 100;
-	const sceneH = (rect.height * SCENE_H) / 100;
+	const sceneH = ((rect.height - safeTop) * SCENE_H) / 100;
 	let Rx = RADIUS;
 	let Rz = RADIUS;
 	let j = JITTER_Y;
@@ -297,7 +308,8 @@ function recomputeFit() {
 	// Auto-center: shift world coords so projected bbox center sits at origin
 	const final = computeBounds(fitRx, fitRz, fitJitter);
 	autoOffsetX = -final.centerX;
-	autoOffsetY = -final.centerY;
+	// Centre within the area BELOW the safe band (shift down by half of it).
+	autoOffsetY = -final.centerY + safeTop / 2;
 
 	// Move the center dot to match (in CSS world space)
 	const dx = autoOffsetX + OFFSET_X;
@@ -489,6 +501,12 @@ function tick() {
 			screenY *= 1 - b;
 			renderScale = renderScale * (1 - b) + FOCUS_SCALE * b;
 		}
+
+		// Smooth slight grow on hover (eased; skipped for the focused card,
+		// which has its own scaling). Disabled for now.
+		// const hoverTarget = i === hoveredIndex && i !== focusedIndex ? 1 : 0;
+		// hoverBlend[i] += (hoverTarget - hoverBlend[i]) * EASE;
+		// renderScale += 0.05 * hoverBlend[i];
 
 		cards[i].style.transform =
 			`translate3d(${screenX}px, ${screenY}px, 0) scale(${renderScale})`;
