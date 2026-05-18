@@ -285,7 +285,7 @@ function recomputeFit() {
 		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
 	const safeInsetY = rem * 0.75; // must match insetY in layoutFilters()
 	const pillH = cornerLabels[0] ? cornerLabels[0].offsetHeight : 0;
-	const safeTop = pillH; // band = just the pill height
+	const safeTop = pillH * 0.7; // band = ~70% of the pill height
 	const sceneW = (rect.width * SCENE_W) / 100;
 	const sceneH = ((rect.height - safeTop) * SCENE_H) / 100;
 	let Rx = RADIUS;
@@ -411,19 +411,23 @@ function onTouchEnd() {
 }
 
 function tick() {
-	// Paused: keep the rAF loop alive (so unpausing resumes seamlessly)
-	// but freeze the scene — no rotation, easing or DOM writes.
-	if (paused) {
-		requestAnimationFrame(tick);
-		return;
-	}
-
-	// Auto-rotate when user has been idle long enough — unless a clicked
-	// card has locked the ring at the front-centre.
-	if (!locked && performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS) {
+	// Auto-rotate when the user has been idle long enough — unless a
+	// clicked card has locked the ring, or the user paused the animation.
+	// Pausing only stops the auto-drift; scroll/drag still rotates the ring
+	// (the easing + render below keep running).
+	if (
+		!paused &&
+		!locked &&
+		performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS
+	) {
 		target += AUTO_ROTATE_SPEED;
 	}
 	current += (target - current) * EASE;
+
+	// "Scrolling": the user has scrolled/dragged the ring within the idle
+	// window. Hover-grow is suppressed while this is true.
+	const scrolling =
+		performance.now() - lastUserInput < IDLE_BEFORE_AUTO_MS;
 
 	// Rotation settled on the focused card?
 	const settled =
@@ -503,10 +507,11 @@ function tick() {
 		}
 
 		// Smooth slight grow on hover (eased; skipped for the focused card,
-		// which has its own scaling). Disabled for now.
-		// const hoverTarget = i === hoveredIndex && i !== focusedIndex ? 1 : 0;
-		// hoverBlend[i] += (hoverTarget - hoverBlend[i]) * EASE;
-		// renderScale += 0.05 * hoverBlend[i];
+		// which has its own scaling, and while the ring is being scrolled).
+		const hoverTarget =
+			i === hoveredIndex && i !== focusedIndex && !scrolling ? 1 : 0;
+		hoverBlend[i] += (hoverTarget - hoverBlend[i]) * EASE;
+		renderScale += 0.03 * hoverBlend[i];
 
 		cards[i].style.transform =
 			`translate3d(${screenX}px, ${screenY}px, 0) scale(${renderScale})`;
