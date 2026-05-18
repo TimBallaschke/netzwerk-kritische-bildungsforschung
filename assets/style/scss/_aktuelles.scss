@@ -69,7 +69,7 @@
   top: 50%;
   left: 0;
   width: 100%;
-  height: auto;
+  height: auto; // JS pins each card's own natural px height (stable -50%)
   translate: 0 -50%;
   display: flex;
   flex-direction: column;
@@ -82,6 +82,9 @@
   color: #612c00;
   overflow: hidden;
   cursor: pointer;
+  // Own compositor layer so the per-frame scale() transforms a cached
+  // raster instead of re-hinting the text every frame (no glyph jitter).
+  will-change: transform;
   // No opacity transition: filtering toggles opacity on every card at once
   // inside the composited 3D stage; animating it repaints the whole stage
   // and reads as a flash. Filtering is instant.

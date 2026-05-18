@@ -248,6 +248,7 @@ body::before {
   color: #612c00;
   overflow: hidden;
   cursor: pointer;
+  will-change: transform;
   transition: background-color 0.2s ease;
 }
 .aktuelles__card.is-open {
@@ -442,9 +443,7 @@ body::before {
   font-family: "Geist", system-ui, sans-serif;
   font-size: var(--font-size-small-sans-serif);
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
   transition: transform 0.25s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -478,9 +477,7 @@ body::before {
 }
 
 .aktuelles__filter {
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  appearance: none;
   font: inherit;
   background: #fff;
   color: #612c00;
@@ -492,9 +489,7 @@ body::before {
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .aktuelles__filter:hover {
@@ -517,9 +512,7 @@ body::before {
   font-family: "Geist", system-ui, sans-serif;
   font-size: var(--font-size-small-sans-serif);
   line-height: 1;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
 }
 
 .aktuelles__switch-thumb {
@@ -539,9 +532,7 @@ body::before {
 
 .aktuelles__switch-option {
   position: relative;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  appearance: none;
   margin: 0;
   padding: 0.5rem 0.85rem;
   background: transparent;
@@ -576,9 +567,7 @@ body::before {
   border: 1px solid #612c00;
   border-radius: 50%;
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  user-select: none;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 .aktuelles__playpause:hover {
@@ -716,4 +705,6 @@ body::before {
 .aktuelles-item__toggle:focus-visible {
   background-color: var(--color-brown);
   color: var(--color-green);
-}/*# sourceMappingURL=style.css.map */
+}
+
+/*# sourceMappingURL=style.css.map */

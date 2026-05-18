@@ -89,6 +89,11 @@ const prevOverlay = new Array(CARDS).fill(-1);
 // Per-card hover-grow blend (0 → 1), eased each frame so the scale-up on
 // hover (and shrink on leave) is smooth despite the per-frame transform.
 const hoverBlend = new Array(CARDS).fill(0);
+// Each card's pinned natural (collapsed) height in px. With height:auto the
+// rendered height fluctuates a sub-pixel as the scaled text re-rasterises,
+// and `translate:0 -50%` of that makes the type bob vertically. Pinning a
+// fixed per-card px height keeps the -50% anchor (and the text) steady.
+const cardHeights = new Array(CARDS).fill(0);
 for (let i = 0; i < CARDS; i++) {
 	const line = document.createElementNS(SVG_NS, "line");
 	svg.appendChild(line);
@@ -276,6 +281,26 @@ function layoutFilters() {
 	});
 }
 
+// Measure each card's own natural collapsed height and pin it inline, so
+// its layout box stops fluctuating while the scaled text re-rasterises.
+// Batched (clear all → read all → write all) to avoid layout thrash.
+// Skips open cards (they're auto-height so the description can expand).
+function pinHeights() {
+	for (let i = 0; i < CARDS; i++) {
+		if (!cards[i].classList.contains("is-open")) cards[i].style.height = "";
+	}
+	for (let i = 0; i < CARDS; i++) {
+		if (!cards[i].classList.contains("is-open")) {
+			cardHeights[i] = cards[i].offsetHeight;
+		}
+	}
+	for (let i = 0; i < CARDS; i++) {
+		if (!cards[i].classList.contains("is-open")) {
+			cards[i].style.height = cardHeights[i] + "px";
+		}
+	}
+}
+
 function recomputeFit() {
 	const rect = stage.getBoundingClientRect();
 	// Reserve a top safe area (the filter pill row) so cards never overlap
@@ -321,6 +346,7 @@ function recomputeFit() {
 	centerLabel.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 1px)`;
 
 	layoutFilters();
+	pinHeights(); // re-measure: card width is responsive (rem) → wraps change
 }
 
 let target = 0;
@@ -346,6 +372,14 @@ const FOCUS_SCALE = 1;
 function setOpen(i, open) {
 	if (i === null || !cards[i]) return;
 	cards[i].classList.toggle("is-open", open);
+	// Open → auto height so the description can expand (the card is
+	// focused/centred and static, so no scale jitter). Close → restore the
+	// pinned px height so rotating collapsed cards stay steady.
+	cards[i].style.height = open
+		? "auto"
+		: cardHeights[i]
+			? cardHeights[i] + "px"
+			: "";
 	const desc = cards[i].querySelector(".aktuelles__card-desc");
 	if (desc) desc.setAttribute("aria-hidden", open ? "false" : "true");
 }
