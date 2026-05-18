@@ -42,12 +42,16 @@
 }
 
 // Fixed width (from .aktuelles__ring), height grows with content.
+// Anchored by its CENTRE (top:50% + the individual `translate` property,
+// which composes with the JS `transform`), so opening the description
+// grows the card symmetrically up & down instead of off the bottom.
 .aktuelles__card {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 0;
   width: 100%;
   height: auto;
+  translate: 0 -50%;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;

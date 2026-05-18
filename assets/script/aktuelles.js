@@ -305,6 +305,10 @@ let current = 0;
 // releases the lock and hands control back to the user.
 let locked = false;
 let focusedIndex = null;
+// 0 → card sits at its orbital spot; 1 → pulled to the stage centre
+// (= .aktuelles centre) at FOCUS_SCALE. Eased each frame in tick().
+let focusBlend = 0;
+const FOCUS_SCALE = 1;
 
 function setOpen(i, open) {
 	if (i === null || !cards[i]) return;
@@ -381,14 +385,16 @@ function tick() {
 	}
 	current += (target - current) * EASE;
 
-	// Once the focused card has eased to the front-centre (rotation
-	// settled), open it: animate height + fade the description in.
-	if (
-		locked &&
-		focusedIndex !== null &&
-		!cards[focusedIndex].classList.contains("is-open") &&
-		Math.abs(target - current) < 0.4
-	) {
+	// Rotation settled on the focused card?
+	const settled =
+		locked && focusedIndex !== null && Math.abs(target - current) < 0.4;
+
+	// Ease the focus blend: once settled, pull the focused card from its
+	// orbital spot to the stage centre; release it again when unfocused.
+	focusBlend += ((settled ? 1 : 0) - focusBlend) * EASE;
+
+	// Open it (height + description fade) once it has reached the centre.
+	if (settled && !cards[focusedIndex].classList.contains("is-open")) {
 		setOpen(focusedIndex, true);
 	}
 
@@ -443,16 +449,29 @@ function tick() {
 		// controlled by z-index instead of GPU 3D depth sorting, which
 		// disagreed with apparent size (tilt + jitter skew the real z).
 		const persp = PERSPECTIVE / (PERSPECTIVE - z);
-		const screenX = fx * persp;
-		const screenY = fy * persp;
-		const renderScale = cardScale * persp; // actual on-screen size factor
+		let screenX = fx * persp;
+		let screenY = fy * persp;
+		let renderScale = cardScale * persp; // actual on-screen size factor
+
+		// Focused card: blend its orbital position toward the stage centre
+		// (0,0) and FOCUS_SCALE, so it ends up centred in .aktuelles.
+		if (i === focusedIndex && focusBlend > 0.0001) {
+			const b = focusBlend;
+			screenX *= 1 - b;
+			screenY *= 1 - b;
+			renderScale = renderScale * (1 - b) + FOCUS_SCALE * b;
+		}
 
 		cards[i].style.transform =
 			`translate3d(${screenX}px, ${screenY}px, 0) scale(${renderScale})`;
 
 		// Paint order strictly follows on-screen size: a larger card can
 		// never sit behind a smaller one. Quantized to limit DOM writes.
-		const zi = Math.round(renderScale * 1000);
+		// The focused card is forced on top while it's pulled in.
+		const zi =
+			i === focusedIndex && focusBlend > 0.01
+				? 1000000
+				: Math.round(renderScale * 1000);
 		if (zi !== prevZ[i]) {
 			cards[i].style.zIndex = zi;
 			prevZ[i] = zi;

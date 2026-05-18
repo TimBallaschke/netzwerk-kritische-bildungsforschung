@@ -211,10 +211,11 @@ body::before {
 
 .aktuelles__card {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 0;
   width: 100%;
   height: auto;
+  translate: 0 -50%;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
