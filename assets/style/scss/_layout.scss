@@ -1,0 +1,14 @@
+// Layout — page shell
+// Column so content below the header fills the viewport.
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh; // accounts for mobile browser chrome
+}
+
+main {
+  display: flex;
+  flex: 1; // takes all space left under the header
+}

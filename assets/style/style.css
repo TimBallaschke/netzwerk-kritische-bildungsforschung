@@ -19,11 +19,6 @@
   margin: 0;
 }
 
-html,
-body {
-  height: 100%;
-}
-
 body {
   line-height: 1.2;
   -webkit-font-smoothing: antialiased;
@@ -67,13 +62,25 @@ h6 {
   font-style: italic;
   font-display: swap;
 }
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+main {
+  display: flex;
+  flex: 1;
+}
+
 .site-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 4rem;
   padding: 0.75rem 0 1.1rem 0;
-  margin: 1.5rem;
+  margin: 1.5rem 1.5rem 0 1.5rem;
   color: var(--color-brown);
   border-top: 1px solid var(--color-brown);
   border-bottom: 1px solid var(--color-brown);
@@ -120,4 +127,8 @@ h6 {
 }
 .site-header__nav a:hover > span, .site-header__nav a:focus > span {
   font-style: italic;
+}
+
+.aktuelles {
+  flex: 1;
 }/*# sourceMappingURL=style.css.map */
