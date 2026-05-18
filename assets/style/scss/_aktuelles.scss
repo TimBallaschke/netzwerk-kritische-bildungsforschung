@@ -4,9 +4,9 @@
 // (the stage size — not the viewport).
 
 .aktuelles {
-  flex: 1; // fill main's width; height comes from flex stretch
   position: relative;
   overflow: hidden;
+  height: calc(100dvh - var(--header-height, 0px)); // viewport minus header
 }
 
 .aktuelles__stage {
@@ -79,7 +79,7 @@
   background: #612c00;
   color: #fff;
   padding: 0.75rem 1.5rem;
-  font-size: 2.25rem;
+  font-size: var(--font-size-large-serif);
   line-height: 1;
   white-space: nowrap;
   border-radius: 9999px;
@@ -94,7 +94,7 @@
   border: 1px solid #612c00;
   padding: 0.5rem 1rem;
   font-family: "Geist", system-ui, sans-serif;
-  font-size: var(--font-size-medium-sans-serif);
+  font-size: var(--font-size-small-sans-serif);
   cursor: pointer;
   user-select: none;
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -105,6 +105,60 @@
 .aktuelles__label--filter.aktuelles__label--active {
   background: #612c00;
   color: #fff;
+}
+
+// View switch (Grafik / Liste) — segmented toggle pinned to the top-right.
+// Same visual language as the filter pills: white, 1px brown, pill shape.
+// A filled brown thumb slides between the two equal-width options.
+.aktuelles__switch {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2; // above the stage / carousel
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr; // two equal-width segments
+  align-items: stretch;
+  background: #fff;
+  border: 1px solid #612c00;
+  border-radius: 9999px;
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: var(--font-size-small-sans-serif);
+  line-height: 1;
+  user-select: none;
+}
+
+// Filled pill that slides between the two segments.
+.aktuelles__switch-thumb {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 50%;
+  background: #612c00;
+  border-radius: 9999px;
+  transition: transform 0.25s ease;
+
+  &.is-grafik { transform: translateX(0); }
+  &.is-liste  { transform: translateX(100%); }
+}
+
+.aktuelles__switch-option {
+  position: relative; // above the thumb
+  appearance: none;
+  margin: 0;
+  padding: 0.5rem 1.25rem;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  color: #612c00;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &.is-active { color: #fff; } // text on the filled thumb
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aktuelles__switch-thumb { transition: none; }
 }
 
 // Single svg holding every connector line. z-index set in JS below all

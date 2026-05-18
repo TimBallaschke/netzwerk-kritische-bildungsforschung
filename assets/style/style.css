@@ -2,11 +2,9 @@
   font-size: 1vw;
   --color-brown: #733400;
   --color-green: #a3ff98;
-  --font-size-headline: 5rem;
-  --font-size-large-serif: 2rem;
+  --font-size-headline: 4.5rem;
+  --font-size-large-serif: 1.9rem;
   --font-size-large-sans-serif: 4rem;
-  --font-size-medium-serif: 3rem;
-  --font-size-medium-sans-serif: 3rem;
   --font-size-small-serif: 1.2rem;
   --font-size-small-sans-serif: 1.2rem;
 }
@@ -69,24 +67,21 @@ h6 {
   font-style: italic;
   font-display: swap;
 }
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh;
-}
-
 main {
-  display: flex;
-  flex: 1;
+  padding-top: var(--header-height, 0px);
 }
 
 .site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 4rem;
-  padding: 0.75rem 0 1.1rem 0;
+  padding: 0.5rem 0 1rem 0;
   margin: 1.5rem 1.5rem 0 1.5rem;
   color: var(--color-brown);
   border-top: 1px solid var(--color-brown);
@@ -139,8 +134,8 @@ main {
 }
 
 .intro-text {
-  margin: 1.5rem;
-  padding: 1.5rem 0 1.5rem 0;
+  margin: 0 1.5rem;
+  padding: 0.9rem 0 1rem 0;
   border-bottom: 1px solid var(--color-brown);
   color: var(--color-brown);
   font-family: "HAL Timezone", serif;
@@ -149,14 +144,15 @@ main {
 }
 
 .intro-text__body {
+  max-width: 75%;
   font-size: var(--font-size-large-serif);
   line-height: 1.2;
 }
 
 .aktuelles {
-  flex: 1;
   position: relative;
   overflow: hidden;
+  height: calc(100dvh - var(--header-height, 0px));
 }
 
 .aktuelles__stage {
@@ -219,7 +215,7 @@ main {
   background: #612c00;
   color: #fff;
   padding: 0.75rem 1.5rem;
-  font-size: 2.25rem;
+  font-size: var(--font-size-large-serif);
   line-height: 1;
   white-space: nowrap;
   border-radius: 9999px;
@@ -231,7 +227,7 @@ main {
   border: 1px solid #612c00;
   padding: 0.5rem 1rem;
   font-family: "Geist", system-ui, sans-serif;
-  font-size: var(--font-size-medium-sans-serif);
+  font-size: var(--font-size-small-sans-serif);
   cursor: pointer;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -327,8 +323,24 @@ main {
 }
 
 .aktuelles-item__toggle-icon {
-  font-size: 1.5rem;
-  line-height: 1;
+  position: relative;
+  width: 1rem;
+  height: 1rem;
+}
+.aktuelles-item__toggle-icon::before, .aktuelles-item__toggle-icon::after {
+  content: "";
+  position: absolute;
+  background-color: currentColor;
+}
+.aktuelles-item__toggle-icon::before {
+  inset: 50% 0 auto 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+.aktuelles-item__toggle-icon::after {
+  inset: 0 auto 0 50%;
+  width: 1px;
+  transform: translateX(-50%);
 }
 
 .aktuelles-item__toggle:hover,

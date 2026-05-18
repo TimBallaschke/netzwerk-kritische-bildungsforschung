@@ -35,6 +35,6 @@ $description = $description  ?? '';
   </div>
 
   <button class="aktuelles-item__toggle" type="button" aria-label="Mehr anzeigen">
-    <span class="aktuelles-item__toggle-icon" aria-hidden="true">+</span>
+    <span class="aktuelles-item__toggle-icon" aria-hidden="true"></span>
   </button>
 </article>

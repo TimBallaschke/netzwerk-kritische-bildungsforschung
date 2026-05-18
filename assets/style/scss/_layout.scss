@@ -1,14 +1,8 @@
 // Layout — page shell
-// Column so content below the header fills the viewport.
-
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  min-height: 100dvh; // accounts for mobile browser chrome
-}
+// The header is position:fixed, so it's out of flow. Content is pushed
+// below it by --header-height (the header's measured occupied height,
+// set in script.js and updated on resize / font load).
 
 main {
-  display: flex;
-  flex: 1; // takes all space left under the header
+  padding-top: var(--header-height, 0px);
 }
