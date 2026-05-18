@@ -38,16 +38,25 @@ const centerLabel = document.querySelector(".center-label");
 const CARD_W = ring.offsetWidth || 140;
 const CARD_H = ring.offsetHeight || 180;
 
-// Stratified Y offsets in [-1, 1] — scaled by `fitJitter` at render time
+// Stratified Y offsets in [-1, 1] — scaled by `fitJitter` at render time.
+// The vertical range is split into CARDS equal bands. Each card's ORBITAL
+// index i is mapped to a band via a bit-reversal permutation, so cards that
+// are angularly adjacent (consecutive i, horizontally close on screen) land
+// in vertically far-apart bands: card i high, i+1 low, i+2 in between, …
+// This minimises overlap. Assumes CARDS is a power of two (16) → the
+// permutation is a bijection, keeping the vertical coverage perfectly even.
+// A small in-band wiggle keeps it from looking like a rigid grid.
 const slot = 2 / CARDS;
+const bits = Math.round(Math.log2(CARDS));
+function bandIndex(i) {
+	let r = 0;
+	for (let b = 0; b < bits; b++) r = (r << 1) | ((i >> b) & 1);
+	return r % CARDS;
+}
 const jitterNorm = Array.from({ length: CARDS }, (_, i) => {
-	const center = -1 + (i + 0.5) * slot;
+	const center = -1 + (bandIndex(i) + 0.5) * slot;
 	return center + (Math.random() - 0.5) * slot * 0.6;
 });
-for (let i = jitterNorm.length - 1; i > 0; i--) {
-	const j = Math.floor(Math.random() * (i + 1));
-	[jitterNorm[i], jitterNorm[j]] = [jitterNorm[j], jitterNorm[i]];
-}
 
 // Stratified color distribution: cycle through palette, then shuffle so each
 // color appears roughly CARDS/COLORS.length times in a randomized order.
