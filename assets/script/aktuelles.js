@@ -69,7 +69,7 @@ const jitterNorm = Array.from({ length: CARDS }, (_, i) => {
 
 // Stratified color distribution: cycle through palette, then shuffle so each
 // color appears roughly CARDS/COLORS.length times in a randomized order.
-const COLORS = ["#005436", "#4965e6", "#fcbacd", "#f3511c"];
+const COLORS = ["#005436", "#4965e6", "#fcbacd", "#f3511c", "#8a4fff"];
 const cardColors = Array.from({ length: CARDS }, (_, i) => COLORS[i % COLORS.length]);
 for (let i = cardColors.length - 1; i > 0; i--) {
 	const j = Math.floor(Math.random() * (i + 1));
@@ -127,27 +127,23 @@ for (let i = 0; i < CARDS; i++) {
 	lines.push(line);
 }
 
-// Four corner pills/dots — laid out in a horizontal row by recomputeFit().
-// Each connects ONLY to cards of one specific color.
-const CORNERS = 4;
+// Five filter pills/dots — laid out in a horizontal row by recomputeFit()
+// in this array order. Each connects ONLY to cards of one specific color.
+const CORNERS = 5;
 const CORNER_COLORS = [
-	"#fcbacd", // top-left → pink
-	"#005436", // top-right → green
-	"#4965e6", // bottom-left → blue
-	"#f3511c", // bottom-right → orange
+	"#005436", // Veranstaltungen
+	"#4965e6", // Notizen
+	"#fcbacd", // Beiträge
+	"#f3511c", // Call for Papers
+	"#8a4fff", // Publikationen
 ];
 const CORNER_LABELS = [
-	"Blog",              // top-left
-	"Veranstaltungen",   // top-right
-	"Publications",      // bottom-left
-	"Call for Papers",   // bottom-right
+	"Veranstaltungen",
+	"Notizen",
+	"Beiträge",
+	"Call for Papers",
+	"Publikationen",
 ];
-const cornerDots = Array.from({ length: CORNERS }, () => {
-	const d = document.createElement("div");
-	d.className = "dot corner-dot";
-	ring.appendChild(d);
-	return d;
-});
 const cornerLabels = Array.from({ length: CORNERS }, (_, c) => {
 	const label = document.createElement("div");
 	label.className = "center-label corner-label";
@@ -155,9 +151,8 @@ const cornerLabels = Array.from({ length: CORNERS }, (_, c) => {
 	ring.appendChild(label);
 	return label;
 });
-// Corner pills/dots are interactive filter controls — always above every card.
+// Filter pills are interactive controls — always above every card.
 for (let c = 0; c < CORNERS; c++) {
-	cornerDots[c].style.zIndex = 100000;
 	cornerLabels[c].style.zIndex = 100001;
 }
 
@@ -321,13 +316,10 @@ function recomputeFit() {
 		const labelW = label.offsetWidth;
 		const labelH = label.offsetHeight;
 
-		// Dot at bottom edge of this label, horizontally centered
-		const dx = stackX + labelW / 2;
-		const dy = rowY + labelH;
-		cornerDotPositions[c].x = dx;
-		cornerDotPositions[c].y = dy;
-		cornerDots[c].style.transform =
-			`translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 2px)`;
+		// Connector lines anchor at the bottom-centre of this pill, nudged
+		// a few px up so the join sits just inside the pill shape.
+		cornerDotPositions[c].x = stackX + labelW / 2;
+		cornerDotPositions[c].y = rowY + labelH - 6;
 
 		stackX += labelW + LABEL_STACK_GAP;
 	});
