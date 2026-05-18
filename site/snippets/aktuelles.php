@@ -1,3 +1,18 @@
+<?php
+// Carousel cards come from the same content as the Liste view (the
+// `aktuelles` blueprint) — without the description. type -> display
+// label + category color (color must match CORNER_* in aktuelles.js;
+// label mapping mirrors aktuelles-list.php).
+$typeMeta = [
+  'veranstaltung'   => ['label' => 'Veranstaltung',  'color' => '#005436'],
+  'notiz'           => ['label' => 'Notiz',           'color' => '#4965e6'],
+  'blog'            => ['label' => 'Blog',            'color' => '#fcbacd'],
+  'call-for-papers' => ['label' => 'Call for Papers', 'color' => '#f3511c'],
+  'publikation'     => ['label' => 'Publikation',     'color' => '#8a4fff'],
+];
+$container     = page('aktuelles');
+$cardEntries   = $container ? $container->children()->listed() : [];
+?>
 <section class="aktuelles" aria-label="Aktuelles" x-data="{ view: 'grafik' }">
   <div class="aktuelles__switch" role="group" aria-label="Ansicht wechseln">
     <span class="aktuelles__switch-thumb" :class="`is-${view}`" aria-hidden="true"></span>
@@ -10,6 +25,17 @@
     <div class="aktuelles__ring">
       <div class="aktuelles__dot"></div>
       <div class="aktuelles__label">Aktuelles</div>
+      <?php foreach ($cardEntries as $entry): ?>
+        <?php $typeKey = $entry->type()->or('veranstaltung')->value(); ?>
+        <?php $meta = $typeMeta[$typeKey] ?? ['label' => ucfirst($typeKey), 'color' => '#612c00']; ?>
+        <?php snippet('aktuelles-card', [
+          'type'        => $meta['label'],
+          'title'       => $entry->title()->value(),
+          'subinfo'     => $entry->subinfo()->value(),
+          'description' => $entry->description()->value(),
+          'color'       => $meta['color'],
+        ]) ?>
+      <?php endforeach ?>
     </div>
   </div>
 

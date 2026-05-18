@@ -2,7 +2,6 @@
 // Tilted ring carousel — cards orbit a tilted circle, always facing the camera
 // =============================================================================
 
-const CARDS = 16;        // number of cards
 const RADIUS = 400;      // preferred circle radius (px) — actual radius is fit
 const TILT_X_DEG = -30;  // tilt around X axis (negative = front down, back up)
 const TILT_Z_DEG = 0;    // tilt around Z axis (diagonal lean) — disabled
@@ -12,7 +11,7 @@ const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-sc
 const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
 const MAX_OVERLAY = 0.2; // white veil opacity on the back-most card (0 at front)
 const LABEL_STACK_GAP = 8; // px gap between filter pills in the row
-const SCENE_W = 94;      // scene width as % of the stage container
+const SCENE_W = 100;     // scene width as % of the stage container (>100 = bleed past edges)
 const SCENE_H = 100;     // scene height as % of the stage container
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
 const SCROLL_FACTOR = 0.1; // degrees of rotation per pixel of wheel/touch delta
@@ -33,6 +32,11 @@ const ring = document.querySelector(".aktuelles__ring");
 const svg = document.querySelector(".aktuelles__connectors");
 const dot = document.querySelector(".aktuelles__dot");
 const centerLabel = document.querySelector(".aktuelles__label");
+
+// Cards are server-rendered from the `aktuelles` content (see
+// aktuelles-card snippet). The carousel count is whatever the CMS has.
+const cardEls = Array.from(ring.querySelectorAll(".aktuelles__card"));
+const CARDS = cardEls.length;
 
 const CARD_W = ring.offsetWidth || 140;
 const CARD_H = ring.offsetHeight || 180;
@@ -66,61 +70,23 @@ const jitterNorm = Array.from({ length: CARDS }, (_, i) => {
 	return center + (Math.random() - 0.5) * slot * 0.6;
 });
 
-// Stratified color distribution: cycle through palette, then shuffle so each
-// color appears roughly CARDS/COLORS.length times in a randomized order.
-const COLORS = ["#005436", "#4965e6", "#fcbacd", "#f3511c", "#8a4fff"];
-const cardColors = Array.from({ length: CARDS }, (_, i) => COLORS[i % COLORS.length]);
-for (let i = cardColors.length - 1; i > 0; i--) {
-	const j = Math.floor(Math.random() * (i + 1));
-	[cardColors[i], cardColors[j]] = [cardColors[j], cardColors[i]];
-}
+// Per-card category color comes from the server-rendered markup
+// (data-color, derived from the entry's blueprint type). It no longer
+// tints the card (cards are uniform green); it only tells the corner
+// filter which connector lines belong to which card.
+const cardColors = cardEls.map((el) => el.dataset.color || "#612c00");
 
-// Card titles — short Lorem Ipsum snippets (2–3 words each)
-const TITLES = [
-	"Lorem ipsum",
-	"Dolor sit amet",
-	"Consectetur adipiscing",
-	"Sed do eiusmod",
-	"Tempor incididunt",
-	"Labore dolore",
-	"Magna aliqua",
-	"Ut enim ad",
-	"Minim veniam",
-	"Quis nostrud",
-	"Exercitation ullamco",
-	"Laboris nisi",
-	"Aliquip ex ea",
-	"Commodo consequat",
-	"Duis aute irure",
-	"In reprehenderit",
-];
-
-const cards = [];
+const cards = cardEls;
+const overlays = cardEls.map((el) =>
+	el.querySelector(".aktuelles__card-overlay")
+);
 const lines = [];
 // Last-applied z-index per card (paint order = on-screen size) — only
 // written when the integer value changes.
 const prevZ = new Array(CARDS).fill(-1);
-// White veil per card; opacity raised as the card moves toward the back.
-const overlays = [];
 // Last-applied veil opacity (×100, integer) — only write style when it changes.
 const prevOverlay = new Array(CARDS).fill(-1);
 for (let i = 0; i < CARDS; i++) {
-	const card = document.createElement("div");
-	card.className = "aktuelles__card";
-
-	const title = document.createElement("h3");
-	title.className = "aktuelles__card-title";
-	title.textContent = TITLES[i];
-	card.appendChild(title);
-
-	const overlay = document.createElement("div");
-	overlay.className = "aktuelles__card-overlay";
-	card.appendChild(overlay);
-	overlays.push(overlay);
-
-	ring.appendChild(card);
-	cards.push(card);
-
 	const line = document.createElementNS(SVG_NS, "line");
 	svg.appendChild(line);
 	lines.push(line);
@@ -155,9 +121,9 @@ for (let c = 0; c < CORNERS; c++) {
 	cornerLabels[c].style.zIndex = 100001;
 }
 
-// Active corner filter: clicking corner pills toggles them into a multi-select.
-// Empty set = no filter, show everything. Any active corner = show only cards
-// whose color matches one of the active corners.
+// Active corner filter — single-select. No active corner = no filter, show
+// everything. Clicking a pill makes it the only active one; clicking the
+// already-active pill clears the filter (back to showing everything).
 const activeCorners = new Set();
 function applyFilter() {
 	const noFilter = activeCorners.size === 0;
@@ -182,13 +148,15 @@ function applyFilter() {
 	cornerLabels.forEach((label, c) => {
 		label.classList.toggle("aktuelles__label--active", activeCorners.has(c));
 	});
+	// Active pill changed width (the ✕ circle) — re-flow the row so the
+	// other pills slide over (CSS transitions the transform).
+	layoutFilters();
 }
 cornerLabels.forEach((label, c) => {
 	label.addEventListener("click", () => {
-		if (activeCorners.has(c)) activeCorners.delete(c);
-		else activeCorners.add(c);
-		// Selecting all is functionally identical to selecting none — collapse to none
-		if (activeCorners.size === CORNERS) activeCorners.clear();
+		const wasActive = activeCorners.has(c);
+		activeCorners.clear(); // single-select: drop any previous selection
+		if (!wasActive) activeCorners.add(c); // re-clicking active = clear
 		applyFilter();
 	});
 });
@@ -263,6 +231,34 @@ let autoOffsetY = 0;
 // Cached world-space positions of the 4 corner dots (updated by recomputeFit)
 const cornerDotPositions = Array.from({ length: CORNERS }, () => ({ x: 0, y: 0 }));
 
+// Lay the filter pills in a horizontal row pinned to the very top-left of
+// the container, 1rem from the top and left edges. Label boxes are anchored
+// at the stage centre, so offset by 1rem − half the stage size. Re-run on
+// resize AND whenever a pill's active state changes its width, so the
+// other pills slide over (CSS transitions the transform).
+function layoutFilters() {
+	const rect = stage.getBoundingClientRect();
+	const rem =
+		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+	let stackX = rem - rect.width / 2;
+	const rowY = rem - rect.height / 2;
+	cornerLabels.forEach((label, c) => {
+		label.style.transform =
+			`translate(0, 0) translate3d(${stackX}px, ${rowY}px, 1px)`;
+
+		// Reading offsetWidth/Height forces a layout flush
+		const labelW = label.offsetWidth;
+		const labelH = label.offsetHeight;
+
+		// Connector lines anchor at the bottom-centre of this pill, nudged
+		// a few px up so the join sits just inside the pill shape.
+		cornerDotPositions[c].x = stackX + labelW / 2;
+		cornerDotPositions[c].y = rowY + labelH - 6;
+
+		stackX += labelW + LABEL_STACK_GAP;
+	});
+}
+
 function recomputeFit() {
 	const rect = stage.getBoundingClientRect();
 	const sceneW = (rect.width * SCENE_W) / 100;
@@ -298,34 +294,49 @@ function recomputeFit() {
 	// (z=1 so it's always in front of the dot regardless of card depth ordering)
 	centerLabel.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 1px)`;
 
-	// Lay the filter pills in a horizontal row pinned to the very top-left
-	// of the container, 1rem from the top and left edges. Label boxes are
-	// anchored at the stage centre, so offset by 1rem − half the stage size.
-	const rem =
-		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-	let stackX = rem - rect.width / 2;
-	const rowY = rem - rect.height / 2;
-	cornerLabels.forEach((label, c) => {
-		const lx = stackX;
-		const ly = rowY;
-		label.style.transform =
-			`translate(0, 0) translate3d(${lx}px, ${ly}px, 1px)`;
-
-		// Reading offsetWidth/Height forces a layout flush
-		const labelW = label.offsetWidth;
-		const labelH = label.offsetHeight;
-
-		// Connector lines anchor at the bottom-centre of this pill, nudged
-		// a few px up so the join sits just inside the pill shape.
-		cornerDotPositions[c].x = stackX + labelW / 2;
-		cornerDotPositions[c].y = rowY + labelH - 6;
-
-		stackX += labelW + LABEL_STACK_GAP;
-	});
+	layoutFilters();
 }
 
 let target = 0;
 let current = 0;
+
+// Clicking a card locks the ring: auto-rotation stops and we animate the
+// clicked card to the front-centre of the orbit. Any wheel/touch input
+// releases the lock and hands control back to the user.
+let locked = false;
+let focusedIndex = null;
+
+function setOpen(i, open) {
+	if (i === null || !cards[i]) return;
+	cards[i].classList.toggle("is-open", open);
+	const desc = cards[i].querySelector(".aktuelles__card-desc");
+	if (desc) desc.setAttribute("aria-hidden", open ? "false" : "true");
+}
+
+// Collapse the currently focused card and forget it (used when the user
+// takes over, or before focusing a different card).
+function clearFocus() {
+	setOpen(focusedIndex, false);
+	focusedIndex = null;
+}
+
+function focusCard(i) {
+	clearFocus(); // collapse any open card before rotating to the new one
+	focusedIndex = i;
+	// A card is front-centre when its orbital angle t = π/2, i.e.
+	// step*i + baseRot = π/2  →  current(deg) = 90 - (360 / CARDS) * i.
+	const base = 90 - (360 / CARDS) * i;
+	// Pick the equivalent angle nearest the current rotation (shortest path).
+	target = base + 360 * Math.round((current - base) / 360);
+	locked = true;
+}
+
+// The carousel only responds to wheel/drag while the page is locked at it
+// (snapped to the header bottom). script.js broadcasts this state.
+let interactive = false;
+window.addEventListener("aktuelles:interactive", (e) => {
+	interactive = !!(e.detail && e.detail.active);
+});
 
 // Infinite "scroll": wheel + touch events accumulate the rotation target
 // directly, so the rotation never hits a maximum. Auto-rotation runs by default
@@ -336,17 +347,23 @@ function markInteraction() {
 }
 
 function onWheel(e) {
+	if (!interactive) return; // let the wheel scroll the page instead
+	locked = false; // user takes over → release card focus
+	clearFocus();
 	target += e.deltaY * SCROLL_FACTOR;
 	markInteraction();
 }
 
 let lastTouchY = null;
 function onTouchStart(e) {
+	if (!interactive) return;
+	locked = false; // user takes over → release card focus
+	clearFocus();
 	lastTouchY = e.touches[0].clientY;
 	markInteraction();
 }
 function onTouchMove(e) {
-	if (lastTouchY === null) return;
+	if (!interactive || lastTouchY === null) return;
 	const dy = lastTouchY - e.touches[0].clientY;
 	target += dy * SCROLL_FACTOR;
 	lastTouchY = e.touches[0].clientY;
@@ -357,11 +374,23 @@ function onTouchEnd() {
 }
 
 function tick() {
-	// Auto-rotate when user has been idle long enough
-	if (performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS) {
+	// Auto-rotate when user has been idle long enough — unless a clicked
+	// card has locked the ring at the front-centre.
+	if (!locked && performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS) {
 		target += AUTO_ROTATE_SPEED;
 	}
 	current += (target - current) * EASE;
+
+	// Once the focused card has eased to the front-centre (rotation
+	// settled), open it: animate height + fade the description in.
+	if (
+		locked &&
+		focusedIndex !== null &&
+		!cards[focusedIndex].classList.contains("is-open") &&
+		Math.abs(target - current) < 0.4
+	) {
+		setOpen(focusedIndex, true);
+	}
 
 	const step = (Math.PI * 2) / CARDS;
 	const baseRot = (current * Math.PI) / 180;
@@ -465,6 +494,11 @@ stage.addEventListener("wheel", onWheel, { passive: true });
 stage.addEventListener("touchstart", onTouchStart, { passive: true });
 stage.addEventListener("touchmove", onTouchMove, { passive: true });
 stage.addEventListener("touchend", onTouchEnd, { passive: true });
+
+// Click a card → lock the ring and rotate it to the front-centre.
+cards.forEach((card, i) => {
+	card.addEventListener("click", () => focusCard(i));
+});
 
 // Adapt to the stage container size, not the viewport.
 const resizeObserver = new ResizeObserver(recomputeFit);

@@ -26,6 +26,7 @@ $typeLabels = [
   'call-for-papers' => 'Call for Papers',
   'blog'            => 'Blog',
   'notiz'           => 'Notiz',
+  'publikation'     => 'Publikation',
 ];
 
 $items = $items ?? null;

@@ -35,29 +35,136 @@
 
 .aktuelles__ring {
   position: relative;
-  width: 280px;
+  width: 440px;
   height: 180px;
   // Not a stacking context: cards' z-index resolves in the stage so they
   // interleave with the connectors svg (also a child of the stage).
 }
 
+// Fixed width (from .aktuelles__ring), height grows with content.
 .aktuelles__card {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
   background: #a3ff98;
   border: 1px solid #612c00;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(97, 44, 0, 0.2);
-  padding: 1rem;
+  padding: 0.9rem 1rem;
   color: #612c00;
-  transition: opacity 0.3s ease;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 0.3s ease, background-color 0.2s ease;
   // transform set inline by JS
+
+  &:hover {
+    background: #612c00;
+  }
+}
+
+// (i) info marker, top-right — 1px brown circle, serif italic glyph.
+.aktuelles__card-info {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1px solid #612c00;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1;
+  transition: color 0.2s ease, border-color 0.2s ease;
+
+  .aktuelles__card:hover & {
+    color: #fff;
+    border-color: #fff;
+  }
+}
+
+.aktuelles__card-type {
+  font-size: var(--font-size-large-serif);
+  line-height: 1.15;
+  padding-right: 1.8rem; // clear the info circle
+  transition: color 0.2s ease;
+
+  .aktuelles__card:hover & {
+    color: #fff;
+  }
+}
+
+.aktuelles__card-type-label {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
 }
 
 .aktuelles__card-title {
   font-weight: 400;
-  font-size: 1.75rem;
+  font-size: var(--font-size-large-serif);
   line-height: 1.15;
+  // Clamp so a long title can't resize the fixed card.
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
+
+  .aktuelles__card:hover & {
+    color: #fff;
+  }
+}
+
+.aktuelles__card-subinfo {
+  font-size: var(--font-size-small-serif);
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s ease;
+
+  em {
+    font-style: italic;
+  }
+
+  .aktuelles__card:hover & {
+    color: #fff;
+  }
+}
+
+// Description — collapsed until the card is clicked + centred (JS adds
+// `is-open`). The 0fr → 1fr grid-rows trick animates to the content's
+// natural height; the inner element clips it while collapsed.
+.aktuelles__card-desc {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: var(--font-size-small-sans-serif);
+  line-height: 1.3;
+  transition: grid-template-rows 0.4s ease, opacity 0.3s ease,
+    color 0.2s ease;
+}
+
+.aktuelles__card-desc-inner {
+  overflow: hidden;
+  min-height: 0; // let the grid row actually collapse to 0
+}
+
+.aktuelles__card.is-open .aktuelles__card-desc {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.aktuelles__card:hover .aktuelles__card-desc {
+  color: #fff;
 }
 
 // White veil over the card; opacity driven by depth in JS (0 front → 0.2 back).
@@ -90,7 +197,7 @@
   background: #612c00;
   color: #fff;
   padding: 0.75rem 1.5rem;
-  font-size: var(--font-size-large-serif);
+  font-size: var(--font-size-headline);
   line-height: 1;
   white-space: nowrap;
   border-radius: 9999px;
@@ -100,6 +207,9 @@
 
 // Filter pills: white pill, brown text, brown outline; smaller than the hub.
 .aktuelles__label--filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   background: #fff;
   color: #612c00;
   border: 1px solid #612c00;
@@ -108,7 +218,24 @@
   font-size: var(--font-size-small-sans-serif);
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  // transform is set inline by JS (row layout); transitioning it makes the
+  // other pills slide when an active pill changes width.
+  transition: transform 0.25s ease, background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+// When active, a 1px-stroke circle with an ✕ appears after the label.
+// Its extra width re-flows the row (JS) and the siblings slide (transition).
+.aktuelles__label--filter.aktuelles__label--active::after {
+  content: "✕";
+  display: grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 0.72em;
+  line-height: 1;
 }
 
 // Hover and active states — both flip to inverted (brown pill, white text)
@@ -116,6 +243,11 @@
 .aktuelles__label--filter.aktuelles__label--active {
   background: #612c00;
   color: #fff;
+}
+
+// Tighter right padding when the ✕ circle is showing.
+.aktuelles__label--filter.aktuelles__label--active {
+  padding-right: 0.5rem;
 }
 
 // Static copy of the filter pills shown above the Liste view. Same visual

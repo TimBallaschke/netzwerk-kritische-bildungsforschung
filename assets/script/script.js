@@ -40,6 +40,14 @@
       );
     }
 
+    // Tell aktuelles.js whether the carousel may take wheel/drag input
+    // (only while the page is locked at it).
+    function setCarouselInteractive(active) {
+      window.dispatchEvent(
+        new CustomEvent("aktuelles:interactive", { detail: { active: active } })
+      );
+    }
+
     function maybeLock() {
       if (locked) return;
       var headerH = headerHeight();
@@ -53,6 +61,7 @@
         window.scrollTo(0, lockY);
         document.documentElement.style.overflow = "hidden";
         document.body.style.overflow = "hidden";
+        setCarouselInteractive(true);
       }
     }
 
@@ -62,6 +71,7 @@
       document.documentElement.style.overflow = "";
       document.body.style.overflow = "";
       locked = false;
+      setCarouselInteractive(false);
       window.removeEventListener("scroll", maybeLock);
       window.addEventListener("scroll", maybeLock, { passive: true });
       window.scrollTo({ top: 0, behavior: "smooth" });
