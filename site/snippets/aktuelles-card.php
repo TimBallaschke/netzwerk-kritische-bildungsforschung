@@ -34,5 +34,11 @@ $color       = $color       ?? '#612c00';
   <span class="aktuelles__card-info" aria-hidden="true">
     <span class="aktuelles__card-info-icon"></span>
   </span>
+  <span class="aktuelles__card-open" aria-hidden="true">
+    <svg class="aktuelles__card-open-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <line x1="6" y1="18" x2="18" y2="6"></line>
+      <polyline points="9 6 18 6 18 15"></polyline>
+    </svg>
+  </span>
   <span class="aktuelles__card-overlay" aria-hidden="true"></span>
 </article>

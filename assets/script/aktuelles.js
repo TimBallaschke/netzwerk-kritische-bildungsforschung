@@ -246,7 +246,9 @@ function layoutFilters() {
 	const rect = stage.getBoundingClientRect();
 	const rem =
 		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-	const rowY = rem - rect.height / 2;
+	const inset = rem * 1.5; // horizontal: match the header's 1.5rem edge gap
+	const insetY = rem * 0.75; // vertical: tighter gap below the header
+	const rowY = insetY - rect.height / 2;
 
 	// READ pass: measure every pill first (one layout flush). Mixing reads
 	// and writes per-iteration forces a reflow each loop and, racing the
@@ -257,7 +259,7 @@ function layoutFilters() {
 	}));
 
 	// WRITE pass: position the row (no reads in between → no thrash).
-	let stackX = rem - rect.width / 2;
+	let stackX = inset - rect.width / 2;
 	cornerLabels.forEach((label, c) => {
 		label.style.transform =
 			`translate(0, 0) translate3d(${stackX}px, ${rowY}px, 1px)`;
@@ -317,6 +319,9 @@ let current = 0;
 // releases the lock and hands control back to the user.
 let locked = false;
 let focusedIndex = null;
+// Frozen by the play/pause control: tick() keeps looping but skips all
+// motion/DOM updates, so the scene holds exactly where it was.
+let paused = false;
 // Index of the card currently hovered (null = none). Used to lift a
 // hovered card to the front — but only while it's on the front half of
 // the orbit (see tick()).
@@ -394,6 +399,13 @@ function onTouchEnd() {
 }
 
 function tick() {
+	// Paused: keep the rAF loop alive (so unpausing resumes seamlessly)
+	// but freeze the scene — no rotation, easing or DOM writes.
+	if (paused) {
+		requestAnimationFrame(tick);
+		return;
+	}
+
 	// Auto-rotate when user has been idle long enough — unless a clicked
 	// card has locked the ring at the front-centre.
 	if (!locked && performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS) {
@@ -560,6 +572,20 @@ cards.forEach((card, i) => {
 		});
 	}
 });
+
+// Play / pause the carousel animation (bottom-left control).
+const playPauseBtn = document.querySelector(".aktuelles__playpause");
+if (playPauseBtn) {
+	playPauseBtn.addEventListener("click", () => {
+		paused = !paused;
+		playPauseBtn.classList.toggle("is-paused", paused);
+		playPauseBtn.setAttribute("aria-pressed", String(paused));
+		playPauseBtn.setAttribute(
+			"aria-label",
+			paused ? "Animation abspielen" : "Animation pausieren"
+		);
+	});
+}
 
 // Adapt to the stage container size, not the viewport.
 const resizeObserver = new ResizeObserver(recomputeFit);

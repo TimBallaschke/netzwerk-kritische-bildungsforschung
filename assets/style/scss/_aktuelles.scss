@@ -5,6 +5,9 @@
 
 .aktuelles {
   position: relative;
+  // Own stacking context: contains the switch/list/stage z-indexes so the
+  // whole section sits below .intro-text (which slides over it on hover).
+  isolation: isolate;
   overflow: hidden;
   height: calc(100dvh - var(--header-height, 0px)); // viewport minus header
   scroll-snap-align: start; // snaps its top to the header's bottom edge
@@ -125,6 +128,45 @@
     inset: 0 auto 0 50%;
     width: 1px;
     transform: translateX(-50%);
+  }
+}
+
+// "Open" circle — appears immediately left of the close ✕ while the card
+// is open. Same size/shape as the plus circle; holds a 1px diagonal ↗.
+.aktuelles__card-open {
+  position: absolute;
+  top: 0.6rem;
+  right: 3rem; // 0.6 (✕ inset) + 2 (✕ width) + 0.4 gap
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  // Hidden until the card opens, then fades + scales in.
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  .aktuelles__card.is-open & {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}
+
+.aktuelles__card-open-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+
+  line,
+  polyline {
+    stroke: currentColor;
+    stroke-width: 1;
+    fill: none;
+    vector-effect: non-scaling-stroke; // stays 1px regardless of viewBox
   }
 }
 
@@ -330,8 +372,8 @@
 // A filled brown thumb slides between the two equal-width options.
 .aktuelles__switch {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: 0.75rem; // align with the filter row (insetY = rem * 0.75 in JS)
+  right: 1.5rem; // match the header's 1.5rem edge gap
   z-index: 2; // above the stage / carousel
   display: grid;
   grid-auto-flow: column;
@@ -377,6 +419,60 @@
 
 @media (prefers-reduced-motion: reduce) {
   .aktuelles__switch-thumb { transition: none; }
+}
+
+// Play / pause control — bottom-left, same visual language as the filter
+// pills (white, 1px brown, hover-inverts), but a circle.
+.aktuelles__playpause {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 2; // above the stage / carousel
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: #fff;
+  color: #612c00;
+  border: 1px solid #612c00;
+  border-radius: 50%;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover {
+    background: #612c00;
+    color: #fff;
+  }
+}
+
+// Both icons share one grid cell; class on the button picks which shows.
+.aktuelles__playpause-icon {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+  }
+}
+
+// Playing → show the pause sign; paused → show the play sign.
+.aktuelles__playpause-icon--play {
+  display: none;
+}
+
+.aktuelles__playpause.is-paused .aktuelles__playpause-icon--pause {
+  display: none;
+}
+
+.aktuelles__playpause.is-paused .aktuelles__playpause-icon--play {
+  display: grid;
 }
 
 // Single svg holding every connector line. z-index set in JS below all

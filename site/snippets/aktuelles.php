@@ -39,6 +39,15 @@ $cardEntries   = $container ? $container->children()->listed() : [];
     </div>
   </div>
 
+  <button type="button" class="aktuelles__playpause" aria-label="Animation pausieren" aria-pressed="false" x-show="view === 'grafik'">
+    <span class="aktuelles__playpause-icon aktuelles__playpause-icon--pause" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+    </span>
+    <span class="aktuelles__playpause-icon aktuelles__playpause-icon--play" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><polygon points="7 4 20 12 7 20"></polygon></svg>
+    </span>
+  </button>
+
   <div class="aktuelles__list" x-show="view === 'liste'" x-cloak>
     <?php /* Static visual copy of the carousel's filter pills — not wired
              to any filtering yet. Keep labels in sync with CORNER_LABELS
