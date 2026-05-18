@@ -163,6 +163,7 @@ body::before {
 .intro-text {
   margin: 0 1.5rem;
   padding: 0.9rem 0 1rem 0;
+  scroll-snap-align: start;
   border-bottom: 1px solid var(--color-brown);
   color: var(--color-brown);
   font-family: "HAL Timezone", serif;
