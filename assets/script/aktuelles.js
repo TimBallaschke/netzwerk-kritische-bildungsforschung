@@ -10,6 +10,7 @@ const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
 const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
 const MAX_OVERLAY = 0.2; // white veil opacity on the back-most card (0 at front)
+const FOCUS_FADE = 0.55; // veil opacity on the non-selected cards when one is picked
 const LABEL_STACK_GAP = 8; // px gap between filter pills in the row
 const SCENE_W = 100;     // scene width as % of the stage container (>100 = bleed past edges)
 const SCENE_H = 100;     // scene height as % of the stage container
@@ -368,6 +369,9 @@ let hoveredIndex = null;
 // (= .aktuelles centre) at FOCUS_SCALE. Eased each frame in tick().
 let focusBlend = 0;
 const FOCUS_SCALE = 1;
+// 0 → all cards normal; 1 → a card is selected, so the others are veiled
+// out. Eased the moment a card is clicked (not waiting for it to centre).
+let selectBlend = 0;
 
 function setOpen(i, open) {
 	if (i === null || !cards[i]) return;
@@ -471,6 +475,10 @@ function tick() {
 	// orbital spot to the stage centre; release it again when unfocused.
 	focusBlend += ((settled ? 1 : 0) - focusBlend) * EASE;
 
+	// Ease the select blend: as soon as a card is picked, fade the others
+	// out (white veil), and fade them back in when nothing is selected.
+	selectBlend += ((focusedIndex !== null ? 1 : 0) - selectBlend) * EASE;
+
 	// Open it (height + description fade) once it has reached the centre.
 	if (settled && !cards[focusedIndex].classList.contains("is-open")) {
 		setOpen(focusedIndex, true);
@@ -569,8 +577,17 @@ function tick() {
 		}
 
 		// White veil fades the card toward the back (full at back, none at
-		// front). Quantized to 1% steps so we rarely touch the DOM.
-		const veil = Math.round((1 - tNorm) * MAX_OVERLAY * 100);
+		// front). When a card is selected, the others fade out via the same
+		// veil (toward FOCUS_FADE) while the selected one clears entirely.
+		const depthVeil = (1 - tNorm) * MAX_OVERLAY;
+		let v;
+		if (i === focusedIndex) {
+			v = depthVeil * (1 - selectBlend);
+		} else {
+			v = depthVeil + (FOCUS_FADE - depthVeil) * selectBlend;
+		}
+		// Quantized to 1% steps so we rarely touch the DOM.
+		const veil = Math.round(v * 100);
 		if (veil !== prevOverlay[i]) {
 			overlays[i].style.opacity = veil / 100;
 			prevOverlay[i] = veil;

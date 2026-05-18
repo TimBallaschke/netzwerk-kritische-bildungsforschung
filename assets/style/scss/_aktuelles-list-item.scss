@@ -13,6 +13,20 @@
   color: var(--color-brown);
   background-color: var(--color-green);
   border-bottom: 1px solid var(--color-brown);
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  // Invert on hover: brown row, white text (cascades to type/title/
+  // subinfo/description, which all inherit `color`).
+  &:hover {
+    background-color: var(--color-brown);
+    color: #fff;
+  }
+
+  // Keep the toggle visible on the inverted row.
+  &:hover .aktuelles-item__toggle {
+    color: #fff;
+    border-color: #fff;
+  }
 }
 
 // Left column — HAL Timezone serif
@@ -96,8 +110,11 @@
   }
 }
 
+// Direct hover/focus on the toggle: solid white circle, brown plus —
+// pops against the (also-inverted) brown row.
 .aktuelles-item__toggle:hover,
 .aktuelles-item__toggle:focus-visible {
-  background-color: var(--color-brown);
-  color: var(--color-green);
+  background-color: #fff;
+  color: var(--color-brown);
+  border-color: #fff;
 }
