@@ -11,8 +11,7 @@ const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
 const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
 const MAX_OVERLAY = 0.2; // white veil opacity on the back-most card (0 at front)
-const LABEL_INSET_Y = 30;// px gap between top of scene and first stacked label
-const LABEL_STACK_GAP = 8; // px gap between stacked label pills
+const LABEL_STACK_GAP = 8; // px gap between filter pills in the row
 const SCENE_W = 94;      // scene width as % of the stage container
 const SCENE_H = 100;     // scene height as % of the stage container
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
@@ -146,7 +145,7 @@ const CORNER_LABELS = [
 ];
 const cornerLabels = Array.from({ length: CORNERS }, (_, c) => {
 	const label = document.createElement("div");
-	label.className = "aktuelles__label aktuelles__label--corner";
+	label.className = "aktuelles__label aktuelles__label--filter";
 	label.textContent = CORNER_LABELS[c];
 	ring.appendChild(label);
 	return label;
@@ -299,13 +298,13 @@ function recomputeFit() {
 	// (z=1 so it's always in front of the dot regardless of card depth ordering)
 	centerLabel.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 1px)`;
 
-	// Lay all 4 label+dot pairs in a horizontal row in the upper-left of the scene.
-	// Pills run left → right; each dot sits at the bottom edge of its pill,
-	// horizontally centered.
-	const edgeW = sceneW / 2;
-	const edgeH = sceneH / 2;
-	let stackX = -edgeW; // start at scene left edge
-	const rowY = -edgeH + LABEL_INSET_Y; // top of scene + inset
+	// Lay the filter pills in a horizontal row pinned to the very top-left
+	// of the container, 1rem from the top and left edges. Label boxes are
+	// anchored at the stage centre, so offset by 1rem − half the stage size.
+	const rem =
+		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+	let stackX = rem - rect.width / 2;
+	const rowY = rem - rect.height / 2;
 	cornerLabels.forEach((label, c) => {
 		const lx = stackX;
 		const ly = rowY;

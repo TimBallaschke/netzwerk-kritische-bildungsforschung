@@ -88,20 +88,21 @@
 }
 
 // Filter pills: white pill, brown text, brown outline; smaller than the hub.
-.aktuelles__label--corner {
+.aktuelles__label--filter {
   background: #fff;
   color: #612c00;
   border: 1px solid #612c00;
   padding: 0.5rem 1rem;
-  font-size: 1.5rem;
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: var(--font-size-medium-sans-serif);
   cursor: pointer;
   user-select: none;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 // Hover and active states — both flip to inverted (brown pill, white text)
-.aktuelles__label--corner:hover,
-.aktuelles__label--corner.aktuelles__label--active {
+.aktuelles__label--filter:hover,
+.aktuelles__label--filter.aktuelles__label--active {
   background: #612c00;
   color: #fff;
 }

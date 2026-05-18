@@ -39,8 +39,8 @@
 }
 
 .aktuelles-item__subinfo {
-  font-size: 1.4rem; // visibly smaller than the title — placeholder size
-  line-height: 1.25;
+  font-size: var(--font-size-small-serif);
+  line-height: 1.2;
 
   em {
     font-style: italic;
@@ -50,8 +50,8 @@
 // Middle column — Geist sans-serif description
 .aktuelles-item__description {
   font-family: "Geist", system-ui, sans-serif;
-  font-size: 1.15rem; // placeholder size — smaller than the serif column
-  line-height: 1.35;
+  font-size: var(--font-size-small-sans-serif);
+  line-height: 1.2;
 }
 
 // Right column — round "+" toggle
