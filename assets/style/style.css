@@ -98,10 +98,26 @@ h6 {
 }
 
 .site-header__nav a {
+  display: inline-grid;
   color: var(--color-brown);
   font-size: var(--font-size-large-serif);
   text-decoration: none;
+  white-space: nowrap;
 }
-.site-header__nav a:hover, .site-header__nav a:focus {
-  text-decoration: underline;
+.site-header__nav a > span, .site-header__nav a::before, .site-header__nav a::after {
+  grid-area: 1/1;
+}
+.site-header__nav a::before, .site-header__nav a::after {
+  content: attr(data-label);
+  visibility: hidden;
+  pointer-events: none;
+}
+.site-header__nav a::before {
+  font-style: normal;
+}
+.site-header__nav a::after {
+  font-style: italic;
+}
+.site-header__nav a:hover > span, .site-header__nav a:focus > span {
+  font-style: italic;
 }/*# sourceMappingURL=style.css.map */

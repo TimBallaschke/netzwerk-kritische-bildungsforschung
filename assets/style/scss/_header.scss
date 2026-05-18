@@ -32,12 +32,33 @@
 }
 
 .site-header__nav a {
+  display: inline-grid;
   color: var(--color-brown);
   font-size: var(--font-size-large-serif);
   text-decoration: none;
+  white-space: nowrap;
 
-  &:hover,
-  &:focus {
-    text-decoration: underline;
+  // Stack the visible label and TWO hidden phantoms (normal + italic)
+  // in the same grid cell. The cell locks to max(normal, italic), so
+  // the box is identical in both states regardless of which is wider.
+  > span,
+  &::before,
+  &::after {
+    grid-area: 1 / 1;
+  }
+
+  &::before,
+  &::after {
+    content: attr(data-label);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  &::before { font-style: normal; } // reserves the regular width
+  &::after  { font-style: italic; } // reserves the italic width
+
+  &:hover > span,
+  &:focus > span {
+    font-style: italic;
   }
 }

@@ -7,16 +7,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist&display=swap">
-  <?= css('assets/style/style.css') ?>
+  <?php $styleFile = 'assets/style/style.css'; ?>
+  <?= css($styleFile . '?v=' . filemtime(kirby()->root('index') . '/' . $styleFile)) ?>
 </head>
 <body>
 <header class="site-header">
   <h1 class="site-header__title">Netzwerk Kritische<br>Bildungsforschung</h1>
   <nav class="site-header__nav" aria-label="Hauptmenü">
     <ul>
-      <li><a href="<?= url('ueber-uns') ?>">Über Uns</a></li>
-      <li><a href="<?= url('beitraege') ?>">Beiträge</a></li>
-      <li><a href="<?= url('seminarplaene') ?>">Seminarpläne</a></li>
+      <li><a href="<?= url('ueber-uns') ?>" data-label="Über Uns"><span>Über Uns</span></a></li>
+      <li><a href="<?= url('beitraege') ?>" data-label="Beiträge"><span>Beiträge</span></a></li>
+      <li><a href="<?= url('seminarplaene') ?>" data-label="Seminarpläne"><span>Seminarpläne</span></a></li>
     </ul>
   </nav>
 </header>
