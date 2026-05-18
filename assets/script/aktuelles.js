@@ -38,6 +38,14 @@ const centerLabel = document.querySelector(".center-label");
 const CARD_W = ring.offsetWidth || 140;
 const CARD_H = ring.offsetHeight || 180;
 
+// The centre hub sits at the orbit's mid-depth so front cards (larger
+// renderScale) paint over it and back cards behind it. Same ×1000 metric
+// as the per-card z-index in tick(): a card crossing the centre plane
+// (z ≈ 0, persp ≈ 1, tNorm ≈ 0.5) has renderScale ≈ (1 + MIN_SCALE) / 2.
+const CENTER_Z = Math.round(((1 + MIN_SCALE) / 2) * 1000);
+dot.style.zIndex = CENTER_Z;
+centerLabel.style.zIndex = CENTER_Z + 1; // label just above its own dot
+
 // Stratified Y offsets in [-1, 1] — scaled by `fitJitter` at render time.
 // The vertical range is split into CARDS equal bands. Each card's ORBITAL
 // index i is mapped to a band via a bit-reversal permutation, so cards that
@@ -147,6 +155,11 @@ const cornerLabels = Array.from({ length: CORNERS }, (_, c) => {
 	ring.appendChild(label);
 	return label;
 });
+// Corner pills/dots are interactive filter controls — always above every card.
+for (let c = 0; c < CORNERS; c++) {
+	cornerDots[c].style.zIndex = 100000;
+	cornerLabels[c].style.zIndex = 100001;
+}
 
 // Active corner filter: clicking corner pills toggles them into a multi-select.
 // Empty set = no filter, show everything. Any active corner = show only cards

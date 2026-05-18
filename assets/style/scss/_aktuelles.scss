@@ -66,7 +66,8 @@
   height: 14px;
   background: #612c00;
   border-radius: 50%;
-  z-index: 100000; // hub + corner dots stay above every card
+  // z-index set per element in JS: centre hub at orbit mid-depth so cards
+  // interleave with it; corner dots forced above all cards.
   // transform set by JS to match the auto-centered offset
 }
 
@@ -81,7 +82,7 @@
   line-height: 1;
   white-space: nowrap;
   border-radius: 9999px;
-  z-index: 100001; // labels above cards and above their dots
+  // z-index set per element in JS (see .dot note)
   // transform set by JS to match the auto-centered offset
 }
 
