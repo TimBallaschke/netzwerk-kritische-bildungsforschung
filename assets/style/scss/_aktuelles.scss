@@ -1,6 +1,106 @@
 // Aktuelles
-// Empty container that fills the space under the header.
+// Container under the header holding the 3D ring carousel.
+// The .stage fills .aktuelles and the JS fits the carousel to that box
+// (the .stage size — not the viewport).
 
 .aktuelles {
   flex: 1; // fill main's width; height comes from flex stretch
+  position: relative;
+  overflow: hidden;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  perspective: 1600px; // must match PERSPECTIVE in aktuelles.js
+  overflow: hidden;
+  font-family: "HAL Timezone", system-ui, sans-serif;
+}
+
+.ring {
+  position: relative;
+  width: 280px;
+  height: 180px;
+  transform-style: preserve-3d;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  background: #a3ff98;
+  border: 1px solid #612c00;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  box-shadow: 0 10px 30px rgba(97, 44, 0, 0.2);
+  padding: 1rem;
+  color: #612c00;
+  transition: opacity 0.3s ease;
+  // transform set inline by JS
+}
+
+.card-title {
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 1.15;
+}
+
+.dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background: #612c00;
+  border-radius: 50%;
+  // transform set by JS to match the auto-centered offset
+}
+
+.center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: #612c00;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  font-size: 2.25rem;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 9999px;
+  // transform set by JS (with z lift to sit on top of dot)
+}
+
+// Corner pills: white pill, brown text, brown outline; smaller than centered
+.corner-label {
+  background: #fff;
+  color: #612c00;
+  border: 1px solid #612c00;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+// Hover and active states — both flip to inverted (brown pill, white text)
+.corner-label:hover,
+.corner-label.is-active {
+  background: #612c00;
+  color: #fff;
+}
+
+.connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  line {
+    stroke: #612c00;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    transition: opacity 0.3s ease;
+  }
 }

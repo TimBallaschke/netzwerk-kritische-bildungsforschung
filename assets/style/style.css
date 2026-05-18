@@ -93,6 +93,7 @@ main {
   margin: 0;
   font-size: var(--font-size-headline);
   line-height: 0.95;
+  letter-spacing: -0.01em;
   text-align: left;
 }
 
@@ -131,4 +132,98 @@ main {
 
 .aktuelles {
   flex: 1;
-}/*# sourceMappingURL=style.css.map */
+  position: relative;
+  overflow: hidden;
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  perspective: 1600px;
+  overflow: hidden;
+  font-family: "HAL Timezone", system-ui, sans-serif;
+}
+
+.ring {
+  position: relative;
+  width: 280px;
+  height: 180px;
+  transform-style: preserve-3d;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  background: #a3ff98;
+  border: 1px solid #612c00;
+  border-radius: 12px;
+  backface-visibility: hidden;
+  box-shadow: 0 10px 30px rgba(97, 44, 0, 0.2);
+  padding: 1rem;
+  color: #612c00;
+  transition: opacity 0.3s ease;
+}
+
+.card-title {
+  font-weight: 400;
+  font-size: 1.75rem;
+  line-height: 1.15;
+}
+
+.dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background: #612c00;
+  border-radius: 50%;
+}
+
+.center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: #612c00;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  font-size: 2.25rem;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 9999px;
+}
+
+.corner-label {
+  background: #fff;
+  color: #612c00;
+  border: 1px solid #612c00;
+  padding: 0.5rem 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.corner-label:hover,
+.corner-label.is-active {
+  background: #612c00;
+  color: #fff;
+}
+
+.connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.connectors line {
+  stroke: #612c00;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transition: opacity 0.3s ease;
+}
+
+/*# sourceMappingURL=style.css.map */
