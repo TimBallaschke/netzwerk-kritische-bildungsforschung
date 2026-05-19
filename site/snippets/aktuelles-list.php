@@ -24,7 +24,7 @@
 $typeLabels = [
   'veranstaltung'   => 'Veranstaltung',
   'call-for-papers' => 'Call for Papers',
-  'blog'            => 'Blog',
+  'blog'            => 'Beiträge',
   'notiz'           => 'Notiz',
   'publikation'     => 'Publikation',
 ];

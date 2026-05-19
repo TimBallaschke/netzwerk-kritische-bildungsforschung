@@ -6,7 +6,7 @@
 $typeMeta = [
   'veranstaltung'   => ['label' => 'Veranstaltung',  'color' => '#005436'],
   'notiz'           => ['label' => 'Notiz',           'color' => '#4965e6'],
-  'blog'            => ['label' => 'Blog',            'color' => '#fcbacd'],
+  'blog'            => ['label' => 'Beiträge',        'color' => '#fcbacd'],
   'call-for-papers' => ['label' => 'Call for Papers', 'color' => '#f3511c'],
   'publikation'     => ['label' => 'Publikation',     'color' => '#8a4fff'],
 ];

@@ -8,7 +8,7 @@
  * Data is supplied by the aktuelles-list snippet (sourced from the
  * `aktuelles` blueprint). Keys: type, date, title, subinfo, description.
  *
- * `type` is one of: Veranstaltung, Call for Papers, Blog, Notiz.
+ * `type` is one of: Veranstaltung, Call for Papers, Beiträge, Notiz.
  * `date` is optional. `subinfo` may contain inline <em> for names.
  */
 
