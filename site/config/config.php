@@ -1,6 +1,12 @@
 <?php
 
 return [
+    // Custom Panel stylesheet — tightens spacing around section
+    // headlines and divider lines (see assets/style/panel.css).
+    'panel' => [
+        'css' => 'assets/style/panel.css',
+    ],
+
     // Isolated styling previews — render a snippet on its own at
     // /preview/<name>, without touching the real pages, nav or content.
     // Restricted to local environments (localhost / Herd *.test), so it

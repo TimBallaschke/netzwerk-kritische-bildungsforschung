@@ -1,0 +1,36 @@
+/*
+ * Custom Panel styles.
+ * Loaded via the `panel.css` option in site/config/config.php.
+ *
+ * Tightens the vertical rhythm around section headlines and divider
+ * lines. Kirby ships generous defaults (headline: 1.5rem padding-top,
+ * line: 3rem tall) which stack up when a `line` sits directly above a
+ * `headline` — producing an oversized gap. These overrides apply
+ * Panel-wide to every blueprint.
+ */
+
+/* Headline fields: smaller top padding (default 1.5rem). */
+.k-headline-field {
+	padding-top: 0.75rem;
+}
+
+/* Divider lines: shorter overall height (default 3rem) so the rule
+   hugs the section it introduces. The 1px rule stays centered. */
+.k-line-field {
+	height: 1.5rem;
+}
+
+/* When a line sits immediately above a headline, drop the headline's
+   own top padding — the line already provides the separation. */
+.k-line-field + .k-headline-field {
+	padding-top: 0;
+}
+
+/* "Untertitel" (subinfo) is a one-line subtitle, but uses the italic
+   textarea for its persistent italic button. The `small` size preset is
+   still 7.5rem tall, so override the `--textarea-size` variable that drives
+   the input's min-height down to roughly one line. The toolbar stays put
+   and the field auto-grows when it needs to. */
+.k-field-name-subinfo .k-textarea-input {
+	--textarea-size: 2.5rem !important;
+}

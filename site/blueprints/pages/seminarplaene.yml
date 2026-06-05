@@ -9,35 +9,45 @@ options:
   delete: false
 
 fields:
+  # ── Einleitung ──
+  introHeadline:
+    type: headline
+    label: Einleitung
   intro:
-    label: Intro-Text
-    type: textarea
+    label: Text
+    extends: fields/italictext
     size: medium
-    help: Fließtext „Seminarpläne teilen und kritische Bildungsforschung pluralisieren“ (2–4 Sätze).
-  kontaktEmail:
+  # ── Kontakt ──
+  lineKontakt:
+    type: line
+  kontaktHeadline:
+    type: headline
     label: Kontakt für Einreichungen
+  kontaktEmail:
+    label: E-Mail-Adresse
     type: email
-    help: Wer einen Seminarplan veröffentlichen will, wendet sich an diese Adresse (Laura Hanemann).
+  # ── Seminarpläne ──
+  linePlaene:
+    type: line
   plaeneHeadline:
     type: headline
     label: Seminarpläne
   plaene:
-    label: Seminarpläne
+    label: Einträge
     type: structure
     fields:
       dozierende:
         label: Dozierende
         type: text
+        required: true
       titel:
         label: Titel des Seminars
         type: text
+        required: true
       pdf:
         label: PDF (Seminarplan)
         type: files
         max: 1
+        min: 1
         accept: application/pdf
-      bild:
-        label: Bild (optional)
-        type: files
-        max: 1
-        query: page.images
+        required: true

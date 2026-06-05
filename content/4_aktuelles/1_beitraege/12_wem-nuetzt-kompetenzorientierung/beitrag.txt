@@ -6,11 +6,23 @@ Authors:
 
 ----
 
-Subinfo: Blogeintrag von <em>Mira Anders</em>
+Authorphoto: 
 
 ----
 
 Description: Der Beitrag zeichnet nach, wie der Kompetenzbegriff von einer pädagogischen zu einer steuerungspolitischen Kategorie wurde – und welche Bildungsvorstellungen dabei stillschweigend verabschiedet werden.
+
+----
+
+Body: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Datemanual: false
 
 ----
 
@@ -19,6 +31,10 @@ Date:
 ----
 
 Inaktuelles: true
+
+----
+
+Subinfo: Blogeintrag von <em>Mira Anders</em>
 
 ----
 
@@ -34,20 +50,12 @@ Externalurl:
 
 ----
 
-Authorphoto: 
-
-----
-
-Body: 
-
-----
-
-Downloadpdf: 
-
-----
-
 Uuid: fdr7sc56hlua6ugu
 
 ----
 
 Feedorder: 5
+
+----
+
+Dateauto: false

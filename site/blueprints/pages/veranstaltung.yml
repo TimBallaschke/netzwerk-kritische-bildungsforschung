@@ -7,83 +7,81 @@ options:
   template: veranstaltung
   changeTemplate: false
 
-tabs:
-  eintrag:
-    label: Eintrag
-    icon: page
-    columns:
-      - width: 2/3
-        fields:
-          subinfo:
-            label: Untertitel
-            type: writer
-            inline: true
-            marks:
-              - italic
-            help: Art der Veranstaltung + Organisation, z. B. „Tagung mit <em>Hannelore Wolb</em> (Miteinander e.V.)“.
-          description:
-            label: Teaser / Beschreibung
-            type: textarea
-            size: large
-      - width: 1/3
-        fields:
-          date:
-            label: Datum
-            type: date
-            display: DD.MM.YYYY
-          ort:
-            label: Ort
-            type: text
-          onlineHinweis:
-            label: Hinweis Online-Teilnahme
-            type: text
-            help: z. B. Zoom-Link oder Kontaktadresse. Leer lassen, wenn nicht zutreffend.
-          inAktuelles:
-            label: In Aktuelles zeigen
-            type: toggle
-            default: true
-            text:
-              - "Nein"
-              - "Ja"
-          linkHeadline:
-            type: headline
-            label: Weiterlesen führt zu …
-          linkType:
-            label: Ziel
-            type: select
-            default: self
-            empty: false
-            options:
-              self: Eigene Detailseite
-              internal: Andere Seite auf dieser Website
-              external: Externer Link
-          internalPage:
-            label: Verlinkte Seite
-            type: pages
-            max: 1
-            when:
-              linkType: internal
-          externalUrl:
-            label: Externe URL
-            type: url
-            when:
-              linkType: external
-
-  detail:
-    label: Detailseite
-    icon: text
+columns:
+  - width: 2/3
     fields:
+      subinfo:
+        label: Untertitel
+        extends: fields/italictext
+        size: small
+      description:
+        label: Teaser / Beschreibung
+        extends: fields/italictext
+        size: small
+      inAktuelles:
+        label: In Aktuelles zeigen
+        type: toggle
+        default: true
+        width: 1/2
+        text:
+          - "Nein"
+          - "Ja"
+      linkType:
+        label: Verlinkung?
+        type: select
+        default: self
+        empty: false
+        required: true
+        help: >
+          Legt fest, wohin der Eintrag im Aktuelles-Feed verlinkt.
+          „Eigene Detailseite“ öffnet eine Unterseite mit Fließtext, Bild(ern), Link und PDF.
+          „Externer Link“ führt direkt auf eine andere Website (Feld „Externe URL“).
+          „Keine Verlinkung“ zeigt den Eintrag nur als Teaser im Feed, ohne
+          weiterführenden Link.
+        options:
+          self: Eigene Detailseite
+          external: Externer Link
+          none: Keine Verlinkung
+        width: 1/2
+      externalUrl:
+        label: Externe URL
+        type: url
+        when:
+          linkType: external
       body:
         label: Fließtext (Thema)
-        type: textarea
+        extends: fields/italictext
         size: huge
+        when:
+          linkType: self
       image:
         label: Bild(er) / Flyer
         type: files
         layout: cards
         query: page.images
+        when:
+          linkType: self
+      linkUrl:
+        label: Weiterführender Link
+        type: url
+        when:
+          linkType: self
       downloadPdf:
         label: PDF zum Download
         type: files
         max: 1
         accept: application/pdf
+        when:
+          linkType: self
+  - width: 1/3
+    fields:
+      date:
+        label: Datum
+        type: date
+        display: DD.MM.YYYY
+      ort:
+        label: Ort
+        type: text
+      onlineHinweis:
+        label: Hinweis Online-Teilnahme
+        type: text

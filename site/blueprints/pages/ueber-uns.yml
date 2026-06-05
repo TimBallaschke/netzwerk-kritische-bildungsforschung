@@ -9,86 +9,110 @@ options:
   changeTemplate: false
   delete: false
 
-tabs:
-  inhalt:
-    label: Inhalt
-    icon: text
-    fields:
-      wasWollenWir:
-        label: Was wollen wir?
-        type: textarea
-        size: medium
-      wasMachenWir:
-        label: Was machen wir?
-        type: textarea
-        size: medium
-      werSindWir:
-        label: Wer sind wir?
-        type: textarea
-        size: medium
-      kontaktHeadline:
-        type: headline
-        label: Kontakt
-      kontakte:
-        label: Personen
-        type: structure
-        fields:
-          name:
-            label: Name
-            type: text
-            width: 1/2
-          email:
-            label: E-Mail
-            type: email
-            width: 1/2
-      akHeadline:
-        type: headline
-        label: Arbeitskreis (AK) am IfS Frankfurt
-      akLink:
-        label: Link zur Homepage AK / IfS
-        type: url
-      rmuLogo:
-        label: RMU-Logo
-        type: files
-        max: 1
-        query: page.images
+fields:
+  # ── Wer sind wir? (Einstieg) ──
+  wasWollenWirHeadline:
+    type: headline
+    label: Was wollen wir?
+  wasWollenWir:
+    label: Text
+    extends: fields/italictext
+    size: medium
 
-  vertiefung:
-    label: Vertiefung
-    icon: list-bullet
-    fields:
-      wasIstDasNetzwerk:
-        label: Was ist das Netzwerk, wie versteht es sich?
-        type: textarea
-        size: medium
-      werKannMitmachen:
-        label: Wer kann wie mitmachen?
-        type: textarea
-        size: medium
-      mitmachenKontakte:
-        label: Kontakt (Mitmachen)
-        type: structure
-        fields:
-          name:
-            label: Name
-            type: text
-            width: 1/2
-          email:
-            label: E-Mail
-            type: email
-            width: 1/2
-      vorstellungAk:
-        label: Vorstellung Arbeitskreis (AK) am IfS
-        type: textarea
-        size: medium
+  lineMachen:
+    type: line
+  wasMachenWirHeadline:
+    type: headline
+    label: Was machen wir?
+  wasMachenWir:
+    label: Text
+    extends: fields/italictext
+    size: medium
 
-  vergangene:
-    label: Vergangene Veranstaltungen
-    icon: calendar
+  lineSind:
+    type: line
+  werSindWirHeadline:
+    type: headline
+    label: Wer sind wir?
+  werSindWir:
+    label: Text
+    extends: fields/italictext
+    size: medium
+  kontakte:
+    label: Ansprechpersonen (Netzwerk)
+    type: structure
     fields:
-      vergangeneHint:
-        type: info
-        text: |
-          Vergangene Veranstaltungen werden automatisch aus den
-          Aktuelles-Einträgen vom Typ „Veranstaltung“ mit einem
-          Datum in der Vergangenheit gezogen. Pflege erfolgt dort.
+      name:
+        label: Name
+        type: text
+        width: 1/2
+      email:
+        label: E-Mail
+        type: email
+        width: 1/2
+  akLink:
+    label: Link zur Homepage AK / IfS
+    type: url
+  rmuLogo:
+    label: RMU-Logo
+    type: files
+    max: 1
+    multiple: false
+    search: false
+    query: page.images
+
+  # ── Vertiefung ──
+  lineNetzwerk:
+    type: line
+  wasIstDasNetzwerkHeadline:
+    type: headline
+    label: Was ist das Netzwerk, wie versteht es sich?
+  wasIstDasNetzwerk:
+    label: Text
+    extends: fields/italictext
+    size: medium
+
+  lineMitmachen:
+    type: line
+  werKannMitmachenHeadline:
+    type: headline
+    label: Wer kann wie mitmachen?
+  werKannMitmachen:
+    label: Text
+    extends: fields/italictext
+    size: medium
+  mitmachenKontakte:
+    label: Ansprechpersonen zum Mitmachen
+    type: structure
+    fields:
+      name:
+        label: Name
+        type: text
+        width: 1/2
+      email:
+        label: E-Mail
+        type: email
+        width: 1/2
+
+  lineVorstellung:
+    type: line
+  vorstellungAkHeadline:
+    type: headline
+    label: Vorstellung Arbeitskreis (AK) am Institut für Sozialforschung (IfS)
+  vorstellungAk:
+    label: Text
+    extends: fields/italictext
+    size: medium
+
+  # ── Vergangene Veranstaltungen ──
+  lineVergangene:
+    type: line
+  vergangeneHeadline:
+    type: headline
+    label: Vergangene Veranstaltungen des Netzwerkes
+  vergangeneHint:
+    type: info
+    text: |
+      Vergangene Veranstaltungen werden automatisch aus den
+      Aktuelles-Einträgen vom Typ „Veranstaltung“ mit einem
+      Datum in der Vergangenheit gezogen. Pflege erfolgt dort.

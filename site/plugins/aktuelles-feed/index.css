@@ -56,7 +56,24 @@
   cursor: grabbing;
 }
 
+.aktuelles-feed__help {
+  margin-bottom: var(--spacing-3, 0.75rem);
+}
+
 /* visual feedback while dragging */
 .aktuelles-feed .sortable-ghost {
   opacity: 0.5;
+}
+
+/* Site overview: a single full-height vertical divider between the two
+   layout columns (intro/feed | Seiten), drawn on the left column's edge.
+   NOTE: in Kirby, fields ALSO render as .k-column — so we restrict the
+   rule to columns that actually contain a section (`:has(.k-section)`).
+   That targets the layout columns only, not the field columns inside them
+   (e.g. the intro field, which previously got a stray short border).
+   `:first-child:has(+ .k-column)` keeps it to the left of a two-column row,
+   so the single-column Einstellungen tab is unaffected. */
+.k-site-view .k-column:first-child:has(+ .k-column):has(.k-section) {
+  border-inline-end: 1px solid var(--color-border, #e1e1e1);
+  padding-inline-end: var(--spacing-6, 1.5rem);
 }

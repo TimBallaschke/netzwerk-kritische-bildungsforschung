@@ -47,6 +47,9 @@ Kirby::plugin('nkb/aktuelles-feed', [
                 'headline' => function (string $headline = 'Aktuelles-Feed') {
                     return $headline;
                 },
+                'help' => function (?string $help = null) {
+                    return $help;
+                },
             ],
             'computed' => [
                 'entries' => function () {
@@ -60,7 +63,7 @@ Kirby::plugin('nkb/aktuelles-feed', [
 
                     $data = [];
 
-                    foreach ($this->model()->aktuellesFeed() as $p) {
+                    foreach ($this->model()->kirby()->site()->aktuellesFeed() as $p) {
                         $template = $p->intendedTemplate()->name();
                         $data[] = [
                             'id'       => $p->id(),

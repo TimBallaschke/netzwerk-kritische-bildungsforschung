@@ -40,7 +40,9 @@ $cardEntries = site()->aktuellesFeed();
         <?php snippet('aktuelles-card', [
           'type'        => $meta['label'],
           'title'       => $entry->title()->value(),
-          'subinfo'     => $entry->subinfo()->value(),
+          // subinfo is an italic-only field (Markdown *…*); parse inline so
+          // emphasis renders. Old writer HTML (<em>…</em>) passes through.
+          'subinfo'     => $entry->subinfo()->kirbytextinline(),
           'description' => $entry->description()->value(),
           'color'       => $meta['color'],
         ]) ?>

@@ -46,8 +46,9 @@ if ($items === null) {
       // Kirby stores dates as Y-m-d; the design uses no leading zeros.
       'date'        => $entry->date()->isNotEmpty() ? $entry->date()->toDate('j.n.Y') : null,
       'title'       => $entry->title()->value(),
-      // `subinfo` is a writer field — already HTML (e.g. <em> for names).
-      'subinfo'     => $entry->subinfo()->value(),
+      // `subinfo` is an italic-only field (Markdown *…* for names); parse
+      // inline so emphasis renders. Old writer HTML (<em>…>) passes through.
+      'subinfo'     => $entry->subinfo()->kirbytextinline(),
       'description' => $entry->description()->value(),
     ];
   }

@@ -4,6 +4,7 @@ panel.plugin("nkb/aktuelles-feed", {
       data() {
         return {
           headline: null,
+          help: null,
           entries: [],
           saving: false
         };
@@ -15,6 +16,7 @@ panel.plugin("nkb/aktuelles-feed", {
         reload() {
           this.load().then((response) => {
             this.headline = response.headline;
+            this.help = response.help;
             this.entries = response.entries.map((entry) => ({
               id: entry.id,
               title: entry.title,
@@ -50,6 +52,7 @@ panel.plugin("nkb/aktuelles-feed", {
           <header class="k-section-header">
             <k-headline>{{ headline }}</k-headline>
           </header>
+          <k-text v-if="help" theme="help" class="k-help aktuelles-feed__help">{{ help }}</k-text>
           <k-draggable
             v-if="entries.length"
             v-model="entries"

@@ -1,24 +1,25 @@
 title: Startseite
 
-# Locked, hidden placeholder. Exists only to serve the site root "/"
-# (Kirby requires one page as the homepage). It carries NO editable
-# content — the startpage's intro text and the Aktuelles-feed curation
-# live on the site overview (see site.yml). It is filtered out of the
-# overview's page list, so editors never see it as a separate node.
-#
-# The `home` template reads its content from $site (intro) and the
-# /aktuelles pool (feed).
+# The public startpage (serves "/"). Holds the intro text ("Grundidee")
+# and the Aktuelles feed (drag-orderable). The site overview only manages
+# the page list and the footer.
 
 options:
   changeTemplate: false
   delete: false
   duplicate: false
 
-fields:
-  notice:
-    label: Hinweis
-    type: info
-    text: |
-      Die Inhalte der Startseite (Intro-Text und der Aktuelles-Feed)
-      werden in der **Übersicht** gepflegt – oben links auf „Netzwerk
-      Kritische Bildungsforschung“ klicken.
+columns:
+  - width: 1/1
+    sections:
+      start:
+        type: fields
+        fields:
+          intro:
+            label: Grundidee (Intro-Text)
+            extends: fields/italictext
+            size: medium
+      feed:
+        type: aktuellesfeed
+        headline: Aktuelles-Feed
+        help: Zeigt den Aktuelles-Feed der Startseite. Pro Eintrag über »In Aktuelles zeigen« aus-/einblenden, Reihenfolge per Drag & Drop.

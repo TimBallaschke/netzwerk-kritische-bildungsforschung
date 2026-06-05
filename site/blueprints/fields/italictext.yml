@@ -1,0 +1,7 @@
+# Shared text field: italic is the ONLY available formatting.
+# The toolbar shows just the italic button — no bold, headings, links,
+# code or lists. Used everywhere via `extends: fields/italictext`.
+
+type: textarea
+buttons:
+  - italic

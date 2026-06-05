@@ -12,14 +12,6 @@ options:
 columns:
   - width: 1/1
     sections:
-      intro:
-        type: fields
-        fields:
-          intro:
-            label: Intro-Text
-            type: textarea
-            size: small
-            help: Optionaler Einleitungstext über der Beitragsliste.
       entries:
         label: Beiträge
         type: pages

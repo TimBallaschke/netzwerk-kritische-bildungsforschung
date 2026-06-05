@@ -5,63 +5,51 @@ title: Netzwerk Kritische Bildungsforschung
 # Public navigation is fixed to three sections — Über Uns · Beiträge ·
 # Seminarpläne. "Aktuelles" is an UNLISTED pool: it stores every posting
 # (Beitrag, Veranstaltung, Notiz, Call for Papers, Publikation) as one
-# flat, drag-sortable list. The homepage renders that list as the
+# flat, drag-sortable list. The startpage renders that list as the
 # "Aktuelles" feed; the "Beiträge" nav link is NOT a separate page — it's
 # a view of the same pool filtered to type = blog (rendered via route in
 # the template layer). Content lives in one place; the rest are views.
 #
-# The STARTPAGE has no separate node: its content (intro + Aktuelles-feed
-# curation) is managed here on the site overview. A locked, hidden `home`
-# page still serves "/" (Kirby requires one page for the site root) — it
-# carries no editable content and is filtered out of the page list below.
+# The site overview itself only manages the page list (Seiten) and the
+# footer. The startpage's own content (intro + Aktuelles feed) lives on
+# the "Startseite" page (template `home`, serves "/"), reachable from the
+# Seiten list below.
 
-tabs:
-  uebersicht:
-    label: Übersicht
-    icon: home
-    columns:
-      - width: 2/3
-        sections:
-          start:
-            type: fields
-            fields:
-              intro:
-                label: Startseite – Grundidee (Intro-Text)
-                type: textarea
-                size: medium
-                help: Fließtext unter dem Titel auf der Startseite (5–7 Sätze).
-
-          # One combined list of ALL Aktuelles entries with a category tag
-          # (custom section — see site/plugins/aktuelles-feed). Read-only +
-          # click-to-edit; sorted by date, filtered by "In Aktuelles zeigen".
-          feed:
-            type: aktuellesfeed
-            headline: Aktuelles-Feed
-
-      - width: 1/3
-        sections:
-          pages:
+columns:
+  - width: 1/1
+    sections:
+      seiten:
+        type: fields
+        fields:
+          seitenHeadline:
+            type: headline
             label: Seiten
-            type: pages
-            sortable: false
-            create: false
-            templates:
-              - ueber-uns
-              - seminarplaene
-              - aktuelles-container
+      pages:
+        label: " "
+        type: pages
+        sortable: false
+        create: false
+        templates:
+          - home
+          - ueber-uns
+          - seminarplaene
+          - aktuelles-container
 
-  einstellungen:
-    label: Einstellungen
-    icon: settings
-    fields:
-      footerText:
-        label: Footer-Text
-        type: text
-      footerLogos:
-        label: Footer-Logos
-        type: files
-        layout: cards
-        query: site.files
-      instagramUrl:
-        label: Instagram-URL
-        type: url
+      footer:
+        type: fields
+        fields:
+          footerDivider:
+            type: line
+          footerHeadline:
+            type: headline
+            label: Footer
+          footerLogos:
+            label: Footer-Logos
+            type: files
+            layout: cards
+            query: site.files
+            width: 1/2
+          instagramUrl:
+            label: Instagram-URL
+            type: url
+            width: 1/2
