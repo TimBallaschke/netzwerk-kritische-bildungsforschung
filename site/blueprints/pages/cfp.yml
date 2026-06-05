@@ -1,0 +1,18 @@
+title: Call for Papers
+
+# Type-page nested under Aktuelles. Holds Call-for-Papers entries.
+# Template name is `cfp` to avoid colliding with the entry template
+# `call-for-papers`; the folder slug stays `call-for-papers`.
+
+options:
+  template: cfp
+  changeTemplate: false
+  delete: false
+
+sections:
+  entries:
+    label: Call for Papers
+    type: pages
+    template: call-for-papers
+    create: call-for-papers
+    sortable: true

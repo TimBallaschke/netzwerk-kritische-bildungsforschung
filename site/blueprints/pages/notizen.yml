@@ -1,0 +1,16 @@
+title: Notizen
+
+# Type-page nested under Aktuelles. Holds Notiz entries.
+
+options:
+  template: notizen
+  changeTemplate: false
+  delete: false
+
+sections:
+  entries:
+    label: Notizen
+    type: pages
+    template: notiz
+    create: notiz
+    sortable: true

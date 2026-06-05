@@ -1,15 +1,28 @@
 title: Aktuelles
 
-# Holds all Aktuelles entries. The entries themselves use the
-# `aktuelles` blueprint and are reused across the site.
+# The content pool, organised into clickable type-pages ("Rubriken"):
+# Beiträge · Veranstaltungen · Call for Papers · Publikationen · Notizen.
+# Click a Rubrik to manage its entries (drag-orderable within the type).
+#
+# The homepage Aktuelles feed aggregates entries across all Rubriken,
+# ordered by DATE (newest first). The "In Aktuelles zeigen" toggle on each
+# entry controls whether it appears in that feed. The Rubriken are a fixed
+# set, so no adding/removing here.
 
 options:
   template: aktuelles-container
+  changeTemplate: false
+  delete: false
 
 sections:
-  entries:
-    label: Einträge
+  rubriken:
+    label: Rubriken
     type: pages
-    template: aktuelles
-    create: aktuelles
-    sortBy: date desc
+    templates:
+      - beitraege
+      - veranstaltungen
+      - cfp
+      - publikationen
+      - notizen
+    create: false
+    sortable: false

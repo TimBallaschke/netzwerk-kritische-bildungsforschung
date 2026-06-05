@@ -1,0 +1,28 @@
+title: Beiträge
+
+# Type-page nested under Aktuelles. Holds the blog posts (template
+# `beitrag`) as children and doubles as the public "Beiträge" listing
+# (the nav target). Drag to order this type's own list.
+
+options:
+  template: beitraege
+  changeTemplate: false
+  delete: false
+
+columns:
+  - width: 1/1
+    sections:
+      intro:
+        type: fields
+        fields:
+          intro:
+            label: Intro-Text
+            type: textarea
+            size: small
+            help: Optionaler Einleitungstext über der Beitragsliste.
+      entries:
+        label: Beiträge
+        type: pages
+        template: beitrag
+        create: beitrag
+        sortable: true

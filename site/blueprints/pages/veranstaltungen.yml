@@ -1,0 +1,16 @@
+title: Veranstaltungen
+
+# Type-page nested under Aktuelles. Holds Veranstaltung entries.
+
+options:
+  template: veranstaltungen
+  changeTemplate: false
+  delete: false
+
+sections:
+  entries:
+    label: Veranstaltungen
+    type: pages
+    template: veranstaltung
+    create: veranstaltung
+    sortable: true

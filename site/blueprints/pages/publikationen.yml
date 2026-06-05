@@ -1,0 +1,16 @@
+title: Publikationen
+
+# Type-page nested under Aktuelles. Holds Publikation entries.
+
+options:
+  template: publikationen
+  changeTemplate: false
+  delete: false
+
+sections:
+  entries:
+    label: Publikationen
+    type: pages
+    template: publikation
+    create: publikation
+    sortable: true

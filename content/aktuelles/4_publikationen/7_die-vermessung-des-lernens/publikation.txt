@@ -1,0 +1,53 @@
+Title: Die Vermessung des Lernens
+
+----
+
+Authors: 
+
+----
+
+Subinfo: von <em>Theo Marwitz</em>
+
+----
+
+Description: Eine kritische Studie zu Lernstandserhebungen und Bildungsmonitoring: Was wird sichtbar gemacht – und was systematisch ausgeblendet, wenn Bildung in Kennzahlen übersetzt wird?
+
+----
+
+Date: 
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: 
+
+----
+
+Internalpage: 
+
+----
+
+Externalurl: 
+
+----
+
+Cover: 
+
+----
+
+Body: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Uuid: eixvaxzj0jkui5m7
+
+----
+
+Feedorder: 10

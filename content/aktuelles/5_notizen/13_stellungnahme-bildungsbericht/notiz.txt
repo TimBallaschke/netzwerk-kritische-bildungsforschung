@@ -1,0 +1,41 @@
+Title: Stellungnahme zum Bildungsbericht 2026
+
+----
+
+Subinfo: Pressemitteilung des Netzwerks
+
+----
+
+Description: Das Netzwerk kommentiert die zentralen Befunde des aktuellen Bildungsberichts und kritisiert die Verengung bildungspolitischer Debatten auf messbare Output-Größen.
+
+----
+
+Date: 
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: 
+
+----
+
+Internalpage: 
+
+----
+
+Externalurl: 
+
+----
+
+Body: 
+
+----
+
+Uuid: tasgzergficmfhfj
+
+----
+
+Feedorder: 13

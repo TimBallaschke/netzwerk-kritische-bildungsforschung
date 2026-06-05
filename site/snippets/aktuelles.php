@@ -1,17 +1,21 @@
 <?php
-// Carousel cards come from the same content as the Liste view (the
-// `aktuelles` blueprint) — without the description. type -> display
-// label + category color (color must match CORNER_* in aktuelles.js;
-// label mapping mirrors aktuelles-list.php).
+// The feed = all entries across the Aktuelles Rubriken (Beiträge,
+// Veranstaltungen, …) whose "In Aktuelles zeigen" toggle is on, newest
+// first. Entries live one level below the Rubriken, so we take the
+// grandchildren of /aktuelles. The type is the entry's TEMPLATE.
+//
+// type (template) -> display label + category color (color must match
+// CORNER_* in aktuelles.js; label mapping mirrors aktuelles-list.php).
 $typeMeta = [
   'veranstaltung'   => ['label' => 'Veranstaltung',  'color' => '#005436'],
   'notiz'           => ['label' => 'Notiz',           'color' => '#4965e6'],
-  'blog'            => ['label' => 'Beiträge',        'color' => '#fcbacd'],
+  'beitrag'         => ['label' => 'Beiträge',        'color' => '#fcbacd'],
   'call-for-papers' => ['label' => 'Call for Papers', 'color' => '#f3511c'],
   'publikation'     => ['label' => 'Publikation',     'color' => '#8a4fff'],
 ];
-$container     = page('aktuelles');
-$cardEntries   = $container ? $container->children()->listed() : [];
+// Single source of truth (site method): entries with the toggle on,
+// in manual feedOrder (date desc fallback). See plugins/aktuelles-feed.
+$cardEntries = site()->aktuellesFeed();
 ?>
 <section
   class="aktuelles"
@@ -30,8 +34,8 @@ $cardEntries   = $container ? $container->children()->listed() : [];
     <div class="aktuelles__ring">
       <div class="aktuelles__dot"></div>
       <div class="aktuelles__label">Aktuelles</div>
-      <?php foreach ($cardEntries as $entry): ?>
-        <?php $typeKey = $entry->type()->or('veranstaltung')->value(); ?>
+      <?php foreach (($cardEntries ?? []) as $entry): ?>
+        <?php $typeKey = $entry->intendedTemplate()->name(); ?>
         <?php $meta = $typeMeta[$typeKey] ?? ['label' => ucfirst($typeKey), 'color' => '#612c00']; ?>
         <?php snippet('aktuelles-card', [
           'type'        => $meta['label'],
@@ -64,6 +68,6 @@ $cardEntries   = $container ? $container->children()->listed() : [];
       <button type="button" class="aktuelles__filter">Call for Papers</button>
       <button type="button" class="aktuelles__filter">Publikationen</button>
     </div>
-    <?php snippet('aktuelles-list') ?>
+    <?php snippet('aktuelles-list', ['entriesPages' => $cardEntries]) ?>
   </div>
 </section>

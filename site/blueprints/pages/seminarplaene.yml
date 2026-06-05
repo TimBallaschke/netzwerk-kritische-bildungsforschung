@@ -1,0 +1,43 @@
+title: Seminarpläne
+
+# Standalone nav section — NOT part of the Aktuelles feed. A curated list
+# of shared seminar syllabi, each with a (non-downloadable) PDF.
+
+options:
+  template: seminarplaene
+  changeTemplate: false
+  delete: false
+
+fields:
+  intro:
+    label: Intro-Text
+    type: textarea
+    size: medium
+    help: Fließtext „Seminarpläne teilen und kritische Bildungsforschung pluralisieren“ (2–4 Sätze).
+  kontaktEmail:
+    label: Kontakt für Einreichungen
+    type: email
+    help: Wer einen Seminarplan veröffentlichen will, wendet sich an diese Adresse (Laura Hanemann).
+  plaeneHeadline:
+    type: headline
+    label: Seminarpläne
+  plaene:
+    label: Seminarpläne
+    type: structure
+    fields:
+      dozierende:
+        label: Dozierende
+        type: text
+      titel:
+        label: Titel des Seminars
+        type: text
+      pdf:
+        label: PDF (Seminarplan)
+        type: files
+        max: 1
+        accept: application/pdf
+      bild:
+        label: Bild (optional)
+        type: files
+        max: 1
+        query: page.images

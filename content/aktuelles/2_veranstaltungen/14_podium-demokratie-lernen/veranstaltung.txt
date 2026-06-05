@@ -1,0 +1,57 @@
+Title: Podiumsdiskussion: Demokratie lernen?
+
+----
+
+Subinfo: Podiumsdiskussion mit <em>Hannelore Wolb</em> und <em>Max Jansen</em>
+
+----
+
+Description: Kann Demokratie in einer Institution gelernt werden, die selbst hierarchisch verfasst ist? Das Podium diskutiert das Spannungsverhältnis von demokratischem Anspruch und schulischer Wirklichkeit.
+
+----
+
+Date: 2026-06-20
+
+----
+
+Ort: 
+
+----
+
+Onlinehinweis: 
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: 
+
+----
+
+Internalpage: 
+
+----
+
+Externalurl: 
+
+----
+
+Body: 
+
+----
+
+Image: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Uuid: z5f4ru8ps0hroh5m
+
+----
+
+Feedorder: 3

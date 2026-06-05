@@ -1,0 +1,24 @@
+title: Startseite
+
+# Locked, hidden placeholder. Exists only to serve the site root "/"
+# (Kirby requires one page as the homepage). It carries NO editable
+# content — the startpage's intro text and the Aktuelles-feed curation
+# live on the site overview (see site.yml). It is filtered out of the
+# overview's page list, so editors never see it as a separate node.
+#
+# The `home` template reads its content from $site (intro) and the
+# /aktuelles pool (feed).
+
+options:
+  changeTemplate: false
+  delete: false
+  duplicate: false
+
+fields:
+  notice:
+    label: Hinweis
+    type: info
+    text: |
+      Die Inhalte der Startseite (Intro-Text und der Aktuelles-Feed)
+      werden in der **Übersicht** gepflegt – oben links auf „Netzwerk
+      Kritische Bildungsforschung“ klicken.

@@ -1,0 +1,94 @@
+title: Über Uns
+
+# Static section. The "Vergangene Veranstaltungen" block at the bottom is
+# rendered in the template by pulling type=veranstaltung entries with a
+# past date from /aktuelles — no content is duplicated here.
+
+options:
+  template: ueber-uns
+  changeTemplate: false
+  delete: false
+
+tabs:
+  inhalt:
+    label: Inhalt
+    icon: text
+    fields:
+      wasWollenWir:
+        label: Was wollen wir?
+        type: textarea
+        size: medium
+      wasMachenWir:
+        label: Was machen wir?
+        type: textarea
+        size: medium
+      werSindWir:
+        label: Wer sind wir?
+        type: textarea
+        size: medium
+      kontaktHeadline:
+        type: headline
+        label: Kontakt
+      kontakte:
+        label: Personen
+        type: structure
+        fields:
+          name:
+            label: Name
+            type: text
+            width: 1/2
+          email:
+            label: E-Mail
+            type: email
+            width: 1/2
+      akHeadline:
+        type: headline
+        label: Arbeitskreis (AK) am IfS Frankfurt
+      akLink:
+        label: Link zur Homepage AK / IfS
+        type: url
+      rmuLogo:
+        label: RMU-Logo
+        type: files
+        max: 1
+        query: page.images
+
+  vertiefung:
+    label: Vertiefung
+    icon: list-bullet
+    fields:
+      wasIstDasNetzwerk:
+        label: Was ist das Netzwerk, wie versteht es sich?
+        type: textarea
+        size: medium
+      werKannMitmachen:
+        label: Wer kann wie mitmachen?
+        type: textarea
+        size: medium
+      mitmachenKontakte:
+        label: Kontakt (Mitmachen)
+        type: structure
+        fields:
+          name:
+            label: Name
+            type: text
+            width: 1/2
+          email:
+            label: E-Mail
+            type: email
+            width: 1/2
+      vorstellungAk:
+        label: Vorstellung Arbeitskreis (AK) am IfS
+        type: textarea
+        size: medium
+
+  vergangene:
+    label: Vergangene Veranstaltungen
+    icon: calendar
+    fields:
+      vergangeneHint:
+        type: info
+        text: |
+          Vergangene Veranstaltungen werden automatisch aus den
+          Aktuelles-Einträgen vom Typ „Veranstaltung“ mit einem
+          Datum in der Vergangenheit gezogen. Pflege erfolgt dort.

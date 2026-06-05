@@ -9,22 +9,22 @@
  *   1. `items`        — an explicit array of associative arrays (type,
  *                        date, title, subinfo, description). Use this to
  *                        reuse the list with a hand-picked set.
- *   2. `entriesPages` — a Kirby Pages collection of `aktuelles` entries
+ *   2. `entriesPages` — a Kirby Pages collection of Aktuelles entries
  *                        (e.g. a pre-filtered selection).
- *   3. default        — children of the `aktuelles` container page.
+ *   3. default        — all entries across the Aktuelles Rubriken whose
+ *                        "In Aktuelles zeigen" toggle is on, newest first.
  *
  * NOTE: do not name the collection param `$pages` — that is a built-in
  * Kirby snippet variable (the site's top-level pages) and would shadow it.
  *
- * Entry pages use the `aktuelles` blueprint, so this same content can be
- * surfaced elsewhere (e.g. Beiträge) without going through this snippet.
+ * The entry "type" is its TEMPLATE (beitrag / veranstaltung / …).
  */
 
-// Map the blueprint's stored `type` value to its display label.
+// Map the entry's template to its display label.
 $typeLabels = [
   'veranstaltung'   => 'Veranstaltung',
   'call-for-papers' => 'Call for Papers',
-  'blog'            => 'Beiträge',
+  'beitrag'         => 'Beiträge',
   'notiz'           => 'Notiz',
   'publikation'     => 'Publikation',
 ];
@@ -34,13 +34,13 @@ $items = $items ?? null;
 if ($items === null) {
   $entries = $entriesPages ?? null;
 
-  if ($entries === null && $container = page('aktuelles')) {
-    $entries = $container->children()->listed();
+  if ($entries === null) {
+    $entries = site()->aktuellesFeed();
   }
 
   $items = [];
   foreach (($entries ?? []) as $entry) {
-    $typeKey = $entry->type()->or('veranstaltung')->value();
+    $typeKey = $entry->intendedTemplate()->name();
     $items[] = [
       'type'        => $typeLabels[$typeKey] ?? ucfirst($typeKey),
       // Kirby stores dates as Y-m-d; the design uses no leading zeros.

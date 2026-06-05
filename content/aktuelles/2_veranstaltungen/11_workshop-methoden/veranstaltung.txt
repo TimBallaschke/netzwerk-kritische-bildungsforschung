@@ -1,0 +1,57 @@
+Title: Workshop: Methoden kritischer Bildungsforschung
+
+----
+
+Subinfo: Workshop mit <em>Samuel Reich</em> (Goethe-Universität Frankfurt)
+
+----
+
+Description: Ein praxisorientierter Workshop zu rekonstruktiven und ideologiekritischen Verfahren. Anhand eigener Materialien werden Analysezugänge erprobt und methodologische Grundannahmen reflektiert.
+
+----
+
+Date: 2026-11-04
+
+----
+
+Ort: 
+
+----
+
+Onlinehinweis: 
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: 
+
+----
+
+Internalpage: 
+
+----
+
+Externalurl: 
+
+----
+
+Body: 
+
+----
+
+Image: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Uuid: 7ntx6ggfojtz4his
+
+----
+
+Feedorder: 1

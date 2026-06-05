@@ -8,7 +8,8 @@ const TILT_Z_DEG = 0;    // tilt around Z axis (diagonal lean) — disabled
 const OFFSET_X = 0;      // manual horizontal nudge on top of auto-center
 const OFFSET_Y = 0;      // manual vertical nudge on top of auto-center
 const JITTER_Y = 2000;   // preferred max Y offset per card (px) — also fit-scaled
-const MIN_SCALE = 0.4;   // scale of back-most card (front-most stays at 1.0)
+const MIN_SCALE = 0.28;  // scale of back-most card
+const MAX_SCALE = 0.75;  // scale of front-most card (1.0 = full size)
 const MAX_OVERLAY = 0.2; // white veil opacity on the back-most card (0 at front)
 const FOCUS_FADE = 0.55; // veil opacity on the non-selected cards when one is picked
 const LABEL_STACK_GAP = 8; // px gap between filter pills in the row
@@ -45,8 +46,8 @@ const CARD_H = ring.offsetHeight || 180;
 // The centre hub sits at the orbit's mid-depth so front cards (larger
 // renderScale) paint over it and back cards behind it. Same ×1000 metric
 // as the per-card z-index in tick(): a card crossing the centre plane
-// (z ≈ 0, persp ≈ 1, tNorm ≈ 0.5) has renderScale ≈ (1 + MIN_SCALE) / 2.
-const CENTER_Z = Math.round(((1 + MIN_SCALE) / 2) * 1000);
+// (z ≈ 0, persp ≈ 1, tNorm ≈ 0.5) has renderScale ≈ (MAX_SCALE + MIN_SCALE) / 2.
+const CENTER_Z = Math.round(((MAX_SCALE + MIN_SCALE) / 2) * 1000);
 dot.style.zIndex = CENTER_Z;
 centerLabel.style.zIndex = CENTER_Z + 1; // label just above its own dot
 svg.style.zIndex = 0; // lines always behind every card
@@ -312,8 +313,13 @@ function recomputeFit() {
 	const safeInsetY = rem * 0.75; // must match insetY in layoutFilters()
 	const pillH = cornerLabels[0] ? cornerLabels[0].offsetHeight : 0;
 	const safeTop = pillH * 0.7; // band = ~70% of the pill height
+	// Reserve a band at the bottom too so the lowest card keeps some breathing
+	// room from the bottom edge — otherwise the fit shrinks only for safeTop
+	// and the bottom-most card sits flush against the edge. A little smaller
+	// than the top band.
+	const safeBottom = safeTop * 0.3;
 	const sceneW = (rect.width * SCENE_W) / 100;
-	const sceneH = ((rect.height - safeTop) * SCENE_H) / 100;
+	const sceneH = ((rect.height - safeTop - safeBottom) * SCENE_H) / 100;
 	let Rx = RADIUS;
 	let Rz = RADIUS;
 	let j = JITTER_Y;
@@ -334,8 +340,10 @@ function recomputeFit() {
 	// Auto-center: shift world coords so projected bbox center sits at origin
 	const final = computeBounds(fitRx, fitRz, fitJitter);
 	autoOffsetX = -final.centerX;
-	// Centre within the area BELOW the safe band (shift down by half of it).
-	autoOffsetY = -final.centerY + safeTop / 2;
+	// Centre within the area between the two safe bands: shift down by half
+	// the top band and up by half the bottom band (equal bands → centred,
+	// with matching top and bottom gaps).
+	autoOffsetY = -final.centerY + safeTop / 2 - safeBottom / 2;
 
 	// Move the center dot to match (in CSS world space)
 	const dx = autoOffsetX + OFFSET_X;
@@ -528,7 +536,7 @@ function tick() {
 		// Orbital position → base size (independent of tilt/jitter).
 		// tNorm: 0 (back of orbit) → 1 (front of orbit)
 		const tNorm = (Math.sin(t) + 1) / 2;
-		const cardScale = MIN_SCALE + tNorm * (1 - MIN_SCALE);
+		const cardScale = MIN_SCALE + tNorm * (MAX_SCALE - MIN_SCALE);
 
 		// Project the 3D point to 2D ourselves (perspective foreshorten),
 		// then render flat — no preserve-3d. Paint order is then fully
