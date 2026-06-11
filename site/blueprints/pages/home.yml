@@ -19,6 +19,8 @@ columns:
             label: Grundidee (Intro-Text)
             extends: fields/italictext
             size: medium
+            maxlength: 500
+            counter: true
       feed:
         type: aktuellesfeed
         headline: Aktuelles-Feed

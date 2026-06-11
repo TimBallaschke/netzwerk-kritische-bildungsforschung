@@ -16,9 +16,12 @@ columns:
         extends: fields/italictext
         size: small
       description:
-        label: Teaser / Beschreibung
+        label: Teaser / Beschreibung (für Vorschau)
         extends: fields/italictext
         size: small
+        maxlength: 350
+        counter: true
+        help: Kurztext für die Aktuelles-Ansicht. Max. 350 Zeichen.
       inAktuelles:
         label: In Aktuelles zeigen
         type: toggle
@@ -44,6 +47,12 @@ columns:
           external: Externer Link
           none: Keine Verlinkung
         width: 1/2
+      externalUrlTitle:
+        label: Linktitel
+        type: text
+        help: Wird als sichtbarer Linktext statt der URL angezeigt, z. B. „Weitere Informationen“.
+        when:
+          linkType: external
       externalUrl:
         label: Externe URL
         type: url
@@ -60,6 +69,12 @@ columns:
         type: files
         layout: cards
         query: page.images
+        when:
+          linkType: self
+      linkTitle:
+        label: Linktitel
+        type: text
+        help: Wird als sichtbarer Linktext statt der URL angezeigt, z. B. „Weitere Informationen“.
         when:
           linkType: self
       linkUrl:

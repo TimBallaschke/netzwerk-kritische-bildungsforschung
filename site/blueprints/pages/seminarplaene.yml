@@ -11,8 +11,10 @@ options:
 fields:
   # ── Einleitung ──
   introHeadline:
-    type: headline
-    label: Einleitung
+    label: Überschrift
+    type: text
+    required: true
+    placeholder: Seminarpläne teilen und kritische Bildungsforschung pluralisieren
   intro:
     label: Text
     extends: fields/italictext
@@ -23,8 +25,13 @@ fields:
   kontaktHeadline:
     type: headline
     label: Kontakt für Einreichungen
+  kontaktText:
+    label: Text
+    extends: fields/italictext
+    size: small
+    placeholder: "Wer seinen Seminarplan hier veröffentlichen will, wendet sich an Laura Hanemann:"
   kontaktEmail:
-    label: E-Mail-Adresse
+    label: E-Mail
     type: email
   # ── Seminarpläne ──
   linePlaene:

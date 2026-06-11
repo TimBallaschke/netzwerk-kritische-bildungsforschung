@@ -50,6 +50,10 @@ fields:
         label: E-Mail
         type: email
         width: 1/2
+  akLinkTitle:
+    label: Linktitel
+    type: text
+    help: Wird als sichtbarer Linktext statt der URL angezeigt, z. B. „Weitere Informationen“.
   akLink:
     label: Link zur Homepage AK / IfS
     type: url
@@ -64,45 +68,47 @@ fields:
   # ── Vertiefung ──
   lineNetzwerk:
     type: line
-  wasIstDasNetzwerkHeadline:
-    type: headline
-    label: Was ist das Netzwerk, wie versteht es sich?
-  wasIstDasNetzwerk:
-    label: Text
-    extends: fields/italictext
-    size: medium
-
-  lineMitmachen:
-    type: line
-  werKannMitmachenHeadline:
-    type: headline
-    label: Wer kann wie mitmachen?
-  werKannMitmachen:
-    label: Text
-    extends: fields/italictext
-    size: medium
-  mitmachenKontakte:
-    label: Ansprechpersonen zum Mitmachen
+  vertiefungsBloecke:
+    label: Weitere Abschnitte
     type: structure
+    empty: Noch keine weiteren Abschnitte angelegt
+    help: Abschnitte unterhalb des Logos. Die Zwischenüberschrift und der Fließtext sind Pflichtfelder; Ansprechperson und E-Mail/Link sind optional.
+    columns:
+      zwischenueberschrift:
+        label: Zwischenüberschrift
+        width: 2/5
+      fliesstext:
+        label: Fließtext
+        width: 2/5
+      ansprechpersonName:
+        label: Ansprechperson
+        width: 1/5
     fields:
-      name:
+      zwischenueberschrift:
+        label: Zwischenüberschrift
+        type: text
+        required: true
+      fliesstext:
+        label: Fließtext
+        extends: fields/italictext
+        size: medium
+        required: true
+      ansprechpersonName:
         label: Name
         type: text
         width: 1/2
-      email:
+      ansprechpersonEmail:
         label: E-Mail
         type: email
         width: 1/2
-
-  lineVorstellung:
-    type: line
-  vorstellungAkHeadline:
-    type: headline
-    label: Vorstellung Arbeitskreis (AK) am Institut für Sozialforschung (IfS)
-  vorstellungAk:
-    label: Text
-    extends: fields/italictext
-    size: medium
+      kontaktLinkTitle:
+        label: Linktitel
+        type: text
+        help: Wird als sichtbarer Linktext statt der URL angezeigt, z. B. „Weitere Informationen“.
+      kontaktLink:
+        label: E-Mail / Link
+        type: text
+        help: "Optional: zusätzliche E-Mail-Adresse oder URL"
 
   # ── Vergangene Veranstaltungen ──
   lineVergangene:

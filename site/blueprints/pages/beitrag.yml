@@ -20,10 +20,12 @@ columns:
         max: 1
         query: page.images
       description:
-        label: Teaser / Beschreibung
+        label: Teaser / Beschreibung (für Vorschau)
         extends: fields/italictext
         size: large
-        help: Kurztext für die Aktuelles-Ansicht.
+        maxlength: 350
+        counter: true
+        help: Kurztext für die Aktuelles-Ansicht. Max. 350 Zeichen.
       inAktuelles:
         label: In Aktuelles zeigen
         type: toggle
