@@ -7,6 +7,10 @@ options:
   changeTemplate: false
   delete: false
 
+status:
+  draft: true
+  listed: true
+
 sections:
   entries:
     label: Notizen

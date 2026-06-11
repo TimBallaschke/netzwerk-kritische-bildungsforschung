@@ -9,6 +9,10 @@ options:
   delete: false
   duplicate: false
 
+status:
+  draft: true
+  listed: true
+
 columns:
   - width: 1/1
     sections:

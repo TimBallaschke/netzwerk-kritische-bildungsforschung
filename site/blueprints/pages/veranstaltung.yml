@@ -10,6 +10,10 @@ options:
 create:
   slug: "{{ page.title }}"
 
+status:
+  draft: true
+  listed: true
+
 columns:
   - width: 2/3
     fields:

@@ -3,6 +3,10 @@ title: Default Page
 create:
   slug: "{{ page.title }}"
 
+status:
+  draft: true
+  listed: true
+
 columns:
   main:
     width: 2/3

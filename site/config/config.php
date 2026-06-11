@@ -5,6 +5,10 @@ return [
     // headlines and divider lines (see assets/style/panel.css).
     'panel' => [
         'css' => 'assets/style/panel.css',
+        'viewButtons' => [
+            'page' => ['status'],
+            'site' => false,
+        ],
     ],
 
     // Isolated styling previews — render a snippet on its own at
