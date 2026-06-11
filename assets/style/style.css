@@ -2,7 +2,7 @@
 :root {
   font-size: 1vw;
   --color-brown: #733400;
-  --color-green: #a3ff98;
+  --color-green: #6EF3FF;
   --font-size-headline: 4.4rem;
   --font-size-large-serif: 1.8rem;
   --font-size-large-sans-serif: 4rem;
@@ -240,7 +240,7 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  background: #a3ff98;
+  background: #6EF3FF;
   border: 1px solid #612c00;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(97, 44, 0, 0.2);

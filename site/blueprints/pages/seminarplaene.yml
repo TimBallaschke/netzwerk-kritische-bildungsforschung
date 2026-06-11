@@ -30,6 +30,11 @@ fields:
     extends: fields/italictext
     size: small
     placeholder: "Wer seinen Seminarplan hier veröffentlichen will, wendet sich an Laura Hanemann:"
+  kontaktEmailTitle:
+    label: Titel zur E-Mail
+    type: text
+    default: "Wer seine Seminarpläne veröffentlichen will, wendet sich an:"
+    placeholder: "Wer seine Seminarpläne veröffentlichen will, wendet sich an:"
   kontaktEmail:
     label: E-Mail
     type: email

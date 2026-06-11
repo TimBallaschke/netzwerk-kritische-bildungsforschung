@@ -8,6 +8,9 @@ options:
   template: notiz
   changeTemplate: false
 
+create:
+  slug: "{{ page.title }}"
+
 columns:
   - width: 2/3
     fields:
@@ -95,3 +98,6 @@ columns:
         label: Datum
         type: date
         display: DD.MM.YYYY
+      authors:
+        label: Autor*in / Organisation
+        type: text

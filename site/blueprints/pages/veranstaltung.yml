@@ -7,6 +7,9 @@ options:
   template: veranstaltung
   changeTemplate: false
 
+create:
+  slug: "{{ page.title }}"
+
 columns:
   - width: 2/3
     fields:

@@ -6,7 +6,7 @@ Authors:
 
 ----
 
-Subinfo: Blogeintrag von <em>Jana Rems</em>
+Authorphoto: 
 
 ----
 
@@ -14,27 +14,7 @@ Description: Neuer Blogbeitrag von Jonas Reichert zum Thema Leistungsmessung und
 
 ----
 
-Date: 
-
-----
-
-Inaktuelles: true
-
-----
-
-Linktype: 
-
-----
-
-Internalpage: 
-
-----
-
-Externalurl: 
-
-----
-
-Authorphoto: 
+Inaktuelles: false
 
 ----
 
@@ -46,8 +26,36 @@ Downloadpdf:
 
 ----
 
+Datemanual: false
+
+----
+
+Date: 
+
+----
+
+Subinfo: Blogeintrag von <em>Jana Rems</em>
+
+----
+
+Linktype: self
+
+----
+
+Internalpage: 
+
+----
+
+Externalurl: 
+
+----
+
 Uuid: puzhvly9flot0dmg
 
 ----
 
 Feedorder: 4
+
+----
+
+Dateauto: false

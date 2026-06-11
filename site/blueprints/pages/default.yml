@@ -1,5 +1,8 @@
 title: Default Page
 
+create:
+  slug: "{{ page.title }}"
+
 columns:
   main:
     width: 2/3
@@ -18,4 +21,3 @@ columns:
         template: default
       files:
         type: files
-
