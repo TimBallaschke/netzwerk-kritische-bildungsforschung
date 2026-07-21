@@ -10,10 +10,6 @@ Description: Das Netzwerk kommentiert die zentralen Befunde des aktuellen Bildun
 
 ----
 
-Date: 
-
-----
-
 Inaktuelles: true
 
 ----
@@ -22,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -31,6 +27,34 @@ Externalurl:
 ----
 
 Body: 
+
+----
+
+Image: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 
+
+----
+
+Authors: 
+
+----
+
+Internalpage: 
 
 ----
 

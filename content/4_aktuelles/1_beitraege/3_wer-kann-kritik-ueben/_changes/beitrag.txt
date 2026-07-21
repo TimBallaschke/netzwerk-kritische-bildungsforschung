@@ -1,0 +1,65 @@
+Title: Wer kann Kritik üben?
+
+----
+
+Authors: 
+
+----
+
+Description: Neuer Blogbeitrag von Jonas Reichert zum Thema Leistungsmessung und Selbstoptimierung: Warum der Glaube, Bildungserfolg sei messbar und individuell steuerbar, mehr über gesellschaftliche Verhältnisse verrät als über Lernende selbst. Ein Beitrag über die stille Normierungsmacht standardisierter Tests.
+
+----
+
+Date: 
+
+----
+
+Inaktuelles: false
+
+----
+
+Linktype: self
+
+----
+
+Internalpage: 
+
+----
+
+Externalurl: 
+
+----
+
+Authorphoto: 
+
+----
+
+Body: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Subinfo: Blogeintrag von <em>Jana Rems</em>
+
+----
+
+Uuid: puzhvly9flot0dmg
+
+----
+
+Feedorder: 4
+
+----
+
+Lock: XzRAbKTl
+
+----
+
+Dateauto: false
+
+----
+
+Datemanual: false

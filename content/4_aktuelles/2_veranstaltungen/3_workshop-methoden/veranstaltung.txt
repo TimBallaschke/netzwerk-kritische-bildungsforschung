@@ -10,18 +10,6 @@ Description: Ein praxisorientierter Workshop zu rekonstruktiven und ideologiekri
 
 ----
 
-Date: 2026-11-04
-
-----
-
-Ort: 
-
-----
-
-Onlinehinweis: 
-
-----
-
 Inaktuelles: true
 
 ----
@@ -30,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -46,7 +34,35 @@ Image:
 
 ----
 
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
 Downloadpdf: 
+
+----
+
+Date: 2026-11-04
+
+----
+
+Authors: 
+
+----
+
+Ort: 
+
+----
+
+Onlinehinweis: 
+
+----
+
+Internalpage: 
 
 ----
 

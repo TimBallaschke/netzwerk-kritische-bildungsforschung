@@ -2,23 +2,11 @@ Title: Subjektivierung und Schule
 
 ----
 
-Subinfo: Deadline 15.12.2026
-
-----
-
-Description: Gesucht werden Beiträge, die untersuchen, wie schulische Praktiken Subjekte formen – zwischen Selbstführung, Anpassung und Möglichkeiten des Widerstands.
-
-----
-
 Deadline: 
 
 ----
 
-Date: 
-
-----
-
-Ort: 
+Description: Gesucht werden Beiträge, die untersuchen, wie schulische Praktiken Subjekte formen – zwischen Selbstführung, Anpassung und Möglichkeiten des Widerstands.
 
 ----
 
@@ -30,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -43,6 +31,34 @@ Body:
 ----
 
 Downloadpdf: 
+
+----
+
+Callurltitle: 
+
+----
+
+Callurl: 
+
+----
+
+Date: 
+
+----
+
+Authors: 
+
+----
+
+Ort: 
+
+----
+
+Subinfo: Deadline 15.12.2026
+
+----
+
+Internalpage: 
 
 ----
 

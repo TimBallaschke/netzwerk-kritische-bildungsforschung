@@ -1,0 +1,57 @@
+Title: Notizen
+
+----
+
+Subinfo: 
+
+----
+
+Description: 
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: external
+
+----
+
+Externalurltitle: 
+
+----
+
+Externalurl: 
+
+----
+
+Body: 
+
+----
+
+Image: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 
+
+----
+
+Authors: 
+
+----
+
+Uuid: ibf9p9fhbtm1jxbb

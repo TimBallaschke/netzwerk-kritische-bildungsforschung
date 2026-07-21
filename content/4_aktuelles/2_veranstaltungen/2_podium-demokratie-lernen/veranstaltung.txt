@@ -10,18 +10,6 @@ Description: Kann Demokratie in einer Institution gelernt werden, die selbst hie
 
 ----
 
-Date: 2026-06-20
-
-----
-
-Ort: 
-
-----
-
-Onlinehinweis: 
-
-----
-
 Inaktuelles: true
 
 ----
@@ -30,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -46,7 +34,35 @@ Image:
 
 ----
 
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
 Downloadpdf: 
+
+----
+
+Date: 2026-06-20
+
+----
+
+Authors: 
+
+----
+
+Ort: 
+
+----
+
+Onlinehinweis: 
+
+----
+
+Internalpage: 
 
 ----
 

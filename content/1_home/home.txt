@@ -2,4 +2,8 @@ Title: Startseite
 
 ----
 
+Intro: Unter Bildung verstehen wir mehr als die aktuell sichtbar werdende diskursive Engführung auf Chancengleichheit, Humankapitalorientierung oder die Wettbewerbsfähigkeit. Hierbei geht es u.a. um Fragen nach der Bedeutung von Bildung für Demokratisierung und Mündigkeit, um veränderte Autoritätsverhältnisse oder um mit Bildung verbundene Gerechtigkeits- und Teilhabeversprechen.
+
+----
+
 Uuid: awaj6i9rgz0tkac5

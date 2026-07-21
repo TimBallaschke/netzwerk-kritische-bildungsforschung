@@ -10,10 +10,6 @@ Description: Deutschlandfunk Kultur, Sendung „Sein und Streit", Oktober 2025. 
 
 ----
 
-Date: 
-
-----
-
 Inaktuelles: true
 
 ----
@@ -22,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -31,6 +27,34 @@ Externalurl:
 ----
 
 Body: 
+
+----
+
+Image: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 
+
+----
+
+Authors: 
+
+----
+
+Internalpage: 
 
 ----
 

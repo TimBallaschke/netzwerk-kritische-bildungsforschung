@@ -2,4 +2,57 @@ Title: Über Uns
 
 ----
 
+Waswollenwir:
+
+Im Netzwerk wollen wir thematisch einschlägige Forscher*innen zusammenbringen, die sich anhand von verschiedenen topoi und unter Berücksichtigung von disziplinären Schwerpunkten der Wiederbelebung einer kritischen Bildungstheorie und -forschung widmen. Mit dem Begriff der Wiederbelebung wollen wir deutlich machen, dass wir eine bestehende – wenngleich gegenwärtig (noch) verschüttete – Tradition der kritischen Bildungsforschung, die nach 1945 durch den Einsatz von zentralen Figuren wie Max Horkheimer, Theodor W. Adorno und Heinz-Joachim Heydorn verankert wurde, wieder aufgreifen und aktualisieren wollen. 
+Eine solche Aktualisierung ist mit drei Zielstellungen verknüpft: 
+(1) Bildungsprozesse und deren Rahmenbedingungen unter Einbezug von Aspekten der Bildungstheorie, Bildungssoziologie und Bildungsgeschichte neu perspektivieren und denken;
+(2) die empirische Bildungsforschung durch interdisziplinär ausgerichtete Ansätze ergänzen bzw. weiter ausbauen; 
+(3) Wissenschaft mit Akteur*innen der Bildungspraxis, Verantwortlichen aus Bildungspolitik und -administration sowie mit zivilgesellschaftlichen Akteur*innen vernetzen. 
+Wir sind davon überzeugt, dass wir einen Zusammenschluss verschiedener im zivilgesellschaftlich und wissenschaftlich engagierte Akteur*innen brauchen, um einen grundlegenden Wandel im Bildungssystem zu erreichen.
+
+----
+
+Wasmachenwir:
+
+Ausgangspunkt und Motivation der Gründung eines Netzwerks Kritische Bildungsforschung sind die institutionelle und ideelle Krise des bundesrepublikanischen Bildungswesens in der Gegenwart sowie die epistemischen, gesellschaftsanalytischen und wissenspolitischen Leerstellen, die der Forschungstypus der evidenzbasierten Bildungsforschung produziert. Trotz zahlreicher Bildungsreformen und einer anhaltenden Bildungsexpansion klafft weiterhin eine Lücke zwischen dem bildungspolitischen und gesellschaftlichen Anspruch, Chancengerechtigkeit im Bildungssystem zu realisieren und einer Bildungsrealität, in der Bildungschancen und -teilhabe in signifikantem Maß von der sozialen Herkunft abhängig sind.
+Unter kritischer Bildungstheorie verstehen wir ein spezifisches Forschungsprogramm, welches die Analyse der Entstehung und des Wandels von Bildungsdiskurs und Bildungspolitik in einen Zusammenhang stellt mit der Reflexion der gesellschaftlichen, politischen und ökonomischen, der pädagogischen und subjektiven Bedingungen, die das Bildungssystem regulieren und unser Denken und Forschen darüber strukturieren
+
+----
+
+Wersindwir:
+
+Aufbau und Gründung des Netzwerkes Kritische Bildungsforschung erfolgte, gefördert durch RMU-Förderlinie „Early Career Researchers – Wissenschaftler*innen in der frühen Karrierephase“, durch Dr. Ricarda Biemüller und Dr. Laura Hanemann an der Goethe-Universität Frankfurt a.M. in Zusammenarbeit mit Kooperationspartner*innen des Frankfurter Instituts für Sozialforschung und der Bergischen Universität Wuppertal. 
+Das Netzwerk kooperiert mit dem am Institut für Sozialforschung (IfS) in Frankfurt am Main gegründeten Arbeitskreis "Kritische Bildungsforschung".  Der Arbeitskreis (AK) macht Entwicklungen im Bereich der Bildungspolitik und der Bildungsforschung im nationalen, transnationalen und internationalen Kontext nach 1945 zum Gegenstand der Analyse und Kritik, mit besonderem Fokus auf die gegenwärtige Strukturdynamik beider Felder. Der AK untersucht dies aus einer gesellschaftstheoretischen Perspektive, die sowohl an Forschungen des IfS anknüpft als auch verschiedene sozial- und geisteswissenschaftliche Disziplinen und Forschungszugänge einbezieht. Der theoretische und methodologische Zugang des Arbeitskreises richtet sich dabei zugleich auf die subjektiven (psychischen, affektiven, ästhetischen, kognitiven) und objektiven (institutionellen, ökonomischen, politischen, gesellschaftlichen) Bedingungen von Transformationen sowie auf deren ideologische Legitimationen und epistemische Begründungsformen.
+Neben dem AK hat das Netzwerk bereits eine Tagung und Workshops organisiert und zielt auf einen Zusammenschluss verschiedener zivilgesellschaftlich und wissenschaftlich engagierten Akteur*innen ab. Auf dieser Basis wollen wir einen breiten Dialog über die Anforderungen an eine Bildungsforschung eröffnen, welche die Prozesse, Institutionen und Bedarfe des Bildungswesens in der Gegenwart analysiert und zu ihrer Veränderung beiträgt.
+
+----
+
+Kontakte:
+
+- 
+  name: Laura Hanemann
+  email: hanemann@soz.uni-frankfurt.de
+- 
+  name: Ricarda Biemüller
+  email: biemuell@em.uni-frankfurt.de
+
+----
+
+Aklinktitle: Link zum AK Kritische Bildungsforschung am IfS:
+
+----
+
+Aklink: https://www.ifs.uni-frankfurt.de/arbeitskreisdetails/kritische-bildungsforschung.html
+
+----
+
+Rmulogo: 
+
+----
+
+Vertiefungsbloecke: 
+
+----
+
 Uuid: iz2g8y9n0a86a0ln

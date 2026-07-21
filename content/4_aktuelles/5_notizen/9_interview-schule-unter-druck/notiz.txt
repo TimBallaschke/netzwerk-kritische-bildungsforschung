@@ -10,10 +10,6 @@ Description: Im Gespräch werden die Folgen permanenter Reform- und Leistungserw
 
 ----
 
-Date: 
-
-----
-
 Inaktuelles: true
 
 ----
@@ -22,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -31,6 +27,34 @@ Externalurl:
 ----
 
 Body: 
+
+----
+
+Image: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 
+
+----
+
+Authors: 
+
+----
+
+Internalpage: 
 
 ----
 

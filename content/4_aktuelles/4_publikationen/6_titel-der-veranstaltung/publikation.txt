@@ -6,15 +6,7 @@ Authors:
 
 ----
 
-Subinfo: von <em>Günther Eben</em>
-
-----
-
 Description: Der Band untersucht, wie das Versprechen von Bildung diskursiv erzeugt und politisch in Anspruch genommen wird – und welche Enttäuschungen strukturell bereits in dieses Versprechen eingelassen sind.
-
-----
-
-Date: 
 
 ----
 
@@ -26,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -42,7 +34,27 @@ Body:
 
 ----
 
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
 Downloadpdf: 
+
+----
+
+Date: 
+
+----
+
+Subinfo: von <em>Günther Eben</em>
+
+----
+
+Internalpage: 
 
 ----
 

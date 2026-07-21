@@ -14,6 +14,10 @@ Description: Der Beitrag zeichnet nach, wie der Kompetenzbegriff von einer päda
 
 ----
 
+Inaktuelles: true
+
+----
+
 Body: 
 
 ----
@@ -27,10 +31,6 @@ Datemanual: false
 ----
 
 Date: 
-
-----
-
-Inaktuelles: true
 
 ----
 

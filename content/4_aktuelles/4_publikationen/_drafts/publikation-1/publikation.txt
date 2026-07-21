@@ -1,0 +1,53 @@
+Title: PUBLIKATION 1
+
+----
+
+Authors: 
+
+----
+
+Description: 
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: self
+
+----
+
+Externalurltitle: 
+
+----
+
+Externalurl: 
+
+----
+
+Cover: 
+
+----
+
+Body: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 
+
+----
+
+Uuid: a22dwxnpa9ormbuw

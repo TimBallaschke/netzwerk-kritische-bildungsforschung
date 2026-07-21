@@ -10,18 +10,6 @@ Description: Der Vortrag bündelt aktuelle Befunde zur sozialen Selektivität de
 
 ----
 
-Date: 2026-09-12
-
-----
-
-Ort: 
-
-----
-
-Onlinehinweis: 
-
-----
-
 Inaktuelles: true
 
 ----
@@ -30,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -46,7 +34,35 @@ Image:
 
 ----
 
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
 Downloadpdf: 
+
+----
+
+Date: 2026-09-12
+
+----
+
+Authors: 
+
+----
+
+Ort: 
+
+----
+
+Onlinehinweis: 
+
+----
+
+Internalpage: 
 
 ----
 

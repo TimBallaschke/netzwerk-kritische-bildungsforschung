@@ -14,7 +14,7 @@ Inaktuelles: true
 
 ----
 
-Linktype: self
+Linktype: 
 
 ----
 

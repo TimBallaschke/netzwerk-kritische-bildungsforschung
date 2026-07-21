@@ -1,0 +1,57 @@
+Title: beispiel
+
+----
+
+Deadline: 
+
+----
+
+Description: 
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: self
+
+----
+
+Externalurltitle: 
+
+----
+
+Externalurl: 
+
+----
+
+Body: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Callurltitle: 
+
+----
+
+Callurl: 
+
+----
+
+Date: 
+
+----
+
+Authors: 
+
+----
+
+Ort: 
+
+----
+
+Uuid: zrptvxhfj1ayyr1x

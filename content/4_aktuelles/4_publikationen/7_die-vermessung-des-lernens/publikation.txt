@@ -6,15 +6,7 @@ Authors:
 
 ----
 
-Subinfo: von <em>Theo Marwitz</em>
-
-----
-
 Description: Eine kritische Studie zu Lernstandserhebungen und Bildungsmonitoring: Was wird sichtbar gemacht – und was systematisch ausgeblendet, wenn Bildung in Kennzahlen übersetzt wird?
-
-----
-
-Date: 
 
 ----
 
@@ -26,7 +18,7 @@ Linktype:
 
 ----
 
-Internalpage: 
+Externalurltitle: 
 
 ----
 
@@ -42,7 +34,27 @@ Body:
 
 ----
 
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
 Downloadpdf: 
+
+----
+
+Date: 
+
+----
+
+Subinfo: von <em>Theo Marwitz</em>
+
+----
+
+Internalpage: 
 
 ----
 
