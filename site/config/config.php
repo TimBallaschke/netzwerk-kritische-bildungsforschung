@@ -1,8 +1,8 @@
 <?php
 
 return [
-    // Custom Panel stylesheet — tightens spacing around section
-    // headlines and divider lines (see assets/style/panel.css).
+    'debug'  => true,
+
     'panel' => [
         'css' => 'assets/style/panel.css',
         'viewButtons' => [
@@ -11,10 +11,16 @@ return [
         ],
     ],
 
-    // Isolated styling previews — render a snippet on its own at
-    // /preview/<name>, without touching the real pages, nav or content.
-    // Restricted to local environments (localhost / Herd *.test), so it
-    // is never reachable on the production domain.
+    'hooks' => [
+            'kirbytext:before' => function (?string $text) {
+                if ($text === null) {
+                    return '';
+                }
+                return str_replace('*', '\*', $text);
+            }
+        ],
+
+    
     'routes' => [
         [
             'pattern' => 'preview/aktuelles',

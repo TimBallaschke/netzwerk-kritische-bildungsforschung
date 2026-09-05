@@ -1,0 +1,61 @@
+Title: Wem nützt die Kompetenzorientierung?
+
+----
+
+Authors: Name Namerich
+
+----
+
+Authorphoto: - file://lq98pxfsintuse0c
+
+----
+
+Description: Der Beitrag zeichnet nach, wie der Kompetenzbegriff von einer pädagogischen zu einer steuerungspolitischen Kategorie wurde – und welche Bildungsvorstellungen dabei stillschweigend verabschiedet werden.
+
+----
+
+Inaktuelles: true
+
+----
+
+Body: Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+
+----
+
+Downloadpdf: - file://kiwd7tqgfxjhnxd9
+
+----
+
+Datemanual: true
+
+----
+
+Date: 2001-01-01
+
+----
+
+Subinfo: Blogeintrag von <em>Mira Anders</em>
+
+----
+
+Linktype: 
+
+----
+
+Internalpage: 
+
+----
+
+Externalurl: 
+
+----
+
+Uuid: fdr7sc56hlua6ugu
+
+----
+
+Feedorder: 5
+
+----
+
+Dateauto: false

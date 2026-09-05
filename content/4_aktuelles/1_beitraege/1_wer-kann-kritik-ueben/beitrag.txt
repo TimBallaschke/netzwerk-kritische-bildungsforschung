@@ -2,7 +2,7 @@ Title: Wer kann Kritik üben?
 
 ----
 
-Authors: 
+Authors: Name Namerich
 
 ----
 
@@ -14,7 +14,7 @@ Description: Neuer Blogbeitrag von Jonas Reichert zum Thema Leistungsmessung und
 
 ----
 
-Inaktuelles: true
+Inaktuelles: false
 
 ----
 
@@ -26,11 +26,11 @@ Downloadpdf:
 
 ----
 
-Datemanual: false
+Datemanual: true
 
 ----
 
-Date: 
+Date: 2001-01-01
 
 ----
 
@@ -38,7 +38,7 @@ Subinfo: Blogeintrag von <em>Jana Rems</em>
 
 ----
 
-Linktype: 
+Linktype: self
 
 ----
 
@@ -55,3 +55,7 @@ Uuid: puzhvly9flot0dmg
 ----
 
 Feedorder: 4
+
+----
+
+Dateauto: false

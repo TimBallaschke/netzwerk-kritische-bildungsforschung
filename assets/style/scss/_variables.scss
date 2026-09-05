@@ -1,17 +1,11 @@
 
 :root {
-  // Root font size — 1% of viewport width.
-  // All rem-based sizes below scale with the viewport.
-  font-size: 1vw;
 
   // Colors
   --color-brown: #733400;
-  --color-green: #6EF3FF;
+  --color-green: #A3FF98;
+  --color-yellow: #E2FF6D;
+  --color-pink: #FFB8FE;
+  --color-blue: #6EF3FF;
 
-  // Font sizes (placeholder values — adjust to taste)
-  --font-size-headline:           4.4rem;
-  --font-size-large-serif:        1.8rem;
-  --font-size-large-sans-serif:   4rem;
-  --font-size-small-serif:        1.2rem;
-  --font-size-small-sans-serif:   1.2rem;
 }

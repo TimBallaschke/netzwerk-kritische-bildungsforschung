@@ -1,8 +1,8 @@
-Title: Bildung als Versprechen. Studien zur pädagogischen Semantik
+Title: Xname: Bildung als Versprechen. Studien zur pädagogischen Semantik
 
 ----
 
-Authors: 
+Authors: Testing Name Namerich
 
 ----
 
@@ -14,7 +14,7 @@ Inaktuelles: true
 
 ----
 
-Linktype: 
+Linktype: self
 
 ----
 
@@ -26,27 +26,27 @@ Externalurl:
 
 ----
 
-Cover: 
+Cover: - file://venwabl6m3cgpuwv
 
 ----
 
-Body: 
+Body: Dieser Test Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
 ----
 
-Linktitle: 
+Linktitle: Dieser Link
 
 ----
 
-Linkurl: 
+Linkurl: https://www.loremipsum.de/
 
 ----
 
-Downloadpdf: 
+Downloadpdf: - file://venwabl6m3cgpuwv
 
 ----
 
-Date: 
+Date: 2015-12-01
 
 ----
 

@@ -1,120 +1,91 @@
-// Aktuelles list item
-// One row of the Aktuelles list: serif type/title/subinfo (left),
-// sans-serif description (middle), round toggle (right). Brown on green,
-// separated by a bottom rule.
-
 .aktuelles-item {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  align-items: start;
-  gap: 4rem;
-  // Vertical padding matches the site header (.site-header: 0.5rem / 1rem).
-  padding: 0.5rem 1.5rem 1rem 1.5rem;
+  position: relative;
+  padding: 1.2rem 4.5rem 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--color-brown);
   color: var(--color-brown);
   background-color: var(--color-green);
-  border-bottom: 1px solid var(--color-brown);
-  transition: background-color 0.2s ease, color 0.2s ease;
-
-  // Invert on hover: brown row, white text (cascades to type/title/
-  // subinfo/description, which all inherit `color`).
-  &:hover {
-    background-color: var(--color-brown);
-    color: #fff;
-  }
-
-  // Keep the toggle visible on the inverted row.
-  &:hover .aktuelles-item__toggle {
-    color: #fff;
-    border-color: #fff;
-  }
-}
-
-// Left column — HAL Timezone serif
-.aktuelles-item__main {
-  font-family: "HAL Timezone", serif;
-  font-style: normal;
-  font-synthesis: none; // never fake bold/italic from the regular cut
-}
-
-.aktuelles-item__type {
-  font-size: var(--font-size-large-serif);
-  line-height: 1.15;
-}
-
-.aktuelles-item__type-label {
-  text-decoration: underline;
-  text-underline-offset: 0.12em;
-}
-
-.aktuelles-item__title {
-  margin: 0.1em 0 0.35em 0;
-  font-size: var(--font-size-large-serif);
-  font-weight: 400;
-  line-height: 1.15;
-}
-
-.aktuelles-item__subinfo {
-  font-size: var(--font-size-small-serif);
-  line-height: 1.2;
-
-  em {
-    font-style: italic;
-  }
-}
-
-// Middle column — Geist sans-serif description
-.aktuelles-item__description {
-  font-family: "Geist", system-ui, sans-serif;
-  font-size: var(--font-size-small-sans-serif);
-  line-height: 1.3;
-}
-
-// Right column — round "+" toggle
-.aktuelles-item__toggle {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
-  color: var(--color-brown);
-  background: transparent;
-  border: 1px solid var(--color-brown);
-  border-radius: 50%;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
+  transition: background-color 0.25s ease, color 0.25s ease;
 
-// Plus drawn as two 1px strokes (matches the 1px circle border) — not a glyph.
-.aktuelles-item__toggle-icon {
-  position: relative;
-  width: 1rem;
-  height: 1rem;
+  @media (max-width: 900px) {
+    padding-right: 5rem;
+  }
 
-  &::before,
-  &::after {
-    content: "";
+  /* Zweispaltiges Layout für Titel (links) und Intro-Text (rechts) */
+  .aktuelles-item__header-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  .aktuelles-item__main {
+    font-family: "HAL Timezone", serif;
+  }
+
+  .aktuelles-item__type {
+    font-size: var(--font-size-large-serif);
+    line-height: 1.15;
+    margin-bottom: 0.2rem;
+  }
+
+  .aktuelles-item__type-label {
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .aktuelles-item__date {
+    margin-left: 0.3em;
+  }
+
+  .aktuelles-item__title {
+    margin: 0.1em 0 0.35em 0;
+    font-size: var(--font-size-large-serif);
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .aktuelles-item__subinfo {
+    font-size: var(--font-size-small-serif);
+    line-height: 1.2;
+
+    em {
+      font-style: italic;
+    }
+  }
+
+  /* Styling des kurzen Intro-Textes */
+  .aktuelles-item__preview-desc {
+    font-family: "Geist", system-ui, sans-serif;
+    font-size: var(--font-size-small-serif);
+    line-height: 1.3;
+
+    @media (max-width: 768px) {
+      display: none; // Auf Wunsch auf Mobilgeräten ausblenden
+    }
+  }
+
+  .aktuelles-item__toggle {
     position: absolute;
-    background-color: currentColor; // inherits/inverts with the button color
+    top: 1.2rem;
+    right: 1.5rem;
+    pointer-events: none;
   }
 
-  &::before { // horizontal stroke
-    inset: 50% 0 auto 0;
-    height: 1px;
-    transform: translateY(-50%);
-  }
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-brown);
+      color: var(--color-green);
 
-  &::after { // vertical stroke
-    inset: 0 auto 0 50%;
-    width: 1px;
-    transform: translateX(-50%);
+      .toggle-btn {
+        color: var(--color-green);
+        border-color: var(--color-green);
+      }
+    }
   }
-}
-
-// Direct hover/focus on the toggle: solid white circle, brown plus —
-// pops against the (also-inverted) brown row.
-.aktuelles-item__toggle:hover,
-.aktuelles-item__toggle:focus-visible {
-  background-color: #fff;
-  color: var(--color-brown);
-  border-color: #fff;
 }

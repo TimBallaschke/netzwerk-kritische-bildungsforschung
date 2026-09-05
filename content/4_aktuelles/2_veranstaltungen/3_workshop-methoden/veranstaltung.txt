@@ -1,12 +1,12 @@
-Title: Workshop: Methoden kritischer Bildungsforschung
+Title: Fernanda Test Workshop: Methoden kritischer Bildungsforschung
 
 ----
 
-Subinfo: Workshop mit <em>Samuel Reich</em> (Goethe-Universität Frankfurt)
+Subinfo: Workshop mit <em> Samuel Reich </em> (Goethe-Universität Frankfurt)
 
 ----
 
-Description: Ein praxisorientierter Workshop zu rekonstruktiven und ideologiekritischen Verfahren. Anhand eigener Materialien werden Analysezugänge erprobt und methodologische Grundannahmen reflektiert.
+Description: Ein <em>praxisorientierter</em> Workshop zu <em>rekonstruktiven</em> und ideologiekritischen Verfahren. Anhand eigener Materialien werden Analysezugänge erprobt und methodologische Grundannahmen reflektiert.
 
 ----
 
@@ -14,7 +14,7 @@ Inaktuelles: true
 
 ----
 
-Linktype: 
+Linktype: self
 
 ----
 
@@ -26,23 +26,23 @@ Externalurl:
 
 ----
 
-Body: 
+Body: 1___ Lorem <em>ipsum</em> dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
 
 ----
 
-Image: 
+Image: - file://kukglc2loxtjhi1d
 
 ----
 
-Linktitle: 
+Linktitle: Das ist der Link hierhin
 
 ----
 
-Linkurl: 
+Linkurl: https://www.loremipsum.de/
 
 ----
 
-Downloadpdf: 
+Downloadpdf: - file://edhpgmpsfbp6lioc
 
 ----
 
@@ -50,15 +50,15 @@ Date: 2026-11-04
 
 ----
 
-Authors: 
+Authors: Fernanda Braun Santos
 
 ----
 
-Ort: 
+Ort: Berlin Leipziger Straße
 
 ----
 
-Onlinehinweis: 
+Onlinehinweis: nien
 
 ----
 

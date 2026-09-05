@@ -11,7 +11,7 @@ create:
   slug: "{{ page.title }}"
 
 status:
-  draft: true
+  # draft: true
   listed: true
 
 columns:

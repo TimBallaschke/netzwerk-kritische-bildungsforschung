@@ -21,6 +21,11 @@ const AUTO_ROTATE_SPEED = 0.05; // deg per frame when idle (positive = leftward 
 const IDLE_BEFORE_AUTO_MS = 800;// ms of inactivity before auto-rotation resumes
 const EASE = 0.08;       // smoothing factor (lower = smoother)
 
+// mobile & desktop anpassung
+const isMobile = () => window.innerWidth <= 900;
+const getScrollFactor = () => (isMobile() ? 0.25 : 0.1); 
+const getAutoRotateSpeed = () => (isMobile() ? 0.12 : 0.05);
+
 const TILT_X = (TILT_X_DEG * Math.PI) / 180;
 const TILT_Z = (TILT_Z_DEG * Math.PI) / 180;
 const cosX = Math.cos(TILT_X);
@@ -35,208 +40,190 @@ const svg = document.querySelector(".aktuelles__connectors");
 const dot = document.querySelector(".aktuelles__dot");
 const centerLabel = document.querySelector(".aktuelles__label");
 
-// Cards are server-rendered from the `aktuelles` content (see
-// aktuelles-card snippet). The carousel count is whatever the CMS has.
 const cardEls = Array.from(ring.querySelectorAll(".aktuelles__card"));
 const CARDS = cardEls.length;
 
 const CARD_W = ring.offsetWidth || 140;
 const CARD_H = ring.offsetHeight || 180;
 
-// The centre hub sits at the orbit's mid-depth so front cards (larger
-// renderScale) paint over it and back cards behind it. Same ×1000 metric
-// as the per-card z-index in tick(): a card crossing the centre plane
-// (z ≈ 0, persp ≈ 1, tNorm ≈ 0.5) has renderScale ≈ (MAX_SCALE + MIN_SCALE) / 2.
 const CENTER_Z = Math.round(((MAX_SCALE + MIN_SCALE) / 2) * 1000);
 dot.style.zIndex = CENTER_Z;
-centerLabel.style.zIndex = CENTER_Z + 1; // label just above its own dot
-svg.style.zIndex = 0; // lines always behind every card
+centerLabel.style.zIndex = CENTER_Z + 1;
+svg.style.zIndex = 0;
 
-// Stratified Y offsets in [-1, 1] — scaled by `fitJitter` at render time.
-// The vertical range is split into CARDS equal bands. Each card's ORBITAL
-// index i is mapped to a band via a bit-reversal permutation, so cards that
-// are angularly adjacent (consecutive i, horizontally close on screen) land
-// in vertically far-apart bands: card i high, i+1 low, i+2 in between, …
-// This minimises overlap. Assumes CARDS is a power of two (16) → the
-// permutation is a bijection, keeping the vertical coverage perfectly even.
-// A small in-band wiggle keeps it from looking like a rigid grid.
 const slot = 2 / CARDS;
 const bits = Math.round(Math.log2(CARDS));
 function bandIndex(i) {
-	let r = 0;
-	for (let b = 0; b < bits; b++) r = (r << 1) | ((i >> b) & 1);
-	return r % CARDS;
+    let r = 0;
+    for (let b = 0; b < bits; b++) r = (r << 1) | ((i >> b) & 1);
+    return r % CARDS;
 }
 const jitterNorm = Array.from({ length: CARDS }, (_, i) => {
-	const center = -1 + (bandIndex(i) + 0.5) * slot;
-	return center + (Math.random() - 0.5) * slot * 0.6;
+    const center = -1 + (bandIndex(i) + 0.5) * slot;
+    return center + (Math.random() - 0.5) * slot * 0.6;
 });
 
-// Per-card category color comes from the server-rendered markup
-// (data-color, derived from the entry's blueprint type). It no longer
-// tints the card (cards are uniform green); it only tells the corner
-// filter which connector lines belong to which card.
 const cardColors = cardEls.map((el) => el.dataset.color || "#612c00");
 
 const cards = cardEls;
 const overlays = cardEls.map((el) =>
-	el.querySelector(".aktuelles__card-overlay")
+    el.querySelector(".aktuelles__card-overlay")
 );
 const lines = [];
-// Last-applied z-index per card (paint order = on-screen size) — only
-// written when the integer value changes.
 const prevZ = new Array(CARDS).fill(-1);
-// Last-applied veil opacity (×100, integer) — only write style when it changes.
 const prevOverlay = new Array(CARDS).fill(-1);
-// Per-card hover-grow blend (0 → 1), eased each frame so the scale-up on
-// hover (and shrink on leave) is smooth despite the per-frame transform.
 const hoverBlend = new Array(CARDS).fill(0);
-// Each card's pinned natural (collapsed) height in px. With height:auto the
-// rendered height fluctuates a sub-pixel as the scaled text re-rasterises,
-// and `translate:0 -50%` of that makes the type bob vertically. Pinning a
-// fixed per-card px height keeps the -50% anchor (and the text) steady.
 const cardHeights = new Array(CARDS).fill(0);
 for (let i = 0; i < CARDS; i++) {
-	const line = document.createElementNS(SVG_NS, "line");
-	svg.appendChild(line);
-	lines.push(line);
+    const line = document.createElementNS(SVG_NS, "line");
+    svg.appendChild(line);
+    lines.push(line);
 }
 
-// Five filter pills/dots — laid out in a horizontal row by recomputeFit()
-// in this array order. Each connects ONLY to cards of one specific color.
 const CORNERS = 5;
 const CORNER_COLORS = [
-	"#005436", // Veranstaltungen
-	"#4965e6", // Notizen
-	"#fcbacd", // Beiträge
-	"#f3511c", // Call for Papers
-	"#8a4fff", // Publikationen
+    "#005436", // Veranstaltungen
+    "#4965e6", // Notizen
+    "#fcbacd", // Beiträge
+    "#f3511c", // Call for Papers
+    "#8a4fff", // Publikationen
 ];
 const CORNER_LABELS = [
-	"Veranstaltungen",
-	"Notizen",
-	"Beiträge",
-	"Call for Papers",
-	"Publikationen",
+    "Veranstaltungen",
+    "Notizen",
+    "Beiträge",
+    "Call for Papers",
+    "Publikationen",
 ];
+const CORNER_KEYS = [
+    "veranstaltung",
+    "notiz",
+    "beitrag",
+    "call-for-papers",
+    "publikation"
+];
+
 const cornerLabels = Array.from({ length: CORNERS }, (_, c) => {
-	const label = document.createElement("div");
-	label.className = "aktuelles__label aktuelles__label--filter";
-	label.textContent = CORNER_LABELS[c];
-	ring.appendChild(label);
-	return label;
+    const label = document.createElement("div");
+    label.className = "aktuelles__label aktuelles__label--filter";
+    label.textContent = CORNER_LABELS[c];
+    ring.appendChild(label);
+    return label;
 });
-// Filter pills are interactive controls — always above every card.
+
 for (let c = 0; c < CORNERS; c++) {
-	cornerLabels[c].style.zIndex = 100001;
+    cornerLabels[c].style.zIndex = 100001;
 }
 
-// Active corner filter — single-select. No active corner = no filter, show
-// everything. Clicking a pill makes it the only active one; clicking the
-// already-active pill clears the filter (back to showing everything).
 const activeCorners = new Set();
-function applyFilter() {
-	// Changing the filter releases any clicked/centred card and resumes
-	// rotation — otherwise the ring stays frozen on a card that the new
-	// filter just hid, and the carousel looks empty.
-	clearFocus();
-	locked = false;
+function applyFilter(fromSync = false) {
+    clearFocus();
+    locked = false;
 
-	const noFilter = activeCorners.size === 0;
-	const activeColors = new Set();
-	for (const c of activeCorners) activeColors.add(CORNER_COLORS[c]);
+    const noFilter = activeCorners.size === 0;
+    const activeColors = new Set();
+    for (const c of activeCorners) activeColors.add(CORNER_COLORS[c]);
 
-	for (let i = 0; i < CARDS; i++) {
-		const matches = noFilter || activeColors.has(cardColors[i]);
-		const op = matches ? "1" : "0";
-		cards[i].style.opacity = op;
-		lines[i].style.opacity = op; // center line going to this card
-	}
-	// Corner lines: visible if their corner is active (or no filter at all)
-	cornerLines.forEach((cornerSet, c) => {
-		const visible = noFilter || activeCorners.has(c);
-		const op = visible ? "1" : "0";
-		for (const { line } of cornerSet) {
-			line.style.opacity = op;
-		}
-	});
-	// Toggle active visual state on the corner pills themselves
-	cornerLabels.forEach((label, c) => {
-		label.classList.toggle("aktuelles__label--active", activeCorners.has(c));
-	});
-	// Active pill changed width (the ✕ circle) — re-flow the row so the
-	// other pills slide over (CSS transitions the transform).
-	layoutFilters();
+    for (let i = 0; i < CARDS; i++) {
+        const matches = noFilter || activeColors.has(cardColors[i]);
+        const op = matches ? "1" : "0";
+        cards[i].style.opacity = op;
+        lines[i].style.opacity = op;
+    }
+    cornerLines.forEach((cornerSet, c) => {
+        const visible = noFilter || activeCorners.has(c);
+        const op = visible ? "1" : "0";
+        for (const { line } of cornerSet) {
+            line.style.opacity = op;
+        }
+    });
+    cornerLabels.forEach((label, c) => {
+        label.classList.toggle("aktuelles__label--active", activeCorners.has(c));
+    });
+
+    requestAnimationFrame(() => {
+        layoutFilters();
+    });
+
+    if (!fromSync) {
+        const activeIdx = activeCorners.size > 0 ? Array.from(activeCorners)[0] : null;
+        const activeKey = activeIdx !== null ? CORNER_KEYS[activeIdx] : null;
+        window.dispatchEvent(new CustomEvent("aktuelles:filter-from-js", { detail: { key: activeKey } }));
+    }
 }
-cornerLabels.forEach((label, c) => {
-	label.addEventListener("click", () => {
-		const wasActive = activeCorners.has(c);
-		activeCorners.clear(); // single-select: drop any previous selection
-		if (!wasActive) activeCorners.add(c); // re-clicking active = clear
-		applyFilter();
-	});
-});
-// For each corner, only create lines to cards whose color matches.
-// Each entry: { line, cardIndex } so we know which card to point at.
-const cornerLines = Array.from({ length: CORNERS }, (_, c) => {
-	const match = CORNER_COLORS[c];
-	const arr = [];
-	for (let i = 0; i < CARDS; i++) {
-		if (cardColors[i] === match) {
-			const line = document.createElementNS(SVG_NS, "line");
-			svg.appendChild(line);
-			arr.push({ line, cardIndex: i });
-		}
-	}
-	return arr;
+
+window.addEventListener("aktuelles:filter-from-alpine", (e) => {
+    const key = e.detail ? e.detail.key : null;
+    const idx = CORNER_KEYS.indexOf(key);
+    activeCorners.clear();
+    if (idx !== -1) {
+        activeCorners.add(idx);
+    }
+    applyFilter(true);
 });
 
-// -----------------------------------------------------------------------------
-// Fit: scale RADIUS and JITTER_Y so the projected bounding box (including card
-// dimensions and perspective scaling) fits within SCENE_W × SCENE_H. Iterates
-// because perspective is non-linear in radius.
-// -----------------------------------------------------------------------------
+cornerLabels.forEach((label, c) => {
+    label.addEventListener("click", () => {
+        const wasActive = activeCorners.has(c);
+        activeCorners.clear();
+        if (!wasActive) activeCorners.add(c);
+        applyFilter();
+    });
+});
+
+const cornerLines = Array.from({ length: CORNERS }, (_, c) => {
+    const match = CORNER_COLORS[c];
+    const arr = [];
+    for (let i = 0; i < CARDS; i++) {
+        if (cardColors[i] === match) {
+            const line = document.createElementNS(SVG_NS, "line");
+            svg.appendChild(line);
+            arr.push({ line, cardIndex: i });
+        }
+    }
+    return arr;
+});
 
 function computeBounds(Rx, Rz, jitter) {
-	let minX = Infinity, maxX = -Infinity;
-	let minY = Infinity, maxY = -Infinity;
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
 
-	const samples = 96;
-	const jitterExtremes = [-jitter, 0, jitter];
+    const samples = 96;
+    const jitterExtremes = [-jitter, 0, jitter];
 
-	for (let s = 0; s < samples; s++) {
-		const t = (s / samples) * Math.PI * 2;
-		for (const jy of jitterExtremes) {
-			let x = Rx * Math.cos(t);
-			let y = jy;
-			let z = Rz * Math.sin(t);
+    for (let s = 0; s < samples; s++) {
+        const t = (s / samples) * Math.PI * 2;
+        for (const jy of jitterExtremes) {
+            let x = Rx * Math.cos(t);
+            let y = jy;
+            let z = Rz * Math.sin(t);
 
-			const y1 = y * cosX - z * sinX;
-			const z1 = y * sinX + z * cosX;
-			y = y1; z = z1;
+            const y1 = y * cosX - z * sinX;
+            const z1 = y * sinX + z * cosX;
+            y = y1; z = z1;
 
-			const x2 = x * cosZ - y * sinZ;
-			const y2 = x * sinZ + y * cosZ;
-			x = x2; y = y2;
+            const x2 = x * cosZ - y * sinZ;
+            const y2 = x * sinZ + y * cosZ;
+            x = x2; y = y2;
 
-			const persp = PERSPECTIVE / (PERSPECTIVE - z);
-			const px = x * persp;
-			const py = y * persp;
-			const halfW = (CARD_W / 2) * persp;
-			const halfH = (CARD_H / 2) * persp;
+            const persp = PERSPECTIVE / (PERSPECTIVE - z);
+            const px = x * persp;
+            const py = y * persp;
+            const halfW = (CARD_W / 2) * persp;
+            const halfH = (CARD_H / 2) * persp;
 
-			if (px - halfW < minX) minX = px - halfW;
-			if (px + halfW > maxX) maxX = px + halfW;
-			if (py - halfH < minY) minY = py - halfH;
-			if (py + halfH > maxY) maxY = py + halfH;
-		}
-	}
-	return {
-		width: maxX - minX,
-		height: maxY - minY,
-		centerX: (maxX + minX) / 2,
-		centerY: (maxY + minY) / 2,
-	};
+            if (px - halfW < minX) minX = px - halfW;
+            if (px + halfW > maxX) maxX = px + halfW;
+            if (py - halfH < minY) minY = py - halfH;
+            if (py + halfH > maxY) maxY = py + halfH;
+        }
+    }
+    return {
+        width: maxX - minX,
+        height: maxY - minY,
+        centerX: (maxX + minX) / 2,
+        centerY: (maxY + minY) / 2,
+    };
 }
 
 let fitRx = RADIUS;
@@ -244,385 +231,344 @@ let fitRz = RADIUS;
 let fitJitter = JITTER_Y;
 let autoOffsetX = 0;
 let autoOffsetY = 0;
-// Cached world-space positions of the 4 corner dots (updated by recomputeFit)
+
 const cornerDotPositions = Array.from({ length: CORNERS }, () => ({ x: 0, y: 0 }));
 
-// Lay the filter pills in a horizontal row pinned to the very top-left of
-// the container, 1rem from the top and left edges. Label boxes are anchored
-// at the stage centre, so offset by 1rem − half the stage size. Re-run on
-// resize AND whenever a pill's active state changes its width, so the
-// other pills slide over (CSS transitions the transform).
 function layoutFilters() {
-	const rect = stage.getBoundingClientRect();
-	const rem =
-		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-	const inset = rem * 1.5; // horizontal: match the header's 1.5rem edge gap
-	const insetY = rem * 0.75; // vertical: tighter gap below the header
-	const rowY = insetY - rect.height / 2;
+    const rect = stage.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
 
-	// READ pass: measure every pill first (one layout flush). Mixing reads
-	// and writes per-iteration forces a reflow each loop and, racing the
-	// rAF render, makes the carousel flash on every filter toggle.
-	const sizes = cornerLabels.map((label) => ({
-		w: label.offsetWidth,
-		h: label.offsetHeight,
-	}));
+    const switchEl = document.querySelector(".aktuelles__switch");
+    
+    // Nimm die echte Pixelbreite des Switches und übergib sie an CSS:
+    if (switchEl) {
+        document.documentElement.style.setProperty("--switch-width", `${switchEl.offsetWidth}px`);
+    }
 
-	// WRITE pass: position the row (no reads in between → no thrash).
-	let stackX = inset - rect.width / 2;
-	cornerLabels.forEach((label, c) => {
-		label.style.transform =
-			`translate(0, 0) translate3d(${stackX}px, ${rowY}px, 1px)`;
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const paddingX = rem * 1.5;
+    const paddingY = isMobile() ? rem * 1.5 : rem * 0.75;
 
-		// Connector lines anchor at the bottom-centre of this pill, nudged
-		// a few px up so the join sits just inside the pill shape.
-		cornerDotPositions[c].x = stackX + sizes[c].w / 2;
-		cornerDotPositions[c].y = rowY + sizes[c].h - 6;
+    const switchW = switchEl ? switchEl.offsetWidth + rem * 0.8 : 0;
 
-		stackX += sizes[c].w + LABEL_STACK_GAP;
-	});
+    const maxRow1X = rect.width / 2 - paddingX - switchW;
+    const maxFullX = rect.width / 2 - paddingX;
+
+    let isRow1 = true;
+    let rowY = paddingY - rect.height / 2;
+    let stackX = paddingX - rect.width / 2;
+
+    const sizes = cornerLabels.map((label) => ({
+        w: label.offsetWidth,
+        h: label.offsetHeight,
+    }));
+
+    cornerLabels.forEach((label, c) => {
+        const currentMaxX = isRow1 ? maxRow1X : maxFullX;
+
+        if (c > 0 && (stackX + sizes[c].w > currentMaxX)) {
+            isRow1 = false;
+            stackX = paddingX - rect.width / 2;
+            rowY += (sizes[c].h || 32) + 8;
+        }
+
+        label.style.transform = `translate3d(${stackX}px, ${rowY}px, 1px)`;
+
+        cornerDotPositions[c].x = stackX + sizes[c].w / 2;
+        cornerDotPositions[c].y = rowY + sizes[c].h - 6;
+
+        stackX += sizes[c].w + LABEL_STACK_GAP;
+    });
 }
 
-// Measure each card's own natural collapsed height and pin it inline, so
-// its layout box stops fluctuating while the scaled text re-rasterises.
-// Batched (clear all → read all → write all) to avoid layout thrash.
-// Skips open cards (they're auto-height so the description can expand).
 function pinHeights() {
-	for (let i = 0; i < CARDS; i++) {
-		if (!cards[i].classList.contains("is-open")) cards[i].style.height = "";
-	}
-	for (let i = 0; i < CARDS; i++) {
-		if (!cards[i].classList.contains("is-open")) {
-			cardHeights[i] = cards[i].offsetHeight;
-		}
-	}
-	for (let i = 0; i < CARDS; i++) {
-		if (!cards[i].classList.contains("is-open")) {
-			cards[i].style.height = cardHeights[i] + "px";
-		}
-	}
+    for (let i = 0; i < CARDS; i++) {
+        if (!cards[i].classList.contains("is-open")) cards[i].style.height = "";
+    }
+    for (let i = 0; i < CARDS; i++) {
+        if (!cards[i].classList.contains("is-open")) {
+            cardHeights[i] = cards[i].offsetHeight;
+        }
+    }
+    for (let i = 0; i < CARDS; i++) {
+        if (!cards[i].classList.contains("is-open")) {
+            cards[i].style.height = cardHeights[i] + "px";
+        }
+    }
 }
 
 function recomputeFit() {
-	const rect = stage.getBoundingClientRect();
-	// Reserve a top safe area (the filter pill row) so cards never overlap
-	// the filter menu: shrink the vertical fit by that band; the cluster is
-	// then pushed down by half of it (see autoOffsetY below).
-	const rem =
-		parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-	const safeInsetY = rem * 0.75; // must match insetY in layoutFilters()
-	const pillH = cornerLabels[0] ? cornerLabels[0].offsetHeight : 0;
-	const safeTop = pillH * 0.7; // band = ~70% of the pill height
-	// Reserve a band at the bottom too so the lowest card keeps some breathing
-	// room from the bottom edge — otherwise the fit shrinks only for safeTop
-	// and the bottom-most card sits flush against the edge. A little smaller
-	// than the top band.
-	const safeBottom = safeTop * 0.3;
-	const sceneW = (rect.width * SCENE_W) / 100;
-	const sceneH = ((rect.height - safeTop - safeBottom) * SCENE_H) / 100;
-	let Rx = RADIUS;
-	let Rz = RADIUS;
-	let j = JITTER_Y;
-	// Independent X/Z fit — cluster stretches to scene aspect ratio
-	for (let i = 0; i < 12; i++) {
-		const b = computeBounds(Rx, Rz, j);
-		const fx = sceneW / b.width;
-		const fy = sceneH / b.height;
-		Rx *= fx;
-		Rz *= fy;
-		j *= fy;
-		if (Math.abs(fx - 1) < 0.003 && Math.abs(fy - 1) < 0.003) break;
-	}
-	fitRx = Rx;
-	fitRz = Rz;
-	fitJitter = j;
+    const rect = stage.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
 
-	// Auto-center: shift world coords so projected bbox center sits at origin
-	const final = computeBounds(fitRx, fitRz, fitJitter);
-	autoOffsetX = -final.centerX;
-	// Centre within the area between the two safe bands: shift down by half
-	// the top band and up by half the bottom band (equal bands → centred,
-	// with matching top and bottom gaps).
-	autoOffsetY = -final.centerY + safeTop / 2 - safeBottom / 2;
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const pillH = cornerLabels[0] ? cornerLabels[0].offsetHeight : 30;
+    
+    const safeTop = isMobile() ? (pillH + 6) * 2 : pillH * 0.7;
+    const safeBottom = safeTop * 0.3;
 
-	// Move the center dot to match (in CSS world space)
-	const dx = autoOffsetX + OFFSET_X;
-	const dy = autoOffsetY + OFFSET_Y;
-	dot.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 0)`;
+    const sceneW = (rect.width * SCENE_W) / 100;
+    const sceneH = Math.max(((rect.height - safeTop - safeBottom) * SCENE_H) / 100, 160);
 
-	// Place the "Aktuelles" label at the center, sitting on top of the dot
-	// (z=1 so it's always in front of the dot regardless of card depth ordering)
-	centerLabel.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 1px)`;
+    let Rx = RADIUS;
+    let Rz = RADIUS;
+    let j = JITTER_Y;
 
-	layoutFilters();
-	pinHeights(); // re-measure: card width is responsive (rem) → wraps change
+    for (let i = 0; i < 12; i++) {
+        const b = computeBounds(Rx, Rz, j);
+        const fx = sceneW / (b.width || 1);
+        const fy = sceneH / (b.height || 1);
+        Rx *= fx;
+        Rz *= fy;
+        j *= fy;
+        if (Math.abs(fx - 1) < 0.003 && Math.abs(fy - 1) < 0.003) break;
+    }
+
+    fitRx = Math.max(Rx, 130);
+    fitRz = Math.max(Rz, 110);
+    fitJitter = Math.max(j, 40);
+
+    const final = computeBounds(fitRx, fitRz, fitJitter);
+    autoOffsetX = -final.centerX;
+    autoOffsetY = -final.centerY + safeTop / 2 - safeBottom / 2;
+
+    const dx = autoOffsetX + OFFSET_X;
+    const dy = autoOffsetY + OFFSET_Y;
+    dot.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 0)`;
+    centerLabel.style.transform = `translate(-50%, -50%) translate3d(${dx}px, ${dy}px, 1px)`;
+
+    layoutFilters();
+    pinHeights();
 }
 
 let target = 0;
 let current = 0;
 
-// Clicking a card locks the ring: auto-rotation stops and we animate the
-// clicked card to the front-centre of the orbit. Any wheel/touch input
-// releases the lock and hands control back to the user.
 let locked = false;
 let focusedIndex = null;
-// Frozen by the play/pause control: tick() keeps looping but skips all
-// motion/DOM updates, so the scene holds exactly where it was.
 let paused = false;
-// Index of the card currently hovered (null = none). Used to lift a
-// hovered card to the front — but only while it's on the front half of
-// the orbit (see tick()).
 let hoveredIndex = null;
-// 0 → card sits at its orbital spot; 1 → pulled to the stage centre
-// (= .aktuelles centre) at FOCUS_SCALE. Eased each frame in tick().
 let focusBlend = 0;
 const FOCUS_SCALE = 1;
-// 0 → all cards normal; 1 → a card is selected, so the others are veiled
-// out. Eased the moment a card is clicked (not waiting for it to centre).
 let selectBlend = 0;
 
 function setOpen(i, open) {
-	if (i === null || !cards[i]) return;
-	cards[i].classList.toggle("is-open", open);
-	// Open → auto height so the description can expand (the card is
-	// focused/centred and static, so no scale jitter). Close → restore the
-	// pinned px height so rotating collapsed cards stay steady.
-	cards[i].style.height = open
-		? "auto"
-		: cardHeights[i]
-			? cardHeights[i] + "px"
-			: "";
-	const desc = cards[i].querySelector(".aktuelles__card-desc");
-	if (desc) desc.setAttribute("aria-hidden", open ? "false" : "true");
+    if (i === null || !cards[i]) return;
+    cards[i].classList.toggle("is-open", open);
+    cards[i].style.height = open
+        ? "auto"
+        : cardHeights[i]
+            ? cardHeights[i] + "px"
+            : "";
+    const desc = cards[i].querySelector(".aktuelles__card-desc");
+    if (desc) desc.setAttribute("aria-hidden", open ? "false" : "true");
 }
 
-// Collapse the currently focused card and forget it (used when the user
-// takes over, or before focusing a different card).
 function clearFocus() {
-	setOpen(focusedIndex, false);
-	focusedIndex = null;
+    setOpen(focusedIndex, false);
+    focusedIndex = null;
 }
 
 function focusCard(i) {
-	clearFocus(); // collapse any open card before rotating to the new one
-	focusedIndex = i;
-	// A card is front-centre when its orbital angle t = π/2, i.e.
-	// step*i + baseRot = π/2  →  current(deg) = 90 - (360 / CARDS) * i.
-	const base = 90 - (360 / CARDS) * i;
-	// Pick the equivalent angle nearest the current rotation (shortest path).
-	target = base + 360 * Math.round((current - base) / 360);
-	locked = true;
+    clearFocus();
+    focusedIndex = i;
+    const base = 90 - (360 / CARDS) * i;
+    target = base + 360 * Math.round((current - base) / 360);
+    locked = true;
 }
 
-// The carousel only responds to wheel/drag while the page is locked at it
-// (snapped to the header bottom). script.js broadcasts this state.
-let interactive = false;
+let interactive = true; 
 window.addEventListener("aktuelles:interactive", (e) => {
-	interactive = !!(e.detail && e.detail.active);
+    interactive = !!(e.detail && e.detail.active);
 });
 
-// Infinite "scroll": wheel + touch events accumulate the rotation target
-// directly, so the rotation never hits a maximum. Auto-rotation runs by default
-// and pauses for IDLE_BEFORE_AUTO_MS after any user input.
 let lastUserInput = -Infinity;
 function markInteraction() {
-	lastUserInput = performance.now();
+    lastUserInput = performance.now();
 }
+
+// -----------------------------------------------------------------------------
+// WHEEL & TOUCH HANDLER
+// -----------------------------------------------------------------------------
+let lastTouchX = null;
+let lastTouchY = null;
 
 function onWheel(e) {
-	if (!interactive) return; // let the wheel scroll the page instead
-	locked = false; // user takes over → release card focus
-	clearFocus();
-	target += e.deltaY * SCROLL_FACTOR;
-	markInteraction();
+    if (!interactive) return;
+    locked = false;
+    clearFocus();
+
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    target += delta * getScrollFactor();
+
+    markInteraction();
 }
 
-let lastTouchY = null;
 function onTouchStart(e) {
-	if (!interactive) return;
-	locked = false; // user takes over → release card focus
-	clearFocus();
-	lastTouchY = e.touches[0].clientY;
-	markInteraction();
+    if (!interactive) return;
+    if (e.target.closest(".aktuelles__card.is-open, .aktuelles__switch, .aktuelles__filter, .aktuelles__playpause")) {
+        return;
+    }
+    locked = false;
+    clearFocus();
+
+    lastTouchX = e.touches[0].clientX;
+    lastTouchY = e.touches[0].clientY;
+    markInteraction();
 }
+
 function onTouchMove(e) {
-	if (!interactive || lastTouchY === null) return;
-	const dy = lastTouchY - e.touches[0].clientY;
-	target += dy * SCROLL_FACTOR;
-	lastTouchY = e.touches[0].clientY;
-	markInteraction();
+    if (!interactive || lastTouchY === null || lastTouchX === null) return;
+    if (e.target.closest(".aktuelles__card.is-open, .aktuelles__switch, .aktuelles__filter, .aktuelles__playpause")) {
+        return;
+    }
+
+    const dx = lastTouchX - e.touches[0].clientX;
+    const dy = lastTouchY - e.touches[0].clientY;
+
+    const delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+    target += delta * getScrollFactor();
+
+    lastTouchX = e.touches[0].clientX;
+    lastTouchY = e.touches[0].clientY;
+    markInteraction();
 }
+
 function onTouchEnd() {
-	lastTouchY = null;
+    lastTouchX = null;
+    lastTouchY = null;
 }
 
 function tick() {
-	// Auto-rotate when the user has been idle long enough — unless a
-	// clicked card has locked the ring, or the user paused the animation.
-	// Pausing only stops the auto-drift; scroll/drag still rotates the ring
-	// (the easing + render below keep running).
-	if (
-		!paused &&
-		!locked &&
-		performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS
-	) {
-		target += AUTO_ROTATE_SPEED;
-	}
-	current += (target - current) * EASE;
+    if (
+        !paused &&
+        !locked &&
+        performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS
+    ) {
+        target += getAutoRotateSpeed(); 
+    }
+    current += (target - current) * EASE;
 
-	// "Scrolling": the user has scrolled/dragged the ring within the idle
-	// window. Hover-grow is suppressed while this is true.
-	const scrolling =
-		performance.now() - lastUserInput < IDLE_BEFORE_AUTO_MS;
+    const scrolling =
+        performance.now() - lastUserInput < IDLE_BEFORE_AUTO_MS;
 
-	// Rotation settled on the focused card?
-	const settled =
-		locked && focusedIndex !== null && Math.abs(target - current) < 0.4;
+    const settled =
+        locked && focusedIndex !== null && Math.abs(target - current) < 0.4;
 
-	// Ease the focus blend: once settled, pull the focused card from its
-	// orbital spot to the stage centre; release it again when unfocused.
-	focusBlend += ((settled ? 1 : 0) - focusBlend) * EASE;
+    focusBlend += ((settled ? 1 : 0) - focusBlend) * EASE;
+    selectBlend += ((focusedIndex !== null ? 1 : 0) - selectBlend) * EASE;
 
-	// Ease the select blend: as soon as a card is picked, fade the others
-	// out (white veil), and fade them back in when nothing is selected.
-	selectBlend += ((focusedIndex !== null ? 1 : 0) - selectBlend) * EASE;
+    if (settled && !cards[focusedIndex].classList.contains("is-open")) {
+        setOpen(focusedIndex, true);
+    }
 
-	// Open it (height + description fade) once it has reached the centre.
-	if (settled && !cards[focusedIndex].classList.contains("is-open")) {
-		setOpen(focusedIndex, true);
-	}
+    const step = (Math.PI * 2) / CARDS;
+    const baseRot = (current * Math.PI) / 180;
 
-	const step = (Math.PI * 2) / CARDS;
-	const baseRot = (current * Math.PI) / 180;
+    const stageRect = stage.getBoundingClientRect();
+    const cx = stageRect.width / 2;
+    const cy = stageRect.height / 2;
 
-	const stageRect = stage.getBoundingClientRect();
-	const cx = stageRect.width / 2;
-	const cy = stageRect.height / 2;
+    const offX = autoOffsetX + OFFSET_X;
+    const offY = autoOffsetY + OFFSET_Y;
+    const dotX = cx + offX;
+    const dotY = cy + offY;
 
-	const offX = autoOffsetX + OFFSET_X;
-	const offY = autoOffsetY + OFFSET_Y;
-	const dotX = cx + offX;
-	const dotY = cy + offY;
+    const cornerScreens = cornerDotPositions.map((p) => ({
+        x: cx + p.x,
+        y: cy + p.y,
+    }));
 
-	// Corner dot screen positions — read from cached world coords (z=0, so no
-	// perspective scaling needed; positions come from recomputeFit / label sizes)
-	const cornerScreens = cornerDotPositions.map((p) => ({
-		x: cx + p.x,
-		y: cy + p.y,
-	}));
+    const cardSX = new Array(CARDS);
+    const cardSY = new Array(CARDS);
 
-	// Card screen positions + depth (cached so corner lines can reference them)
-	const cardSX = new Array(CARDS);
-	const cardSY = new Array(CARDS);
+    for (let i = 0; i < CARDS; i++) {
+        const t = step * i + baseRot;
 
-	for (let i = 0; i < CARDS; i++) {
-		const t = step * i + baseRot;
+        let x = fitRx * Math.cos(t);
+        let y = jitterNorm[i] * fitJitter;
+        let z = fitRz * Math.sin(t);
 
-		let x = fitRx * Math.cos(t);
-		let y = jitterNorm[i] * fitJitter;
-		let z = fitRz * Math.sin(t);
+        const y1 = y * cosX - z * sinX;
+        const z1 = y * sinX + z * cosX;
+        y = y1; z = z1;
 
-		const y1 = y * cosX - z * sinX;
-		const z1 = y * sinX + z * cosX;
-		y = y1; z = z1;
+        const x2 = x * cosZ - y * sinZ;
+        const y2 = x * sinZ + y * cosZ;
+        x = x2; y = y2;
 
-		const x2 = x * cosZ - y * sinZ;
-		const y2 = x * sinZ + y * cosZ;
-		x = x2; y = y2;
+        const fx = x + offX;
+        const fy = y + offY;
 
-		const fx = x + offX;
-		const fy = y + offY;
+        const tNorm = (Math.sin(t) + 1) / 2;
+        const cardScale = MIN_SCALE + tNorm * (MAX_SCALE - MIN_SCALE);
 
-		// Orbital position → base size (independent of tilt/jitter).
-		// tNorm: 0 (back of orbit) → 1 (front of orbit)
-		const tNorm = (Math.sin(t) + 1) / 2;
-		const cardScale = MIN_SCALE + tNorm * (MAX_SCALE - MIN_SCALE);
+        const persp = PERSPECTIVE / (PERSPECTIVE - z);
+        let screenX = fx * persp;
+        let screenY = fy * persp;
+        let renderScale = cardScale * persp;
 
-		// Project the 3D point to 2D ourselves (perspective foreshorten),
-		// then render flat — no preserve-3d. Paint order is then fully
-		// controlled by z-index instead of GPU 3D depth sorting, which
-		// disagreed with apparent size (tilt + jitter skew the real z).
-		const persp = PERSPECTIVE / (PERSPECTIVE - z);
-		let screenX = fx * persp;
-		let screenY = fy * persp;
-		let renderScale = cardScale * persp; // actual on-screen size factor
+        if (i === focusedIndex && focusBlend > 0.0001) {
+            const b = focusBlend;
+            screenX *= 1 - b;
+            screenY *= 1 - b;
+            renderScale = renderScale * (1 - b) + FOCUS_SCALE * b;
+        }
 
-		// Focused card: blend its orbital position toward the stage centre
-		// (0,0) and FOCUS_SCALE, so it ends up centred in .aktuelles.
-		if (i === focusedIndex && focusBlend > 0.0001) {
-			const b = focusBlend;
-			screenX *= 1 - b;
-			screenY *= 1 - b;
-			renderScale = renderScale * (1 - b) + FOCUS_SCALE * b;
-		}
+        const hoverTarget =
+            i === hoveredIndex && i !== focusedIndex && !scrolling ? 1 : 0;
+        hoverBlend[i] += (hoverTarget - hoverBlend[i]) * EASE;
+        renderScale += 0.03 * hoverBlend[i];
 
-		// Smooth slight grow on hover (eased; skipped for the focused card,
-		// which has its own scaling, and while the ring is being scrolled).
-		const hoverTarget =
-			i === hoveredIndex && i !== focusedIndex && !scrolling ? 1 : 0;
-		hoverBlend[i] += (hoverTarget - hoverBlend[i]) * EASE;
-		renderScale += 0.03 * hoverBlend[i];
+        cards[i].style.transform =
+            `translate3d(${screenX}px, ${screenY}px, 0) scale(${renderScale})`;
 
-		cards[i].style.transform =
-			`translate3d(${screenX}px, ${screenY}px, 0) scale(${renderScale})`;
+        let zi;
+        if (i === focusedIndex && focusBlend > 0.01) {
+            zi = 1000000;
+        } else if (i === hoveredIndex && tNorm > 0.5) {
+            zi = 100000;
+        } else {
+            zi = Math.round(renderScale * 1000);
+        }
+        if (zi !== prevZ[i]) {
+            cards[i].style.zIndex = zi;
+            prevZ[i] = zi;
+        }
 
-		// Paint order strictly follows on-screen size: a larger card can
-		// never sit behind a smaller one. Quantized to limit DOM writes.
-		// The focused card is forced on top while it's pulled in; a hovered
-		// card jumps to the front too, but only while it's on the front
-		// half of the orbit (tNorm > 0.5 → sin(t) > 0).
-		let zi;
-		if (i === focusedIndex && focusBlend > 0.01) {
-			zi = 1000000;
-		} else if (i === hoveredIndex && tNorm > 0.5) {
-			zi = 100000;
-		} else {
-			zi = Math.round(renderScale * 1000);
-		}
-		if (zi !== prevZ[i]) {
-			cards[i].style.zIndex = zi;
-			prevZ[i] = zi;
-		}
+        const depthVeil = (1 - tNorm) * MAX_OVERLAY;
+        let v;
+        if (i === focusedIndex) {
+            v = depthVeil * (1 - selectBlend);
+        } else {
+            v = depthVeil + (FOCUS_FADE - depthVeil) * selectBlend;
+        }
+        const veil = Math.round(v * 100);
+        if (veil !== prevOverlay[i]) {
+            overlays[i].style.opacity = veil / 100;
+            prevOverlay[i] = veil;
+        }
 
-		// White veil fades the card toward the back (full at back, none at
-		// front). When a card is selected, the others fade out via the same
-		// veil (toward FOCUS_FADE) while the selected one clears entirely.
-		const depthVeil = (1 - tNorm) * MAX_OVERLAY;
-		let v;
-		if (i === focusedIndex) {
-			v = depthVeil * (1 - selectBlend);
-		} else {
-			v = depthVeil + (FOCUS_FADE - depthVeil) * selectBlend;
-		}
-		// Quantized to 1% steps so we rarely touch the DOM.
-		const veil = Math.round(v * 100);
-		if (veil !== prevOverlay[i]) {
-			overlays[i].style.opacity = veil / 100;
-			prevOverlay[i] = veil;
-		}
+        cardSX[i] = cx + screenX;
+        cardSY[i] = cy + screenY;
 
-		cardSX[i] = cx + screenX;
-		cardSY[i] = cy + screenY;
+        lines[i].setAttribute("x1", dotX);
+        lines[i].setAttribute("y1", dotY);
+        lines[i].setAttribute("x2", cardSX[i]);
+        lines[i].setAttribute("y2", cardSY[i]);
+    }
 
-		lines[i].setAttribute("x1", dotX);
-		lines[i].setAttribute("y1", dotY);
-		lines[i].setAttribute("x2", cardSX[i]);
-		lines[i].setAttribute("y2", cardSY[i]);
-	}
+    for (let c = 0; c < CORNERS; c++) {
+        const { x: csx, y: csy } = cornerScreens[c];
+        for (const { line, cardIndex } of cornerLines[c]) {
+            line.setAttribute("x1", csx);
+            line.setAttribute("y1", csy);
+            line.setAttribute("x2", cardSX[cardIndex]);
+            line.setAttribute("y2", cardSY[cardIndex]);
+        }
+    }
 
-	// Corner lines: each corner only connects to its color-matched cards.
-	// Each line is depth-sorted to its target card, same as the centre lines.
-	for (let c = 0; c < CORNERS; c++) {
-		const { x: csx, y: csy } = cornerScreens[c];
-		for (const { line, cardIndex } of cornerLines[c]) {
-			line.setAttribute("x1", csx);
-			line.setAttribute("y1", csy);
-			line.setAttribute("x2", cardSX[cardIndex]);
-			line.setAttribute("y2", cardSY[cardIndex]);
-		}
-	}
-
-	requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
 }
 
 stage.addEventListener("wheel", onWheel, { passive: true });
@@ -630,53 +576,71 @@ stage.addEventListener("touchstart", onTouchStart, { passive: true });
 stage.addEventListener("touchmove", onTouchMove, { passive: true });
 stage.addEventListener("touchend", onTouchEnd, { passive: true });
 
-// Click a card → lock the ring and rotate it to the front-centre.
-// Hover → remember it so tick() can lift it to the front (front half only).
+// Klick auf Card-Aktion/Pfeil öffnet das Fullscreen Overlay Modal
+// Klick auf Card-Aktion/Pfeil öffnet das Fullscreen Overlay Modal
 cards.forEach((card, i) => {
-	card.addEventListener("click", () => focusCard(i));
-	card.addEventListener("mouseenter", () => {
-		hoveredIndex = i;
-	});
-	card.addEventListener("mouseleave", () => {
-		if (hoveredIndex === i) hoveredIndex = null;
-	});
+  card.addEventListener("click", (e) => {
+    const openBtn = e.target.closest(".aktuelles__card-open, .aktuelles__card-info");
+    
+    if (openBtn) {
+      e.stopPropagation();
+      e.preventDefault();
+      
+      const cardId = card.dataset.id || card.getAttribute("data-id");
+      
+      if (cardId) {
+        window.dispatchEvent(
+          new CustomEvent("open-modal", { detail: { id: cardId } })
+        );
+      }
+      return;
+    }
 
-	// While this card is the focused/open one, its plus marker acts as a
-	// close button: collapse the card and let the ring resume.
-	const info = card.querySelector(".aktuelles__card-info");
-	if (info) {
-		info.addEventListener("click", (e) => {
-			if (focusedIndex === i) {
-				e.stopPropagation(); // don't let the card re-focus
-				clearFocus();
-				locked = false;
-			}
-		});
-	}
+    focusCard(i);
+  });
 });
 
-// Play / pause the carousel animation (bottom-left control).
+// -----------------------------------------------------------------------------
+// HELPER: Öffnet das Modal statt der unteren Liste
+// -----------------------------------------------------------------------------
+window.addEventListener("aktuelles:open-item", (e) => {
+    const targetId = e.detail ? e.detail.id : null;
+    if (!targetId) return;
+
+    window.dispatchEvent(
+        new CustomEvent("open-modal", { detail: { id: targetId } })
+    );
+});
+
 const playPauseBtn = document.querySelector(".aktuelles__playpause");
 if (playPauseBtn) {
-	playPauseBtn.addEventListener("click", () => {
-		paused = !paused;
-		playPauseBtn.classList.toggle("is-paused", paused);
-		playPauseBtn.setAttribute("aria-pressed", String(paused));
-		playPauseBtn.setAttribute(
-			"aria-label",
-			paused ? "Animation abspielen" : "Animation pausieren"
-		);
-	});
+    playPauseBtn.addEventListener("click", () => {
+        paused = !paused;
+        playPauseBtn.classList.toggle("is-paused", paused);
+        playPauseBtn.setAttribute("aria-pressed", String(paused));
+        playPauseBtn.setAttribute(
+            "aria-label",
+            paused ? "Animation abspielen" : "Animation pausieren"
+        );
+    });
 }
 
-// Adapt to the stage container size, not the viewport.
 const resizeObserver = new ResizeObserver(recomputeFit);
 resizeObserver.observe(stage);
 
 recomputeFit();
-// Re-run once custom fonts have loaded — label widths change when HAL Timezone
-// replaces the system-ui fallback, which would otherwise leave dots off the edges.
 if (document.fonts && document.fonts.ready) {
-	document.fonts.ready.then(recomputeFit);
+    document.fonts.ready.then(recomputeFit);
 }
 tick();
+
+
+function updateHeaderHeight() {
+  const header = document.querySelector('.site-header');
+  if (header) {
+    document.documentElement.style.setProperty('--header-height', `${header.offsetHeight}px`);
+  }
+}
+
+window.addEventListener('resize', updateHeaderHeight);
+window.addEventListener('DOMContentLoaded', updateHeaderHeight);

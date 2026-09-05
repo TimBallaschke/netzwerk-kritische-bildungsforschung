@@ -4,7 +4,7 @@ Title: Über Uns
 
 Waswollenwir:
 
-Im Netzwerk wollen wir thematisch einschlägige Forscher*innen zusammenbringen, die sich anhand von verschiedenen topoi und unter Berücksichtigung von disziplinären Schwerpunkten der Wiederbelebung einer kritischen Bildungstheorie und -forschung widmen. Mit dem Begriff der Wiederbelebung wollen wir deutlich machen, dass wir eine bestehende – wenngleich gegenwärtig (noch) verschüttete – Tradition der kritischen Bildungsforschung, die nach 1945 durch den Einsatz von zentralen Figuren wie Max Horkheimer, Theodor W. Adorno und Heinz-Joachim Heydorn verankert wurde, wieder aufgreifen und aktualisieren wollen. 
+Im Netzwerk wollen wir <em>thematisch</em> einschlägige Forscher*innen zusammenbringen, die sich anhand von verschiedenen topoi und unter Berücksichtigung von disziplinären Schwerpunkten der Wiederbelebung einer kritischen Bildungstheorie und -forschung widmen. Mit dem Begriff der Wiederbelebung wollen wir deutlich machen, dass wir eine bestehende – wenngleich gegenwärtig (noch) verschüttete – Tradition der kritischen Bildungsforschung, die nach 1945 durch den Einsatz von zentralen <em>Figuren</em> wie Max Horkheimer, Theodor W. Adorno und Heinz-Joachim Heydorn verankert wurde, wieder aufgreifen und aktualisieren wollen. 
 Eine solche Aktualisierung ist mit drei Zielstellungen verknüpft: 
 (1) Bildungsprozesse und deren Rahmenbedingungen unter Einbezug von Aspekten der Bildungstheorie, Bildungssoziologie und Bildungsgeschichte neu perspektivieren und denken;
 (2) die empirische Bildungsforschung durch interdisziplinär ausgerichtete Ansätze ergänzen bzw. weiter ausbauen; 
@@ -47,7 +47,7 @@ Aklink: https://www.ifs.uni-frankfurt.de/arbeitskreisdetails/kritische-bildungsf
 
 ----
 
-Rmulogo: 
+Rmulogo: - file://rach53kbqnomhqxb
 
 ----
 

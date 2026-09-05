@@ -1,8 +1,5 @@
-// Site header
-// Title (left) + main menu (right), brown.
-
 .site-header {
-  position: fixed; // stays put while the page scrolls under it
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -11,32 +8,80 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 4rem;
-  padding: 0.5rem 0 1rem 0;
-  margin: 1.5rem 1.5rem 0 1.5rem;
+  margin: 0; 
+  padding: 1.5rem 1.5rem 1rem 1.5rem; 
   color: var(--color-brown);
-  border-top: 1px solid var(--color-brown);
-  border-bottom: 1px solid var(--color-brown);
   font-family: "HAL Timezone", serif;
   font-style: normal;
-  font-synthesis: none; // never fake bold/italic from the regular cut
-  background-color: white;
+  font-size: var(--font-size-headline);
+  font-synthesis: none;
+  background-color: #ffffff;
+
+  @media (max-width: 900px) {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem 1.5rem 0.75rem 1.5rem;
+
+    .site-header__nav {  
+      order: 1;   
+      width: 100%;  
+      padding-bottom: 0.75rem;  
+    }  
+
+    .site-header__title {  
+      order: 2;   
+      margin: 0 0 2rem 0;
+    }  
+  }
 }
 
-.site-header__title {
-  margin: 0;
-  font-size: var(--font-size-headline);
-  line-height: 0.95;
-  letter-spacing: -0.02em;
-  text-align: left;
+/* Gezielte Steuerung der zwei <hr> Linien in der Navigation */
+.site-header__nav hr {
+  position: static; 
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-brown);
+  border: 0;
+
+  /* 1. Linie (oben über dem Menü): Immer sichtbar auf Desktop & Mobile */
+  &:first-of-type {
+    display: block;
+  }
+
+  /* 2. Linie (unten unter dem Menü): Auf Desktop ausblenden, nur auf Mobile anzeigen */
+  &:last-of-type {
+    display: none;
+
+    @media (max-width: 900px) {
+      display: block;
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+
+
+.site-header__title-link {
+  color: inherit;
+  text-decoration: none;
 }
 
 .site-header__nav ul {
   display: flex;
-  gap: 2rem; // gap between menu options
+  gap: 2rem; 
   margin: 0;
   padding: 0;
   list-style: none;
+
+  /* Nur das Menü auf Mobile rechtsbündig ausrichten */
+  @media (max-width: 900px) {
+    gap: 3.5rem; 
+    justify-content: flex-end;
+    margin: 1rem 0;
+
+  }
 }
+
 
 .site-header__nav a {
   display: inline-grid;
@@ -45,9 +90,6 @@
   text-decoration: none;
   white-space: nowrap;
 
-  // Stack the visible label and TWO hidden phantoms (normal + italic)
-  // in the same grid cell. The cell locks to max(normal, italic), so
-  // the box is identical in both states regardless of which is wider.
   > span,
   &::before,
   &::after {
@@ -61,11 +103,20 @@
     pointer-events: none;
   }
 
-  &::before { font-style: normal; } // reserves the regular width
-  &::after  { font-style: italic; } // reserves the italic width
+  &::before { font-style: normal; } 
+  &::after  { font-style: italic; } 
+}
 
-  &:hover > span,
-  &:focus > span {
-    font-style: italic;
+/* Greift auf <a> ODER <li> für alle aktiven Zustände */
+.site-header__nav {
+  a:hover > span,
+  a:focus > span,
+  a.is-active > span,
+  a.active > span,
+  a[aria-current] > span,
+  li.is-active a > span,
+  li.active a > span,
+  li[aria-current] a > span {
+    font-style: italic !important;
   }
 }

@@ -1,0 +1,188 @@
+
+// =============================================================================
+// ÜBER UNS PAGE
+// =============================================================================
+
+.page-ueber-uns {
+padding: 0 0 0 0;
+color: var(--color-brown);
+font-family: "HAL Timezone", serif;
+
+.ueber-uns-sections {
+padding: 0 1.5rem;
+}
+
+.ueber-uns-block {
+border-bottom: 1px solid var(--color-brown);
+padding: 1.5rem 0;
+
+
+
+&:last-child {  
+  border-bottom: none;  
+}  
+
+.block-header {  
+  display: grid;  
+  grid-template-columns: 20rem 1fr auto;  
+  gap: 2rem;  
+  align-items: start;  
+  cursor: pointer;  
+
+  @media (max-width: 768px) {  
+    grid-template-columns: 1fr auto;  
+    gap: 1rem;  
+
+    .block-headline {  
+      grid-column: 1;  
+      grid-row: 1;  
+    }  
+
+    .toggle-btn {  
+      grid-column: 2;  
+      grid-row: 1;  
+    }  
+
+    .block-content-wrapper {  
+      grid-column: 1 / -1;  
+      grid-row: 2;  
+    }  
+  }  
+
+  .block-headline {  
+    font-size: var(--font-size-large-serif);  
+    font-weight: normal;  
+    line-height: 1.2;  
+    margin: 0;  
+  }  
+
+  .block-content-wrapper {  
+    font-size: var(--font-size-large-serif);  
+    line-height: 1.25;  
+
+    .text-content {  
+      position: relative;  
+      max-height: 5.2em;  
+      overflow: hidden;  
+      transition: max-height 0.35s ease;  
+
+      &::after {  
+        content: "";  
+        position: absolute;  
+        bottom: 0;  
+        left: 0;  
+        right: 0;  
+        height: 2.5em;  
+        background: linear-gradient(  
+          to bottom,  
+          rgba(255, 255, 255, 0) 0%,  
+          #ffffff 90%  
+        );  
+        pointer-events: none;  
+        transition: opacity 0.25s ease;  
+      }  
+    }  
+
+    .kontakt-liste,  
+    .ak-link,  
+    .rmu-logo-box,  
+    .vertiefungs-bloecke {  
+      display: none;  
+    }  
+  }  
+}  
+
+&.is-open {  
+  .block-content-wrapper {  
+    .text-content {  
+      max-height: 2000px;  
+      overflow: visible;  
+
+      &::after {  
+        opacity: 0;  
+      }  
+    }  
+
+    .kontakt-liste,  
+    .ak-link,  
+    .rmu-logo-box,  
+    .vertiefungs-bloecke {  
+      display: block;  
+    }  
+  }  
+}  
+}
+
+.kontakt-liste {
+list-style: none;
+padding: 0;
+margin: 2rem 0;
+
+
+
+li { margin-bottom: 1.2rem; }  
+.kontakt-name { font-style: italic; margin-bottom: 0.1rem; }  
+.kontakt-email a {  
+  color: var(--color-brown);  
+  font-style: italic;  
+  text-decoration: underline;  
+}  
+}
+
+.ak-link {
+margin: 2rem 0;
+a {
+color: var(--color-brown);
+font-style: italic;
+text-decoration: underline;
+}
+}
+
+.rmu-logo-box {
+margin: 2.5rem 0;
+display: inline-block;
+padding: 1rem 2rem;
+border-radius: 4px;
+
+
+
+img {  
+  max-height: 50px;  
+  width: auto;  
+}  
+}
+
+.vertiefungs-bloecke {
+margin-top: 3rem;
+
+
+
+.vertiefung-item {  
+  margin-bottom: 3rem;  
+
+  .vertiefung-headline {  
+    font-size: var(--font-size-large-serif);  
+    font-weight: normal;  
+    font-style: italic;  
+    text-decoration: underline;  
+    margin-bottom: 0.8rem;  
+  }  
+
+  .vertiefung-kontakt { margin-top: 1rem; }  
+}  
+}
+
+.vergangene-veranstaltungen-wrapper {
+border-top: 1px solid var(--color-brown);
+
+
+
+.vergangene-headline {  
+  padding: 1rem 1.5rem;  
+  font-size: var(--font-size-large-serif);  
+  font-style: italic;  
+  font-weight: normal;  
+  margin: 0;  
+}  
+}
+}

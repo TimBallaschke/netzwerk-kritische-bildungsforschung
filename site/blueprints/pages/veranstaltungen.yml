@@ -8,7 +8,7 @@ options:
   delete: false
 
 status:
-  draft: true
+  # draft: true
   listed: true
 
 sections:

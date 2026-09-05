@@ -2,7 +2,6 @@
 (function () {
   "use strict";
 
-  
   // Always start at the top on (re)load. Without this the browser restores
   // the previous scroll position, leaving the page parked past the intro
   // (and re-triggering the scroll lock with the intro out of view).
@@ -43,11 +42,9 @@
       );
     }
 
-    // Tell aktuelles.js whether the carousel may take wheel/drag input
-    // (only while the page is locked at it).
-    function setCarouselInteractive(active) {
-      window.dispatchEvent(
-        new CustomEvent("aktuelles:interactive", { detail: { active: active } })
+    function lockTargetY() {
+      return Math.round(
+        aktuelles.getBoundingClientRect().top + window.scrollY - headerHeight()
       );
     }
 

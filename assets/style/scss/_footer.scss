@@ -1,0 +1,93 @@
+// =============================================================================
+// FOOTER
+// =============================================================================
+
+
+/* Footer im Graph-Modus komplett ausblenden & Seitenscrollen sperren */
+html:has(.aktuelles__switch-thumb.is-grafik),
+body:has(.aktuelles__switch-thumb.is-grafik) {
+
+  .site-footer {
+    display: none !important;
+  }
+}
+
+
+
+
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background-color: #fff;
+  color: var(--color-brown);
+  font-family: "HAL Timezone", serif;
+
+  
+    @media (max-width: 900px) {
+      padding: 4rem 2rem ;
+    }
+
+
+  &__left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  &__title {
+    font-size: var(--font-size-small-serif);
+    line-height: 1.05;
+    margin: 0;
+  }
+
+  &__logos {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  &__logo {
+    height: calc(2 * var(--font-size-small-serif) * 1.05);
+    min-height: 3.5rem;
+    width: auto;
+    object-fit: contain;
+
+    @media (max-width: 900px) {
+      height: 6rem;
+    }
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+  }
+
+  &__social-link {
+    color: var(--color-brown);
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    .instagram-icon {
+      width: 2.2rem;
+      height: 2.2rem;
+      fill: currentColor;
+
+      @media (max-width: 900px) {
+        width: 5rem;
+        height: 5rem;
+        
+      }
+    }
+  }
+}

@@ -66,4 +66,4 @@ fields:
         max: 1
         min: 1
         accept: application/pdf
-        required: true
+        # required: true

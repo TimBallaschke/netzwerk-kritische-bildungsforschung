@@ -1,0 +1,7 @@
+title: Datei
+
+fields:
+  alt:
+    label: Alt-Text / Bildunterschrift
+    type: text
+    help: Dieser Text wird als Alt-Text genutzt und als kleine Bildunterschrift unter dem Foto angezeigt.

@@ -13,3 +13,35 @@
   font-style: italic;
   font-display: swap;
 }
+
+
+:root {
+  font-size: 1vw;
+
+  // Font Sizes
+  --font-size-headline:           2.7rem;
+  --font-size-headline2:          2.8rem;
+
+  --font-size-large-serif:        1.5rem;
+  --font-size-large-sans-serif:   3.5rem;
+
+  --font-size-small-serif:        1.2rem;
+  --font-size-small-sans-serif:   1.2rem;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --font-size-headline:           4rem;
+    --font-size-headline2:          6rem;
+
+    --font-size-large-serif:        4rem;
+    --font-size-large-sans-serif:   9rem;
+
+    --font-size-small-serif:        4rem;
+    --font-size-small-sans-serif:   4rem;
+  }
+}
+
+em, i {
+  font-style: italic !important;
+}

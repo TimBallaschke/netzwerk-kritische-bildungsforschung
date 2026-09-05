@@ -1,8 +1,94 @@
-// Aktuelles list
-// Stacks aktuelles-list-item rows. Each row carries its own bottom rule;
-// the list adds the top rule so the first row is closed off too.
+// =============================================================================
+// AKTUELLES LISTE & EINZELELEMENTE (DIREKT-MODAL)
+// =============================================================================
 
 .aktuelles-list {
-  background-color: var(--color-green);
   border-top: 1px solid var(--color-brown);
+  position: relative;
+  z-index: 1;
+}
+
+.is-list-view .aktuelles {
+  height: auto;
+  overflow: visible;
+}
+
+.is-list-view .aktuelles__list {
+  position: static;
+  overflow: visible;
+}
+
+.aktuelles-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.2rem 4.5rem 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--color-brown);
+  color: var(--color-brown);
+  background-color: var(--color-green);
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+
+  @media (max-width: 900px) {
+    padding-right: 5rem;
+  }
+
+  .aktuelles-item__main {
+    font-family: "HAL Timezone", serif;
+    font-style: normal;
+    flex: 1;
+  }
+
+  .aktuelles-item__type {
+    font-size: var(--font-size-large-serif);
+    line-height: 1.15;
+    margin-bottom: 0.2rem;
+  }
+
+  .aktuelles-item__type-label {
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .aktuelles-item__date {
+    margin-left: 0.3em;
+  }
+
+  .aktuelles-item__title {
+    margin: 0.1em 0 0.35em 0;
+    font-size: var(--font-size-large-serif);
+    font-weight: 400;
+    line-height: 1.15;
+  }
+
+  .aktuelles-item__subinfo {
+    font-size: var(--font-size-small-serif);
+    line-height: 1.2;
+
+    em {
+      font-style: italic;
+    }
+  }
+
+  /* Plus-Button Positionierung */
+  .aktuelles-item__toggle {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.5rem;
+    pointer-events: none;
+  }
+
+  /* Hover-Zustand nur auf Desktop-Mäusen */
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--color-brown);
+      color: var(--color-green);
+
+      .toggle-btn {
+        color: var(--color-green);
+        border-color: var(--color-green);
+      }
+    }
+  }
 }

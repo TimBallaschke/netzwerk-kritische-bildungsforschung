@@ -1,31 +1,27 @@
-// Intro text
-// Large serif paragraph placed directly under the site header.
-
 .intro-text {
-  position: relative;
-  z-index: 2; // sits above .aktuelles so it covers the carousel when slid in
-  margin: 0 1.5rem;
+  /* position und z-index hier komplett entfernt! */
+  margin: 1px 1.5rem;
   padding: 0.9rem 0 1rem 0;
-  scroll-snap-align: start; // top snap point — keeps page put on load
-  background-color: #fff; // opaque so it covers the carousel when revealed
+  scroll-snap-align: start; 
   border-bottom: 1px solid var(--color-brown);
   color: var(--color-brown);
   font-family: "HAL Timezone", serif;
   font-style: normal;
-  font-synthesis: none; // never fake bold/italic from the regular cut
+  font-synthesis: none; 
   transition: transform 0.35s ease;
-}
 
-// Once the carousel has scroll-snapped/locked (JS adds .is-locked to
-// <html>), hovering the header slides the intro down by its own height.
-// Strictly the locked Grafik state: `:not(.is-list-view)` guarantees the
-// reveal is dead in the Liste view (page scrolls normally, no lock).
-.is-locked:not(.is-list-view) .site-header:hover ~ main .intro-text {
-  transform: translateY(100%);
+  @media (max-width: 900px) {
+    padding: 2rem 0 2rem 0;
+    margin: 2.9rem;
+  }
 }
-
 .intro-text__body {
   max-width: 75%; // text fills 75%; the border stays full width on .intro-text
   font-size: var(--font-size-large-serif);
   line-height: 1.2;
+
+    @media (max-width: 900px) {
+        max-width: 90%; 
+
+    }
 }

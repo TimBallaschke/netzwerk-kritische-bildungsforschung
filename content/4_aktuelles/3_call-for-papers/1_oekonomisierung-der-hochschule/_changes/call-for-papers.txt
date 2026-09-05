@@ -1,0 +1,73 @@
+Title: F-Test- Ökonomisierung der Hochschule
+
+----
+
+Deadline: 2026-08-29
+
+----
+
+Description: Dies ist ein test denn:Eingeladen werden Beiträge, die Drittmittellogik, Wettbewerbssteuerung und Exzellenzrhetorik aus kritischer Perspektive untersuchen und nach den Bedingungen freier Wissenschaft unter Marktdruck fragen.
+
+----
+
+Inaktuelles: false
+
+----
+
+Linktype: external
+
+----
+
+Externalurltitle: Ein TEST !
+
+----
+
+Externalurl: https://www.loremipsum.de/
+
+----
+
+Body: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Callurltitle: 
+
+----
+
+Callurl: 
+
+----
+
+Date: 2020-08-20
+
+----
+
+Authors: Name Namerich
+
+----
+
+Ort: Teststade
+
+----
+
+Subinfo: Deadline 30.9.2026
+
+----
+
+Internalpage: 
+
+----
+
+Uuid: vcsdj1zoshk5fu12
+
+----
+
+Feedorder: 7
+
+----
+
+Lock: n2F2eNjz

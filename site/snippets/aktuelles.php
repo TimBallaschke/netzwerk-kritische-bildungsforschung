@@ -1,11 +1,4 @@
 <?php
-// The feed = all entries across the Aktuelles Rubriken (Beiträge,
-// Veranstaltungen, …) whose "In Aktuelles zeigen" toggle is on, newest
-// first. Entries live one level below the Rubriken, so we take the
-// grandchildren of /aktuelles. The type is the entry's TEMPLATE.
-//
-// type (template) -> display label + category color (color must match
-// CORNER_* in aktuelles.js; label mapping mirrors aktuelles-list.php).
 $typeMeta = [
   'veranstaltung'   => ['label' => 'Veranstaltung',  'color' => '#005436'],
   'notiz'           => ['label' => 'Notiz',           'color' => '#4965e6'],
@@ -13,14 +6,20 @@ $typeMeta = [
   'call-for-papers' => ['label' => 'Call for Papers', 'color' => '#f3511c'],
   'publikation'     => ['label' => 'Publikation',     'color' => '#8a4fff'],
 ];
-// Single source of truth (site method): entries with the toggle on,
-// in manual feedOrder (date desc fallback). See plugins/aktuelles-feed.
-$cardEntries = site()->aktuellesFeed();
+
+$cardEntries = $cardEntries ?? site()->aktuellesFeed();
 ?>
+
 <section
   class="aktuelles"
   aria-label="Aktuelles"
-  x-data="{ view: 'grafik' }"
+  x-data="{ view: 'grafik', activeFilter: null }"
+  x-init="
+    $watch('activeFilter', key => {
+      window.dispatchEvent(new CustomEvent('aktuelles:filter-from-alpine', { detail: { key: key } }));
+    })
+  "
+  @aktuelles:filter-from-js.window="activeFilter = $event.detail.key"
   x-effect="window.dispatchEvent(new CustomEvent('aktuelles:view', { detail: { list: view === 'liste' } }))"
 >
   <div class="aktuelles__switch" role="group" aria-label="Ansicht wechseln">
@@ -38,10 +37,9 @@ $cardEntries = site()->aktuellesFeed();
         <?php $typeKey = $entry->intendedTemplate()->name(); ?>
         <?php $meta = $typeMeta[$typeKey] ?? ['label' => ucfirst($typeKey), 'color' => '#612c00']; ?>
         <?php snippet('aktuelles-card', [
+          'id'          => $entry->slug(),
           'type'        => $meta['label'],
           'title'       => $entry->title()->value(),
-          // subinfo is an italic-only field (Markdown *…*); parse inline so
-          // emphasis renders. Old writer HTML (<em>…</em>) passes through.
           'subinfo'     => $entry->subinfo()->kirbytextinline(),
           'description' => $entry->description()->value(),
           'color'       => $meta['color'],
@@ -60,16 +58,51 @@ $cardEntries = site()->aktuellesFeed();
   </button>
 
   <div class="aktuelles__list" x-show="view === 'liste'" x-cloak>
-    <?php /* Static visual copy of the carousel's filter pills — not wired
-             to any filtering yet. Keep labels in sync with CORNER_LABELS
-             in aktuelles.js. */ ?>
     <div class="aktuelles__filters" role="group" aria-label="Filter">
-      <button type="button" class="aktuelles__filter">Veranstaltungen</button>
-      <button type="button" class="aktuelles__filter">Notizen</button>
-      <button type="button" class="aktuelles__filter">Beiträge</button>
-      <button type="button" class="aktuelles__filter">Call for Papers</button>
-      <button type="button" class="aktuelles__filter">Publikationen</button>
+      <button
+        type="button"
+        class="aktuelles__filter"
+        :class="{ 'is-active': activeFilter === 'veranstaltung' }"
+        @click="activeFilter = activeFilter === 'veranstaltung' ? null : 'veranstaltung'"
+      >
+        Veranstaltungen
+      </button>
+      <button
+        type="button"
+        class="aktuelles__filter"
+        :class="{ 'is-active': activeFilter === 'notiz' }"
+        @click="activeFilter = activeFilter === 'notiz' ? null : 'notiz'"
+      >
+        Notizen
+      </button>
+      <button
+        type="button"
+        class="aktuelles__filter"
+        :class="{ 'is-active': activeFilter === 'beitrag' }"
+        @click="activeFilter = activeFilter === 'beitrag' ? null : 'beitrag'"
+      >
+        Beiträge
+      </button>
+      <button
+        type="button"
+        class="aktuelles__filter"
+        :class="{ 'is-active': activeFilter === 'call-for-papers' }"
+        @click="activeFilter = activeFilter === 'call-for-papers' ? null : 'call-for-papers'"
+      >
+        Call for Papers
+      </button>
+      <button
+        type="button"
+        class="aktuelles__filter"
+        :class="{ 'is-active': activeFilter === 'publikation' }"
+        @click="activeFilter = activeFilter === 'publikation' ? null : 'publikation'"
+      >
+        Publikationen
+      </button>
     </div>
     <?php snippet('aktuelles-list', ['entriesPages' => $cardEntries]) ?>
   </div>
+
+  <!-- OVERLAY MODAL RUFE ICH HIER EIN -->
+  <?php snippet('aktuelles-overlay', ['cardEntries' => $cardEntries]) ?>
 </section>

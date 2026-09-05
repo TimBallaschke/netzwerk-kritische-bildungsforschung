@@ -2,4 +2,42 @@ Title: Seminarpläne
 
 ----
 
+Introheadline: Seminarpläne teilen und  kritische Bildungsforschung pluralisieren
+
+----
+
+Intro: Ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, <em>consetetur</em> sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+
+----
+
+Kontakttext: Ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
+
+----
+
+Kontaktemailtitle: Wer seinen Seminarplan hier veröffentlichen will  wendet sich an Laura Hanemann:
+
+----
+
+Kontaktemail: hanemann@soz.uni-frankfurt.de
+
+----
+
+Plaene:
+
+- 
+  dozierende: Prod. Dr. Name Namerich
+  titel: >
+    Platzhalter ! Ein Thema, Bildung,
+    Subjekt, Thema –  Einführung in ein
+    Thema
+  pdf:
+    - file://evd1ayexq2hpv9xg
+- 
+  dozierende: Der Name der Person
+  titel: Titel des Seminars
+  pdf:
+    - file://nz7i30oz4tscoozb
+
+----
+
 Uuid: l7uesfhayfcvz24i

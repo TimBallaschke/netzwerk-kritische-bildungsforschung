@@ -14,7 +14,7 @@ Inaktuelles: true
 
 ----
 
-Linktype: 
+Linktype: self
 
 ----
 
@@ -30,27 +30,27 @@ Body:
 
 ----
 
-Image: 
+Image: - file://ddkbwt6xljwakocg
 
 ----
 
-Linktitle: 
+Linktitle: LinktestX
 
 ----
 
-Linkurl: 
+Linkurl: https://www.loremipsum.de/
 
 ----
 
-Downloadpdf: 
+Downloadpdf: - file://ddkbwt6xljwakocg
 
 ----
 
-Date: 
+Date: 2028-05-01
 
 ----
 
-Authors: 
+Authors: Diesistein Testname
 
 ----
 
