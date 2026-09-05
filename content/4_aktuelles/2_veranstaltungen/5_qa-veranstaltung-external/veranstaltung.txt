@@ -1,0 +1,69 @@
+Title: TEST · Veranstaltung – externer Link
+
+----
+
+Subinfo: Fiktiver Testtermin mit <em>Alex Beispiel</em> / Quelle: Testredaktion
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für externer Link. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: external
+
+----
+
+Externalurltitle: Externe Testseite öffnen
+
+----
+
+Externalurl: https://example.org/?test=veranstaltung&quelle=website
+
+----
+
+Body: 
+
+----
+
+Image: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 2026-11-18
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Ort: Testraum 2.03, Beispielcampus, Frankfurt am Main
+
+----
+
+Onlinehinweis: Hybrider Testtermin; der Zugangslink wird hier nur demonstriert.
+
+----
+
+Uuid: ekqmf6z43qwzkzps
+
+----
+
+Feedorder: -98

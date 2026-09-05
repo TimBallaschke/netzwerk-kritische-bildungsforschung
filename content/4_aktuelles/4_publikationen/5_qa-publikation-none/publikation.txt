@@ -1,0 +1,57 @@
+Title: TEST · Publikation – nur Teaser
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für nur Teaser. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: none
+
+----
+
+Externalurltitle: 
+
+----
+
+Externalurl: 
+
+----
+
+Cover: 
+
+----
+
+Body: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 2026-09-05
+
+----
+
+Uuid: vwdprhztdp362jx9
+
+----
+
+Feedorder: -91

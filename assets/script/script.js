@@ -2,6 +2,87 @@
 (function () {
   "use strict";
 
+  document.addEventListener("alpine:init", function () {
+    window.Alpine.data("disclosure", function () {
+      // Animate a clipped viewport; the text inside always keeps its natural
+      // width, line-height and layout. Native objects stay outside Alpine state.
+      var animation = null;
+      var observer = null;
+      var element, content, inner, preview;
+      var targetHeight = 0;
+
+      function collapsedHeight() {
+        var style = getComputedStyle(content);
+        var limit = parseFloat(style.getPropertyValue("--disclosure-preview-lines")) || 0;
+        // Count actual lines, so every preview ends at the same line boundary.
+        var height = preview ? Math.min(preview.getBoundingClientRect().height, limit * parseFloat(style.lineHeight)) : 0;
+        content.style.setProperty("--disclosure-collapsed-height", height + "px");
+        return height;
+      }
+
+      function animateHeight(from, to) {
+        if (animation) animation.cancel();
+        animation = null;
+        targetHeight = to;
+        element.classList.remove("is-animating");
+
+        if (!content.animate || Math.abs(to - from) < 1 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        element.classList.add("is-animating");
+        var current = content.animate(
+          [{ height: from + "px" }, { height: to + "px" }],
+          { duration: 400, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "both" }
+        );
+        animation = current;
+        current.onfinish = () => {
+          if (animation !== current) return;
+          element.classList.remove("is-animating");
+          current.cancel();
+          animation = null;
+        };
+      }
+
+      return {
+        open: false,
+        init() {
+          element = this.$root;
+          content = this.$refs.content;
+          inner = this.$refs.inner;
+          preview = content.querySelector("[data-disclosure-preview]");
+          collapsedHeight();
+
+          // Fonts, images and responsive wrapping can change the natural size.
+          if ("ResizeObserver" in window) {
+            observer = new ResizeObserver(() => {
+              var from = content.getBoundingClientRect().height;
+              var collapsed = collapsedHeight();
+              var to = this.open ? inner.getBoundingClientRect().height : collapsed;
+              if (animation && Math.abs(to - targetHeight) >= 1) animateHeight(from, to);
+            });
+            observer.observe(inner);
+            if (preview) observer.observe(preview);
+          }
+        },
+        toggle(force) {
+          var next = typeof force === "boolean" ? force : !this.open;
+          if (next === this.open) return;
+
+          // Reversals start at the current visible height. The fade follows
+          // the requested state immediately, in both directions.
+          var from = content.getBoundingClientRect().height;
+          var collapsed = collapsedHeight();
+          this.open = next;
+          element.classList.toggle("is-open", next);
+          animateHeight(from, next ? inner.getBoundingClientRect().height : collapsed);
+        },
+        destroy() {
+          if (animation) animation.cancel();
+          if (observer) observer.disconnect();
+        }
+      };
+    });
+  });
+
   // Always start at the top on (re)load. Without this the browser restores
   // the previous scroll position, leaving the page parked past the intro
   // (and re-triggering the scroll lock with the intro out of view).
@@ -9,13 +90,13 @@
     history.scrollRestoration = "manual";
   }
 
-  // The header is position:fixed, so it's out of flow. Expose its occupied
+  // The header (including an optional category banner) is fixed and out of flow. Expose its occupied
   // height (viewport top → header bottom, incl. its top margin) as a CSS
   // custom property so the layout can offset content and size .aktuelles.
   // It must be dynamic: root font-size is 1vw, so the header height scales
   // with viewport width.
   function syncHeaderHeight() {
-    var header = document.querySelector(".site-header");
+    var header = document.querySelector(".site-header-group, .site-header");
     if (!header) return;
     var h = header.getBoundingClientRect().bottom;
     document.documentElement.style.setProperty("--header-height", h + "px");
@@ -42,28 +123,38 @@
       );
     }
 
+    function setCarouselInteractive(active) {
+      window.dispatchEvent(
+        new CustomEvent("aktuelles:interactive", { detail: { active } })
+      );
+    }
+
+    // Scroll position at which aktuelles' top reaches the header's bottom.
     function lockTargetY() {
       return Math.round(
         aktuelles.getBoundingClientRect().top + window.scrollY - headerHeight()
       );
     }
 
-    // Scroll position at which aktuelles' top reaches the header's bottom.
-    function lockTargetY() {
-      return (
-        aktuelles.getBoundingClientRect().top + window.scrollY - headerHeight()
-      );
+    function alignLockedLayout() {
+      if (!locked || listView) return;
+      // Responsive text wrapping and header sizing move the snap point.
+      // Correct it without a smooth scroll that would expose part of the intro.
+      syncHeaderHeight();
+      var targetY = lockTargetY();
+      if (Math.abs(window.scrollY - targetY) > 0.5) {
+        window.scrollTo({ top: targetY, behavior: "instant" });
+      }
     }
 
     function freeze() {
       locked = true;
       window.removeEventListener("scroll", maybeLock);
-      // Pin exactly to the snap point, then disable page scrolling.
-      window.scrollTo(0, lockTargetY());
       docEl.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
       // Enables the header-hover intro reveal (see _intro-text.scss).
       docEl.classList.add("is-locked");
+      alignLockedLayout();
       setCarouselInteractive(true);
     }
 
@@ -76,7 +167,7 @@
     }
 
     function maybeLock() {
-      if (locked || listView) return;
+      if (locked || listView || docEl.classList.contains("modal-is-open")) return;
       if (window.scrollY >= lockTargetY() - 1) freeze();
     }
 
@@ -98,6 +189,13 @@
     });
 
     window.addEventListener("scroll", maybeLock, { passive: true });
+    window.addEventListener("resize", alignLockedLayout, { passive: true });
+    if ("ResizeObserver" in window) {
+      var layoutObserver = new ResizeObserver(alignLockedLayout);
+      layoutObserver.observe(aktuelles);
+      var intro = document.querySelector(".intro-text");
+      if (intro) layoutObserver.observe(intro);
+    }
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -107,7 +205,7 @@
 
     syncHeaderHeight();
 
-    var header = document.querySelector(".site-header");
+    var header = document.querySelector(".site-header-group, .site-header");
     if (header && "ResizeObserver" in window) {
       new ResizeObserver(syncHeaderHeight).observe(header);
     }

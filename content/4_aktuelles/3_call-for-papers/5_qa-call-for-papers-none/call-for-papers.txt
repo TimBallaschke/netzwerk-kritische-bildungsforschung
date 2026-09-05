@@ -1,0 +1,61 @@
+Title: TEST · Call for Papers – nur Teaser
+
+----
+
+Deadline: 2026-10-31
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für nur Teaser. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: none
+
+----
+
+Externalurltitle: 
+
+----
+
+Externalurl: 
+
+----
+
+Body: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Callurltitle: 
+
+----
+
+Callurl: 
+
+----
+
+Date: 2026-11-20
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Ort: Beispielcampus Mainz (Testort)
+
+----
+
+Uuid: gq77mejgiatjgz4y
+
+----
+
+Feedorder: -94

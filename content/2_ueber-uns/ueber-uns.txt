@@ -51,7 +51,64 @@ Rmulogo: - file://rach53kbqnomhqxb
 
 ----
 
-Vertiefungsbloecke: 
+Vertiefungsbloecke:
+
+- 
+  zwischenueberschrift: >
+    TEST · Was ist das Netzwerk, wie
+    versteht es sich?
+  fliesstext: |
+    Dieser <em>ausführliche Testinhalt</em> prüft Absätze, Sonderzeichen und die Darstellung auf Desktop und Mobilgeräten. Alle hier genannten Testpersonen und Termine sind fiktiv. Forscher*innen, Lehrende und Studierende betrachten Bildung aus unterschiedlichen Perspektiven.
+    
+    Ein zweiter Absatz macht die Abstände und die gemeinsame Textspalte sichtbar. Im Mittelpunkt stehen Fragen nach Teilhabe, gesellschaftlichen Bedingungen und kritischer Reflexion. Auch längere Texte sollen im Overlay vollständig erreichbar bleiben.
+    
+    Für den Test werden Bilder mit Bildunterschriften, ein weiterführender Link und ein lesbares PDF ergänzt. Beim Öffnen und Schließen soll der Fokus zur auslösenden Schaltfläche zurückkehren.
+  kontakte:
+    - 
+      name: Alex Beispiel (Testperson)
+      email: alex@example.org
+    - 
+      name: Robin Muster (Testperson)
+      email: robin@example.org
+    - 
+      name: Testperson ohne öffentliche E-Mail
+      email: ""
+  kontaktlinktitle: Informationen zum Testnetzwerk
+  kontaktlink: 'https://example.org/?test=netzwerk&sprache=de'
+- 
+  zwischenueberschrift: TEST · Wer kann wie mitmachen?
+  fliesstext: 'Dieser Testabschnitt demonstriert einen Kontaktlink per <em>E-Mail</em> und mehrere Ansprechpersonen. Die Adressen sind ausschließlich Platzhalter.'
+  kontakte:
+    - 
+      name: Alex Beispiel (Testperson)
+      email: alex@example.org
+    - 
+      name: Robin Muster (Testperson)
+      email: robin@example.org
+    - 
+      name: Testperson ohne öffentliche E-Mail
+      email: ""
+  kontaktlinktitle: Kontakt zur Testredaktion
+  kontaktlink: mailto:mitmachen@example.org
+- 
+  zwischenueberschrift: >
+    TEST · Vorstellung Arbeitskreis (AK) am
+    Institut für Sozialforschung (IfS)
+  fliesstext: |
+    Dieser <em>ausführliche Testinhalt</em> prüft Absätze, Sonderzeichen und die Darstellung auf Desktop und Mobilgeräten. Alle hier genannten Testpersonen und Termine sind fiktiv. Forscher*innen, Lehrende und Studierende betrachten Bildung aus unterschiedlichen Perspektiven.
+    
+    Ein zweiter Absatz macht die Abstände und die gemeinsame Textspalte sichtbar. Im Mittelpunkt stehen Fragen nach Teilhabe, gesellschaftlichen Bedingungen und kritischer Reflexion. Auch längere Texte sollen im Overlay vollständig erreichbar bleiben.
+    
+    Für den Test werden Bilder mit Bildunterschriften, ein weiterführender Link und ein lesbares PDF ergänzt. Beim Öffnen und Schließen soll der Fokus zur auslösenden Schaltfläche zurückkehren.
+  kontakte:
+    - 
+      name: Alex Beispiel (Testperson)
+      email: alex@example.org
+    - 
+      name: Robin Muster (Testperson)
+      email: robin@example.org
+  kontaktlinktitle: Testinformationen zum Arbeitskreis
+  kontaktlink: https://example.org/?test=arbeitskreis
 
 ----
 

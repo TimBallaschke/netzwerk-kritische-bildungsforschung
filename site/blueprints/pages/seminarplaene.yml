@@ -65,5 +65,6 @@ fields:
         type: files
         max: 1
         min: 1
-        accept: application/pdf
+        query: page.files.filterBy("extension", "pdf")
+        uploads: pdf
         # required: true

@@ -1,0 +1,47 @@
+Title: TEST · Beitrag außerhalb des Aktuelles-Feeds
+
+----
+
+Authors: Testredaktion
+
+----
+
+Authorphoto: - file://jp6hgsw1vu045ah6
+
+----
+
+Description: Fiktiver Testinhalt zur Kontrolle von Archiv, Veröffentlichung und Sichtbarkeit.
+
+----
+
+Inaktuelles: false
+
+----
+
+Body:
+
+Dieser <em>ausführliche Testinhalt</em> prüft Absätze, Sonderzeichen und die Darstellung auf Desktop und Mobilgeräten. Alle hier genannten Testpersonen und Termine sind fiktiv. Forscher*innen, Lehrende und Studierende betrachten Bildung aus unterschiedlichen Perspektiven.
+
+Ein zweiter Absatz macht die Abstände und die gemeinsame Textspalte sichtbar. Im Mittelpunkt stehen Fragen nach Teilhabe, gesellschaftlichen Bedingungen und kritischer Reflexion. Auch längere Texte sollen im Overlay vollständig erreichbar bleiben.
+
+Für den Test werden Bilder mit Bildunterschriften, ein weiterführender Link und ein lesbares PDF ergänzt. Beim Öffnen und Schließen soll der Fokus zur auslösenden Schaltfläche zurückkehren.
+
+----
+
+Downloadpdf: - file://4lqhjdiwczngoncc
+
+----
+
+Datemanual: false
+
+----
+
+Date: 2026-09-04
+
+----
+
+Uuid: ncgkhmxqrsflbtqo
+
+----
+
+Feedorder: -86

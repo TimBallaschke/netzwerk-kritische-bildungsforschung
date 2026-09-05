@@ -1,0 +1,56 @@
+@use 'interaction';
+
+// Shared contact list: the existing dot and arrow glyphs, with Figma's dividers.
+.kontakt-liste {
+  width: min(100%, 19.25em);
+  padding: 0;
+  margin: 0.55em 0 0;
+  list-style: none;
+  border-top: 1px solid currentColor;
+  color: var(--color-brown);
+  font-family: "HAL Timezone", serif;
+  font-size: var(--font-size-large-serif);
+  line-height: 1.2;
+
+  li {
+    border-bottom: 1px solid currentColor;
+    padding: 0.35em 0 0.8em;
+  }
+
+  .kontakt-name, .kontakt-email { margin: 0; }
+  .kontakt-name { font-style: normal; overflow-wrap: anywhere; }
+  .kontakt-email { display: flex; align-items: baseline; gap: 0.2em; font-style: italic; }
+
+  a {
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+
+    @include interaction.desktop-hover {
+      &:hover { text-decoration: underline 2px; }
+    }
+  }
+}
+
+.kontakt-link {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2em;
+  margin: 0.55em 0 0;
+  font-family: "HAL Timezone", serif;
+  font-size: var(--font-size-large-serif);
+  font-style: italic;
+  line-height: 1.2;
+
+  a {
+    min-width: 0;
+    color: inherit;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+
+    @include interaction.desktop-hover {
+      &:hover { text-decoration: underline 2px; }
+    }
+  }
+}

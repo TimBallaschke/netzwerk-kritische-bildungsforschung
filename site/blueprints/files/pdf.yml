@@ -1,0 +1,5 @@
+title: PDF-Dokument
+extends: files/default
+accept:
+  mime: application/pdf
+  extension: pdf

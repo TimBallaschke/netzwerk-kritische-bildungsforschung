@@ -1,8 +1,12 @@
+@use 'interaction';
+
 .intro-text {
-  /* position und z-index hier komplett entfernt! */
+  position: relative;
+  z-index: 2; // cover the carousel when the intro slides back into view
   margin: 1px 1.5rem;
   padding: 0.9rem 0 1rem 0;
   scroll-snap-align: start; 
+  background-color: #fff;
   border-bottom: 1px solid var(--color-brown);
   color: var(--color-brown);
   font-family: "HAL Timezone", serif;
@@ -11,17 +15,26 @@
   transition: transform 0.35s ease;
 
   @media (max-width: 900px) {
-    padding: 2rem 0 2rem 0;
-    margin: 2.9rem;
+    padding: 8px 0;
+    margin: 1px var(--page-gutter) 0;
   }
 }
+
+// Once the carousel is locked under the header, reveal the intro on hover.
+// The list view keeps its normal page scrolling and does not use the reveal.
+@include interaction.desktop-hover {
+  .is-locked:not(.is-list-view) .site-header:hover ~ main .intro-text {
+    transform: translateY(100%);
+  }
+}
+
 .intro-text__body {
   max-width: 75%; // text fills 75%; the border stays full width on .intro-text
   font-size: var(--font-size-large-serif);
   line-height: 1.2;
 
     @media (max-width: 900px) {
-        max-width: 90%; 
+        max-width: 100%;
 
     }
 }

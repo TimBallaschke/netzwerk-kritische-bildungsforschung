@@ -1,6 +1,6 @@
 <?php
 $typeMeta = [
-  'veranstaltung'   => ['label' => 'Veranstaltung',  'color' => '#005436'],
+  'veranstaltung'   => ['label' => 'Veranstaltung',  'color' => '#6EF3FF'],
   'notiz'           => ['label' => 'Notiz',           'color' => '#4965e6'],
   'beitrag'         => ['label' => 'Beiträge',        'color' => '#fcbacd'],
   'call-for-papers' => ['label' => 'Call for Papers', 'color' => '#f3511c'],
@@ -13,7 +13,8 @@ $cardEntries = $cardEntries ?? site()->aktuellesFeed();
 <section
   class="aktuelles"
   aria-label="Aktuelles"
-  x-data="{ view: 'grafik', activeFilter: null }"
+  x-data="{ view: 'grafik', activeFilter: null, isMobile: window.matchMedia('(max-width: 900px)').matches }"
+  @resize.window="isMobile = window.matchMedia('(max-width: 900px)').matches"
   x-init="
     $watch('activeFilter', key => {
       window.dispatchEvent(new CustomEvent('aktuelles:filter-from-alpine', { detail: { key: key } }));
@@ -30,6 +31,7 @@ $cardEntries = $cardEntries ?? site()->aktuellesFeed();
 
   <div class="aktuelles__stage" x-show="view === 'grafik'">
     <svg class="aktuelles__connectors"></svg>
+    <div class="aktuelles__focus-backdrop" aria-hidden="true"></div>
     <div class="aktuelles__ring">
       <div class="aktuelles__dot"></div>
       <div class="aktuelles__label">Aktuelles</div>
@@ -37,12 +39,15 @@ $cardEntries = $cardEntries ?? site()->aktuellesFeed();
         <?php $typeKey = $entry->intendedTemplate()->name(); ?>
         <?php $meta = $typeMeta[$typeKey] ?? ['label' => ucfirst($typeKey), 'color' => '#612c00']; ?>
         <?php snippet('aktuelles-card', [
-          'id'          => $entry->slug(),
+          'id'          => $entry->id(),
           'type'        => $meta['label'],
           'title'       => $entry->title()->value(),
-          'subinfo'     => $entry->subinfo()->kirbytextinline(),
+          'subinfo'     => snippet('entry-subinfo', ['item' => $entry], true),
+          'date'        => $typeKey === 'veranstaltung' && $entry->date()->isNotEmpty() ? $entry->date()->toDate('j.n.Y') : '',
           'description' => $entry->description()->value(),
           'color'       => $meta['color'],
+          'linkType'    => $typeKey === 'beitrag' ? 'self' : $entry->linkType()->or('self')->value(),
+          'externalUrl' => $entry->externalUrl()->value(),
         ]) ?>
       <?php endforeach ?>
     </div>
@@ -63,6 +68,7 @@ $cardEntries = $cardEntries ?? site()->aktuellesFeed();
         type="button"
         class="aktuelles__filter"
         :class="{ 'is-active': activeFilter === 'veranstaltung' }"
+        :aria-pressed="activeFilter === 'veranstaltung'"
         @click="activeFilter = activeFilter === 'veranstaltung' ? null : 'veranstaltung'"
       >
         Veranstaltungen
@@ -71,6 +77,7 @@ $cardEntries = $cardEntries ?? site()->aktuellesFeed();
         type="button"
         class="aktuelles__filter"
         :class="{ 'is-active': activeFilter === 'notiz' }"
+        :aria-pressed="activeFilter === 'notiz'"
         @click="activeFilter = activeFilter === 'notiz' ? null : 'notiz'"
       >
         Notizen
@@ -79,6 +86,7 @@ $cardEntries = $cardEntries ?? site()->aktuellesFeed();
         type="button"
         class="aktuelles__filter"
         :class="{ 'is-active': activeFilter === 'beitrag' }"
+        :aria-pressed="activeFilter === 'beitrag'"
         @click="activeFilter = activeFilter === 'beitrag' ? null : 'beitrag'"
       >
         Beiträge
@@ -87,6 +95,7 @@ $cardEntries = $cardEntries ?? site()->aktuellesFeed();
         type="button"
         class="aktuelles__filter"
         :class="{ 'is-active': activeFilter === 'call-for-papers' }"
+        :aria-pressed="activeFilter === 'call-for-papers'"
         @click="activeFilter = activeFilter === 'call-for-papers' ? null : 'call-for-papers'"
       >
         Call for Papers
@@ -95,6 +104,7 @@ $cardEntries = $cardEntries ?? site()->aktuellesFeed();
         type="button"
         class="aktuelles__filter"
         :class="{ 'is-active': activeFilter === 'publikation' }"
+        :aria-pressed="activeFilter === 'publikation'"
         @click="activeFilter = activeFilter === 'publikation' ? null : 'publikation'"
       >
         Publikationen

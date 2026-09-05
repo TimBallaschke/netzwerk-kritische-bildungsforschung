@@ -92,7 +92,8 @@ columns:
         label: PDF zum Download
         type: files
         max: 1
-        accept: application/pdf
+        query: page.files.filterBy("extension", "pdf")
+        uploads: pdf
         when:
           linkType: self
   - width: 1/3

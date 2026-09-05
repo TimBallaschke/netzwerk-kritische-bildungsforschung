@@ -1,8 +1,13 @@
+@use 'interaction';
+
 // =============================================================================
 // AKTUELLES PAGE (BÜHNE, CARDS, SWITCH & FILTER)
 // =============================================================================
 
 .aktuelles {
+  --pill-padding-block: calc(0.5rem + var(--pill-padding-extra));
+  --pill-padding-inline: calc(0.95rem + var(--pill-padding-extra));
+  --pill-height: calc(var(--font-size-small-sans-serif) + 2 * var(--pill-padding-block) + 2px);
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -10,6 +15,9 @@
   scroll-snap-align: start; 
 
   @media (max-width: 900px) {
+    --pill-padding-block: calc(0.8rem + var(--pill-padding-extra));
+    --pill-padding-inline: calc(1.5rem + var(--pill-padding-extra));
+    --feed-controls-top: calc(1.5rem + 3px);
     display: flex;
     flex-direction: column;
   }
@@ -39,7 +47,27 @@ html.is-locked {
     flex: 1;          
     min-height: 0;    
     width: 100%;
-    padding: 0 0.5rem;
+    padding: 0 var(--page-gutter);
+  }
+}
+
+.aktuelles__focus-backdrop {
+  position: absolute;
+  inset: 0;
+  // Above every background card and connector, below the focused card.
+  z-index: 200000;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+
+  .aktuelles__stage.has-focused-card & {
+    opacity: 0.85;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 
@@ -59,6 +87,16 @@ html.is-locked {
 // CARDS & CARD-BUTTONS
 // -----------------------------------------------------------------------------
 .aktuelles__card {
+  &[hidden] { display: none; }
+
+  // Main's desktop type proportions, with responsive readability limits.
+  // Mobile retains the shared type sizes.
+  @media (min-width: 901px) {
+    --font-size-large-serif: clamp(18px, 1.8vw, 36px);
+    --font-size-small-serif: clamp(14px, 1.2vw, 24px);
+    --font-size-small-sans-serif: clamp(14px, 1.2vw, 24px);
+  }
+
   position: absolute;
   top: 50%;
   left: 0;
@@ -76,25 +114,44 @@ html.is-locked {
   color: var(--color-brown);
   overflow: hidden;
   cursor: pointer;
-  will-change: transform;
-  transition: background-color 0.2s ease;
+  filter: blur(0px);
+  will-change: transform, filter;
+  transition: background-color 0.2s ease, filter 0.35s ease,
+    border-color 0.35s ease;
+
+  // Card spacing comes from the flex gap, not the page-copy paragraph rhythm.
+  > p {
+    margin: 0;
+    max-width: none;
+  }
+
+  &.is-depth-blurred:not(.is-open) {
+    filter: blur(4px);
+    border-color: transparent;
+
+    @media (max-width: 900px) {
+      filter: blur(2px);
+    }
+  }
 
   &.is-open {
-    background: var(--color-brown);
+    filter: blur(0px);
 
     @media (max-width: 900px) {
       width: 80vw;
       left: 50%; 
       translate: -50% -50%;   
-      padding: 1rem 1.25rem; 
     }
   }
 
   @media (max-width: 900px) {
-    width: 130%;  
+    --card-padding: clamp(12px, 3rem, 24px);
+    --card-control-size: max(24px, 6.5rem);
+    --card-control-gap: 1.2rem;
+    width: 180%;
     left: 50%; 
     translate: -50% -50%;   
-    padding: 1rem 1.25rem; 
+    padding: var(--card-padding);
   }
 }
 
@@ -104,34 +161,39 @@ html.is-locked {
   right: 0.6rem;
   display: grid;
   place-items: center;
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
   border: 1px solid var(--color-brown);
   border-radius: 50%;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  opacity: 1;
+  transition: color 0.2s ease, border-color 0.2s ease, opacity 0.35s ease;
 
-  @media (max-width: 900px) {
-    width: 5rem;   
-    height: 5rem;
-    top: 0.8rem;
-    right: 0.8rem;
+  .aktuelles__card.is-depth-blurred:not(.is-open) & {
+    opacity: 0;
+    pointer-events: none;
   }
 
-  .aktuelles__card.is-open & {
-    color: #fff;
-    border-color: #fff;
+  @media (max-width: 900px) {
+    width: var(--card-control-size);
+    height: var(--card-control-size);
+    top: var(--card-padding);
+    right: var(--card-padding);
   }
 }
 
 .aktuelles__card-info-icon {
   position: relative;
-  width: 1rem; 
-  height: 1rem;
+  width: 1.1rem;
+  height: 1.1rem;
   transition: transform 0.2s ease;
 
   @media (max-width: 900px) {
-    width: 2rem;
-    height: 2rem;
+    width: max(10px, 2.6rem);
+    height: max(10px, 2.6rem);
   }
 
   .aktuelles__card.is-open & {
@@ -164,13 +226,13 @@ html.is-locked {
   right: 3rem;
   display: grid;
   place-items: center;
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2rem;
+  height: 2rem;
   padding: 0;
   background: transparent;
-  border: 1px solid #fff;
+  border: 1px solid currentColor;
   border-radius: 50%;
-  color: #fff;
+  color: inherit;
   cursor: pointer;
   opacity: 0;
   transform: scale(0.6);
@@ -178,10 +240,10 @@ html.is-locked {
   transition: opacity 0.2s ease, transform 0.2s ease;
 
   @media (max-width: 900px) {
-    width: 5rem;
-    height: 5rem;
-    top: 0.8rem;
-    right: 7rem; 
+    width: var(--card-control-size);
+    height: var(--card-control-size);
+    top: var(--card-padding);
+    right: calc(var(--card-padding) + var(--card-control-size) + var(--card-control-gap));
   }
 
   .aktuelles__card.is-open & {
@@ -192,12 +254,12 @@ html.is-locked {
 }
 
 .aktuelles__card-open-icon {
-  width: 1rem;
-  height: 1rem;
+  width: 1.1rem;
+  height: 1.1rem;
 
   @media (max-width: 900px) {
-    width: 3rem;
-    height: 3rem;
+    width: max(15px, 3.9rem);
+    height: max(15px, 3.9rem);
   }
 
   line,
@@ -210,22 +272,29 @@ html.is-locked {
 }
 
 .aktuelles__card-type {
+  flex-shrink: 0;
   font-size: var(--font-size-large-serif);
   line-height: 1.15;
   padding-right: 1.8rem;
   transition: color 0.2s ease;
 
-  .aktuelles__card.is-open & {
-    color: #fff;
+  @media (max-width: 900px) {
+    min-height: var(--card-control-size);
+    padding-right: calc(var(--card-control-size) + var(--card-control-gap));
+
+    .aktuelles__card.is-open:has(.aktuelles__card-open) & {
+      padding-right: calc(2 * (var(--card-control-size) + var(--card-control-gap)));
+    }
   }
 }
 
 .aktuelles__card-type-label {
-  text-decoration: underline;
+  text-decoration: underline 2px;
   text-underline-offset: 0.12em;
 }
 
 .aktuelles__card-title {
+  flex-shrink: 0;
   font-weight: 400;
   font-size: var(--font-size-large-serif);
   line-height: 1.15;
@@ -235,13 +304,10 @@ html.is-locked {
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.2s ease;
-
-  .aktuelles__card.is-open & {
-    color: #fff;
-  }
 }
 
 .aktuelles__card-subinfo {
+  flex-shrink: 0;
   font-size: var(--font-size-small-serif);
   line-height: 1.2;
   display: -webkit-box;
@@ -254,10 +320,6 @@ html.is-locked {
   em {
     font-style: italic;
   }
-
-  .aktuelles__card.is-open & {
-    color: #fff;
-  }
 }
 
 .aktuelles__card-desc {
@@ -267,18 +329,39 @@ html.is-locked {
   font-family: "Geist", system-ui, sans-serif;
   font-size: var(--font-size-small-sans-serif);
   line-height: 1.3;
-  transition: grid-template-rows 0.4s ease, opacity 0.3s ease, color 0.2s ease;
+  transition: grid-template-rows 0.4s ease,
+    opacity var(--card-text-fade-duration, 0.3s) ease, color 0.2s ease;
 }
 
 .aktuelles__card-desc-inner {
   overflow: hidden;
   min-height: 0;
+
+  // Include the spacing in the collapsing content so closed cards stay compact.
+  &::before {
+    content: "";
+    display: block;
+    height: 1em;
+  }
 }
 
 .aktuelles__card.is-open .aktuelles__card-desc {
+  // A quick reopen must also start with fully hidden text.
+  --card-text-fade-duration: 0s;
   grid-template-rows: 1fr;
+}
+
+.aktuelles__card.is-open.is-content-visible .aktuelles__card-desc {
+  --card-text-fade-duration: 0.3s;
   opacity: 1;
-  color: #fff;
+}
+
+.aktuelles__card.is-open.is-closing .aktuelles__card-desc {
+  --card-text-fade-duration: 0.18s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aktuelles__card-desc { transition: none; }
 }
 
 .aktuelles__card-overlay {
@@ -294,6 +377,7 @@ html.is-locked {
   position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
   width: 14px;
   height: 14px;
   background: var(--color-brown);
@@ -307,6 +391,7 @@ html.is-locked {
   position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate3d(-50%, -50%, 1px);
   background: var(--color-brown);
   color: #fff;
   padding: 0.75rem 1.5rem;
@@ -323,18 +408,41 @@ html.is-locked {
 // -----------------------------------------------------------------------------
 // FILTER BUTTONS & PILLS (Identisch zu Switch-Optionen)
 // -----------------------------------------------------------------------------
+.aktuelles__graph-filters {
+  display: contents;
+
+  @media (max-width: 900px) {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 300000;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 1.5rem var(--page-gutter) max(var(--page-gutter), env(safe-area-inset-bottom, 0px));
+  }
+}
+
 .aktuelles__label--filter {
   position: absolute;
   top: 50%;
   left: 50%;
+
+  @media (max-width: 900px) {
+    // Keep the active filter's absolute close icon anchored to its own pill.
+    position: relative;
+    inset: auto;
+    transform: none !important;
+  }
 }
 
 .aktuelles__filter {
-  position: static;
+  position: relative;
 }
 
 .aktuelles__label--filter,
 .aktuelles__filter {
+  --filter-icon-inset: calc(0.6rem + var(--pill-padding-extra));
+  --filter-icon-gap: 0.35em;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -348,7 +456,8 @@ html.is-locked {
   font-weight: 400 !important;
   line-height: 1 !important;
 
-  padding: 0.5rem 0.95rem;
+  height: var(--pill-height);
+  padding: var(--pill-padding-block) var(--pill-padding-inline);
   background: #fff;
   color: var(--color-brown);
   border: 1px solid var(--color-brown);
@@ -356,49 +465,63 @@ html.is-locked {
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: padding-right 0.25s ease, background-color 0.2s ease,
+    color 0.2s ease, border-color 0.2s ease;
 
-  &:hover {
-    background: var(--color-brown);
-    color: #fff;
+  // Keep the close icon mounted so both opening and closing can animate.
+  &::after {
+    content: "✕" / "";
+    position: absolute;
+    top: 50%;
+    right: var(--filter-icon-inset);
+    display: grid;
+    place-items: center;
+    width: 1.4em;
+    height: 1.4em;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-size: 0.72em;
+    line-height: 1;
+    opacity: 0;
+    transform: translateY(-50%) scale(0.6) rotate(-45deg);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.25s ease;
+  }
+
+  @include interaction.desktop-hover {
+    &:hover {
+      background: var(--color-brown);
+      color: #fff;
+    }
   }
 
   &.is-active,
   &.aktuelles__label--active {
     background: var(--color-brown);
     color: #fff;
-    padding-right: 0.6rem;
+    // 1.008em is the icon's outer width: 1.4 × its 0.72em font size.
+    padding-right: calc(var(--filter-icon-inset) + var(--filter-icon-gap) + 1.008em);
 
     &::after {
-      content: "";
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      border: 1px solid currentColor;
-      border-radius: 50%;
-      margin-left: 0.35rem;
-      flex-shrink: 0;
-      background: 
-        linear-gradient(currentColor, currentColor) center / 50% 1.5px no-repeat,
-        linear-gradient(currentColor, currentColor) center / 1.5px 50% no-repeat;
-      transform: rotate(45deg);
+      opacity: 1;
+      transform: translateY(-50%) scale(1) rotate(0deg);
     }
   }
 
   @media (max-width: 900px) {
-    padding: 0.8rem 1.5rem;
-
-    &.is-active,
-    &.aktuelles__label--active {
-      padding-right: 0.8rem;
-
-      &::after {
-        margin-left: 0.4rem;
-      }
-    }
+    --filter-icon-inset: calc(0.8rem + var(--pill-padding-extra));
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .aktuelles__label--filter,
+  .aktuelles__filter {
+    &,
+    &::after {
+      transition: none;
+    }
+  }
+}
 
 // -----------------------------------------------------------------------------
 // LISTENANSICHT & FILTER-CONTAINER
@@ -429,33 +552,15 @@ html.is-locked {
   }
 
   @media (max-width: 900px) {
-    padding: 1.5rem !important;
-    gap: 2rem !important; /* Deutlicher Gap zwischen Pills & Zeilen auf Mobile */
-
-    &::before {
-      order: 2 !important; /* Sitzt auf Mobile exakt zwischen 'Notizen' und 'Beiträge' */
-      width: calc(var(--switch-width, 11rem) - 0.5rem) !important;
-    }
+    display: none !important;
   }
 }
 
 .aktuelles__filter {
-  position: static !important;
+  position: relative !important;
   margin: 0 !important; /* Entfernt alte Margins – Flex-Gap übernimmt die Abstände */
   order: 1 !important;
 
-  @media (max-width: 900px) {
-    &:nth-child(1),
-    &:nth-child(2) {
-      order: 1 !important; /* 'Veranstaltungen' & 'Notizen' in Zeile 1 */
-    }
-
-    &:nth-child(3),
-    &:nth-child(4),
-    &:nth-child(5) {
-      order: 3 !important; /* 'Beiträge' & Folgende brechen sauber in Zeile 2+ um */
-    }
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -479,7 +584,9 @@ html.is-locked {
   user-select: none;
 
   @media (max-width: 900px) {
-    top: 1.5rem;
+    top: var(--feed-controls-top);
+    left: var(--page-gutter);
+    right: auto;
   }
 }
 
@@ -493,13 +600,19 @@ html.is-locked {
 
   &.is-grafik { transform: translateX(0); }
   &.is-liste  { transform: translateX(100%); }
+
+  @media (max-width: 900px) {
+    // Include the switch's 1px border so both end positions sit flush.
+    inset: -1px auto -1px -1px;
+    width: calc(50% + 1px);
+  }
 }
 
 .aktuelles__switch-option {
   position: relative; 
   appearance: none;
   margin: 0;
-  padding: 0.5rem 0.95rem;
+  padding: var(--pill-padding-block) var(--pill-padding-inline);
   background: transparent;
   border: 0;
   font: inherit;
@@ -512,7 +625,6 @@ html.is-locked {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0.8rem 1.5rem;  
   }
 
   &.is-active { color: #fff; } 
@@ -529,8 +641,8 @@ html.is-locked {
   z-index: 2; 
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: var(--pill-height);
+  height: var(--pill-height);
   padding: 0;
   background: #fff;
   color: var(--color-brown);
@@ -541,15 +653,17 @@ html.is-locked {
   transition: background-color 0.2s ease, color 0.2s ease;
 
   @media (max-width: 900px) {
-    width: 4.5rem;   
-    height: 4.5rem;
-    bottom: 1.5rem;
-    left: 1.5rem;
+    top: var(--feed-controls-top);
+    right: var(--page-gutter);
+    bottom: auto;
+    left: auto;
   }
 
-  &:hover {
-    background: var(--color-brown);
-    color: #fff;
+  @include interaction.desktop-hover {
+    &:hover {
+      background: var(--color-brown);
+      color: #fff;
+    }
   }
 }
 
@@ -557,13 +671,8 @@ html.is-locked {
   grid-area: 1 / 1;
   display: grid;
   place-items: center;
-  width: 1.1rem;
-  height: 1.1rem;
-
-  @media (max-width: 900px) {
-    width: 1.8rem;  
-    height: 1.8rem;
-  }
+  width: var(--font-size-small-sans-serif);
+  height: var(--font-size-small-sans-serif);
 
   svg {
     width: 100%;
@@ -590,7 +699,11 @@ html.is-locked {
 
   line {
     stroke: var(--color-brown);
-    stroke-width: 1;
+    // Keep all connectors at one CSS pixel, including during scaling.
+    stroke-width: 1px;
+    stroke-opacity: 1;
+    stroke-linecap: round;
+    shape-rendering: geometricPrecision;
     vector-effect: non-scaling-stroke;
   }
 }

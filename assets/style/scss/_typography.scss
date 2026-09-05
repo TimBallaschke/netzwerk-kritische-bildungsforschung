@@ -1,5 +1,11 @@
 // Typography — HAL Timezone
 
+*,
+*::before,
+*::after {
+  text-decoration-thickness: 2px;
+}
+
 @font-face {
   font-family: "HAL Timezone";
   src: url("../fonts/HALTimezoneUnlicensed-Regular.otf") format("opentype");
@@ -16,32 +22,51 @@
 
 
 :root {
+  // Preserve the existing rem-based layout; give type its own readable bounds.
   font-size: 1vw;
-
-  // Font Sizes
-  --font-size-headline:           2.7rem;
-  --font-size-headline2:          2.8rem;
-
-  --font-size-large-serif:        1.5rem;
-  --font-size-large-sans-serif:   3.5rem;
-
-  --font-size-small-serif:        1.2rem;
-  --font-size-small-sans-serif:   1.2rem;
+  --font-size-headline: clamp(36px, 4.894vw, 88px);
+  --font-size-headline2: clamp(28.84px, 3.20124vw, 57.68px);
+  --font-size-large-serif: clamp(18px, 1.984vw, 36px);
+  --font-size-large-sans-serif: 3.5rem;
+  --font-size-small-serif: clamp(14px, 1.323vw, 24px);
+  --font-size-small-sans-serif: clamp(14px, 1.323vw, 24px);
+  --page-gutter: clamp(16px, 1.389vw, 28px);
+  --content-width: 57.94rem;
+  --title-width: 61rem;
+  --content-indent: 19.64rem;
+  --content-gap: 1.323rem;
+  // Figma's shared reading grid: x = 318px, width = 876px at 1512px.
+  --line-height-text: 1.2;
+  // One empty line between paragraphs, following the body-text line height.
+  --paragraph-spacing: calc(1em * var(--line-height-text));
+  // One empty body-text line after a heading or title/author block.
+  --heading-content-gap: calc(var(--font-size-large-serif) * var(--line-height-text));
+  --section-inset: max(12px, 0.85rem);
+  --section-spacing: calc(2 * var(--heading-content-gap));
+  --caption-gap: 0.25em;
+  --image-text-offset: calc(var(--font-size-large-serif) * 0.2);
+  --portrait-width-mobile: 320px;
+  // Shared content-to-divider spacing for every inline disclosure.
+  --disclosure-bottom-gap: max(12px, 0.75rem);
+  --disclosure-open-bottom-gap: max(16px, 1.2rem);
+  --control-size: clamp(35px, 2.315vw, 44px);
 }
 
 @media (max-width: 900px) {
   :root {
-    --font-size-headline:           4rem;
-    --font-size-headline2:          6rem;
-
-    --font-size-large-serif:        4rem;
-    --font-size-large-sans-serif:   9rem;
-
-    --font-size-small-serif:        4rem;
-    --font-size-small-sans-serif:   4rem;
+    --page-gutter: 12px;
+    --font-size-headline: clamp(30px, 7.8vw, 62px);
+    --font-size-headline2: clamp(28.84px, 5.665vw, 43.26px);
+    --font-size-large-serif: clamp(18px, 4.8vw, 26px);
+    --font-size-large-sans-serif: 9rem;
+    --font-size-small-serif: clamp(16px, 4vw, 20px);
+    --font-size-small-sans-serif: clamp(15px, 3.75vw, 19px);
+    --content-width: 100%;
+    --title-width: 100%;
+    --section-inset: 16px;
+    --disclosure-open-bottom-gap: 20px;
+    --control-size: 36px;
   }
 }
 
-em, i {
-  font-style: italic !important;
-}
+em, i { font-style: italic; }

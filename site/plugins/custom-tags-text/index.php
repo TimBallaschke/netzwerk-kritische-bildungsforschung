@@ -1,4 +1,3 @@
-
 <?php
 
 Kirby::plugin('custom/tags', [

@@ -1,3 +1,5 @@
+@use 'interaction';
+
 // =============================================================================
 // FOOTER
 // =============================================================================
@@ -28,7 +30,7 @@ body:has(.aktuelles__switch-thumb.is-grafik) {
 
   
     @media (max-width: 900px) {
-      padding: 4rem 2rem ;
+      padding: 4rem var(--page-gutter);
     }
 
 
@@ -74,8 +76,10 @@ body:has(.aktuelles__switch-thumb.is-grafik) {
     text-decoration: none;
     transition: opacity 0.2s ease;
 
-    &:hover {
-      opacity: 0.7;
+    @include interaction.desktop-hover {
+      &:hover {
+        opacity: 0.7;
+      }
     }
 
     .instagram-icon {

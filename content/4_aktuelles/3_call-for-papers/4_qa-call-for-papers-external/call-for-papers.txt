@@ -1,0 +1,61 @@
+Title: TEST · Call for Papers – externer Link
+
+----
+
+Deadline: 2026-10-31
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für externer Link. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: external
+
+----
+
+Externalurltitle: Externe Testseite öffnen
+
+----
+
+Externalurl: https://example.org/?test=call-for-papers&quelle=website
+
+----
+
+Body: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Callurltitle: 
+
+----
+
+Callurl: 
+
+----
+
+Date: 2026-11-20
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Ort: Beispielcampus Mainz (Testort)
+
+----
+
+Uuid: eom9qdcpu3fg1fzi
+
+----
+
+Feedorder: -95

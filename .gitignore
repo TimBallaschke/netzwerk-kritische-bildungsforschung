@@ -7,6 +7,8 @@ Icon
 # Temporary files
 # ---------------
 
+/node_modules/
+
 /media/*
 !/media/index.html
 

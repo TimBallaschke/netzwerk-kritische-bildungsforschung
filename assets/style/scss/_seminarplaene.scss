@@ -1,141 +1,34 @@
-// =============================================================================
-// SEMINARPLÄNE PAGE
-// =============================================================================
+@use 'content-layout';
 
 .page-seminarplaene {
-padding: 0 0 0 0;
-color: var(--color-brown);
-font-family: "HAL Timezone", serif;
+  color: var(--color-brown);
+  font-family: "HAL Timezone", serif;
 
-.seminarplaene-header {
-padding: 0 1.5rem;
-}
+  .seminarplaene-header { padding: 0 var(--page-gutter); }
 
-.seminarplaene-title {
-font-size: var(--font-size-headline2);
-line-height: 0.95;
-font-weight: normal;
-letter-spacing: -0.02em;
-margin: 2.5rem 0rem;
-max-width: 85%;
-}
+  .seminarplaene-title {
+    @include content-layout.title;
+    margin: var(--section-inset) 0 var(--heading-content-gap);
+  }
 
-.seminarplaene-intro-grid {
-display: grid;
-grid-template-columns: 20rem 1fr;
-gap: 2rem;
-margin-bottom: 3rem;
+  .seminarplaene-intro-grid {
+    @include content-layout.grid;
+    margin-bottom: var(--section-spacing);
+  }
 
+  .seminarplaene-intro-text {
+    @include content-layout.body;
+    grid-column: 2;
+    min-width: 0;
+  }
 
+  .seminarplaene-contact {
+    margin-top: var(--heading-content-gap);
+  }
 
-@media (max-width: 768px) {  
-  grid-template-columns: 1fr;  
-}  
+  .email-link a { color: inherit; font-style: italic; overflow-wrap: anywhere; }
 
-.seminarplaene-intro-text {  
-  grid-column: 2;  
-
-  @media (max-width: 768px) {  
-    grid-column: 1;  
-  }  
-
-  p {  
-    font-size: var(--font-size-large-serif);  
-    line-height: 1.25;  
-    margin-bottom: 1.5rem;  
-  }  
-}  
-
-.seminarplaene-contact {  
-  margin-top: 2rem;  
-  font-size: var(--font-size-large-serif);  
-  line-height: 1.25;  
-
-  p {  
-    margin-bottom: 0.3rem;  
-  }  
-
-  .email-link a {  
-    color: var(--color-brown);  
-    font-style: italic;  
-    text-decoration: underline;  
-
-    &:hover {  
-      font-style: normal;  
-    }  
-  }  
-}  
-}
-
-.seminarplaene-section-header {
-border-top: 1px solid var(--color-brown);
-padding: 0.8rem 1.5rem 0.6rem 1.5rem;
-
-
-
-h2 {  
-  font-size: var(--font-size-large-serif);  
-  font-weight: normal;  
-  margin: 0;  
-}  
-}
-
-.seminarplaene-blue-box {
-background-color: var(--color-blue);
-border-top: 1px solid var(--color-brown);
-border-bottom: 1px solid var(--color-brown);
-padding: 0 1.5rem;
-
-
-
-.seminarplaene-list {  
-  display: flex;  
-  flex-direction: column;  
-
-  .seminarplan-item {  
-    display: flex;  
-    justify-content: space-between;  
-    align-items: center;  
-    gap: 2rem;  
-    padding: 1.2rem 0;  
-    border-bottom: 1px solid var(--color-brown);  
-
-    &:last-child {  
-      border-bottom: none;  
-    }  
-
-    @media (max-width: 768px) {  
-      flex-direction: column;  
-      align-items: flex-start;  
-      gap: 1rem;  
-    }  
-
-    .seminarplan-info {  
-      flex: 1;  
-
-      .seminarplan-dozierende {  
-        font-size: var(--font-size-large-serif);  
-        font-style: italic;  
-        margin-bottom: 0.2rem;  
-      }  
-
-      .seminarplan-titel {  
-        font-size: var(--font-size-large-serif);  
-        font-weight: normal;  
-        line-height: 1.2;  
-        margin: 0;  
-
-        .bullet {  
-          font-size: 0.8em;  
-          margin-right: 0.2rem;  
-        }  
-      }  
-    }  
-
-    .seminarplan-action {  
-      flex-shrink: 0;  
-    }  
-  }  
-}  
-}
+  @media (max-width: 900px) {
+    .seminarplaene-intro-text { grid-column: 1; }
+  }
 }

@@ -1,0 +1,18 @@
+label: Ansprechpersonen
+type: structure
+empty: Noch keine Ansprechpersonen angelegt
+columns:
+  name:
+    width: 1/2
+  email:
+    width: 1/2
+fields:
+  name:
+    label: Name
+    type: text
+    required: true
+    width: 1/2
+  email:
+    label: E-Mail
+    type: email
+    width: 1/2

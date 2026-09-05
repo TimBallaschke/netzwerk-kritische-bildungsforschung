@@ -1,8 +1,8 @@
 title: Beitrag
 
-# One blog post. Lives flat in the /aktuelles pool (type encoded by this
-# template). Detail view rendered at /beiträge/<slug>; listed by the
-# nested Beiträge page and, when toggled, in the Aktuelles feed.
+# One blog post under /aktuelles/beitraege. Its own URL is rendered by
+# templates/beitrag.php; it also appears in the Beiträge overview and,
+# when toggled, in the Aktuelles feed.
 
 options:
   template: beitrag
@@ -53,7 +53,8 @@ columns:
         label: PDF zum Download
         type: files
         max: 1
-        accept: application/pdf
+        query: page.files.filterBy("extension", "pdf")
+        uploads: pdf
   - width: 1/3
     fields:
       dateManual:

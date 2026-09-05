@@ -1,3 +1,6 @@
+@use 'interaction';
+@use 'content-layout';
+
 // =============================================================================
 // GLOBAL LAYOUT & COMPONENT SYSTEM
 // =============================================================================
@@ -17,52 +20,38 @@ html {
   }
 }
 
-*,
-*::before,
-*::after {
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
-  -webkit-tap-highlight-color: transparent !important;
-}
-
-a,
-button,
-input,
-textarea,
-select,
-[role="button"] {
-  -webkit-appearance: none;
-  appearance: none;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-a:active,
-button:active,
-[role="button"]:active {
-  outline: none !important;
-  box-shadow: none !important;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
-}
+button, [role="button"] { -webkit-tap-highlight-color: transparent; }
 
 main {
+  // The header draws the separator; a border here would offset the banners by 1px.
   padding-top: var(--header-height, 0px);
-  border-top: 1px solid var(--color-brown);
 }
 
 /* Globaler Abstand fÃ¼r alle AbsÃ¤tze im Hauptbereich */
 main p {
   margin-top: 0;
-  margin-bottom: 1.25em;
-  max-width: 55rem; 
+  margin-bottom: var(--paragraph-spacing);
+  max-width: var(--content-width);
 
   &:last-child {
     margin-bottom: 0;
   }
 
   @media (max-width: 900px) {
-    max-width: 100vw; 
+    max-width: 100vw;
   }
+}
+
+// The same reading rhythm for page copy, articles and expanded event content.
+.text-content {
+  @include content-layout.body;
+  min-width: 0;
+
+  p { margin: 0 0 var(--paragraph-spacing); }
+  p:last-child { margin-bottom: 0; }
+  :is(h2, h3, h4, h5, h6) { @include content-layout.subheading; }
+  > :last-child { margin-bottom: 0; }
+  a { overflow-wrap: anywhere; }
 }
 
 body::before {
@@ -87,24 +76,27 @@ body::before {
   background: var(--color-brown);
 }
 
-body.modal-is-open {
-  .aktuelles__stage,
-  .aktuelles__ring,
-  .aktuelles__connectors,
-  .aktuelles__switch,
-  .aktuelles__playpause,
-  .aktuelles__list,
-  .category-banner {
-    display: none !important;
+// The native dialog paints in the top layer, independently of these page effects.
+main, .site-footer {
+  transition:
+    opacity var(--overlay-exit-duration) ease,
+    filter var(--overlay-exit-duration) ease,
+    visibility 0s;
+}
+
+body.modal-is-open:not(.modal-is-closing) {
+  main, .site-footer {
+    opacity: 0;
+    filter: blur(8px);
+    visibility: hidden;
+    transition-duration: var(--overlay-transition-duration), var(--overlay-transition-duration), 0s;
+    // Hide only after the fade; restore visibility immediately when closing.
+    transition-delay: 0s, 0s, var(--overlay-transition-duration);
   }
-  .intro-text,
-  .category-banner,
-  .beitraege-subtitle {
-    opacity: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main, .site-footer { transition: none; }
 }
 
 html.modal-is-open,
@@ -116,11 +108,11 @@ body.modal-is-open {
 // -----------------------------------------------------------------------------
 // 2. KATEGORIE BANNER & HR LINES
 // -----------------------------------------------------------------------------
-hr {
+.site-header > hr {
   position: absolute;
   bottom: -2px; /* Platziert die Linie exakt auf der Kante */
-  left: 1.5rem;
-  right: 1.5rem;
+  left: var(--page-gutter);
+  right: var(--page-gutter);
   z-index: 1001;
   height: 1px;
   background-color: var(--color-brown);
@@ -130,13 +122,10 @@ hr {
 }
 
 .category-banner {
+  @include content-layout.section-label;
   background-color: var(--color-brown);
   color: #ffffff;
   height: auto;
-  padding: 0.4rem 1.5rem;
-  font-family: "HAL Timezone", serif;
-  font-style: italic;
-  font-size: var(--font-size-small-serif);
 }
 
 // -----------------------------------------------------------------------------
@@ -145,10 +134,11 @@ hr {
 .toggle-btn,
 .aktuelles-item__toggle,
 .aktuelles-modal__close {
+  position: relative;
   display: grid;
   place-items: center;
-  width: 2.2rem;
-  height: 2.2rem;
+  width: var(--control-size);
+  height: var(--control-size);
   padding: 0;
   background: transparent;
   border: 1px solid var(--color-brown);
@@ -160,14 +150,24 @@ hr {
   line-height: 0;
   transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
 
-  &:hover {
-    background-color: var(--color-brown);
-    color: #ffffff;
+  @include interaction.desktop-hover {
+    &:hover {
+      background-color: var(--color-brown);
+      color: #ffffff;
+    }
   }
 
   @media (max-width: 900px) {
-    width: 5rem !important;  
-    height: 5rem !important;
+    // Keep a 44px touch target around the smaller visible circle.
+    &::after {
+      content: "";
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 
   .toggle-icon,
@@ -175,20 +175,13 @@ hr {
   .close-icon {
     position: relative;
     display: block;
-    width: 1rem;
-    height: 1rem;
+    width: 16px;
+    height: 16px;
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 
     @media (max-width: 900px) {
-      width: 2.6rem !important;
-      height: 2.6rem !important;
-
-      &::before {
-        height: 1px !important;  
-      }
-      &::after {
-        width: 1px !important;
-      }
+      width: 14px;
+      height: 14px;
     }
 
     &::before,
@@ -221,11 +214,63 @@ hr {
   }
 }
 
-.ueber-uns-block.is-open {
-  .toggle-btn {
-    .toggle-icon {
-      transform: rotate(45deg);
-    }
+// Only the content viewport changes height. Its gradient stays attached to
+// the moving bottom edge and fades independently, without changing text layout.
+.disclosure-content {
+  --disclosure-preview-lines: 4;
+  --disclosure-fade-height: calc(2 * var(--line-height-text) * 1em);
+  position: relative;
+  min-width: 0;
+  line-height: var(--line-height-text);
+  height: var(--disclosure-collapsed-height, auto);
+  max-height: calc(var(--disclosure-preview-lines) * var(--line-height-text) * 1em);
+  overflow: clip;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: min(100%, var(--disclosure-fade-height));
+    background: linear-gradient(to bottom, rgb(255 255 255 / 0), #fff 90%);
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &--no-fade {
+    --disclosure-preview-lines: 0;
+    &::after { content: none; }
+  }
+}
+
+[x-data="disclosure"] {
+  transition: padding-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Full text needs a little more space below its baseline than the faded
+  // preview, so the two sides of the divider look balanced.
+  &.is-open { --disclosure-bottom-gap: var(--disclosure-open-bottom-gap); }
+
+  &.is-open .disclosure-content,
+  &.is-animating .disclosure-content {
+    height: auto;
+    max-height: none;
+  }
+
+  &.is-open .disclosure-content::after { opacity: 0; }
+
+  .toggle-btn[aria-expanded] .toggle-icon {
+    transform: rotate(0deg);
+    transition-duration: 0.4s;
+  }
+
+  .toggle-btn[aria-expanded="true"] .toggle-icon {
+    transform: rotate(45deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    .toggle-btn, .toggle-icon { transition: none; }
+    .disclosure-content::after { transition: none; }
   }
 }
 
@@ -235,28 +280,28 @@ hr {
 .pdf-button {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.9rem;
+  gap: 0.35em;
+  padding: calc(0.35em + var(--pill-padding-extra)) calc(0.8em + var(--pill-padding-extra));
   border: 1px solid var(--color-brown);
   border-radius: 9999px;
   color: var(--color-brown);
   text-decoration: none;
-  font-family: "HAL Timezone", serif;
-  font-size: var(--font-size-small-serif);
+  font-family: "Geist", system-ui, sans-serif;
+  font-size: var(--font-size-small-sans-serif);
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.2;
   background: transparent;
   white-space: nowrap;
   transition: background-color 0.3s ease, color 0.3s ease;
 
-  &:hover {
-    background-color: var(--color-brown);
-    color: #ffffff;
+  @include interaction.desktop-hover {
+    &:hover {
+      background-color: var(--color-brown);
+      color: #ffffff;
+    }
   }
 
-  @media (max-width: 768px) {
-    padding: 0.6rem 3rem;
-    font-size: var(--font-size-large-serif);
-    min-height: 2.75rem;
-  }
 }
 
 /* Standardized Category Pill */
@@ -267,7 +312,7 @@ hr {
   justify-content: center;
   width: fit-content;
   height: auto;
-  padding: 0.45rem 1.1rem;
+  padding: calc(0.45rem + var(--pill-padding-extra)) calc(1.1rem + var(--pill-padding-extra));
   font-family: "Geist", system-ui, sans-serif;
   font-size: var(--font-size-small-sans-serif);
   line-height: 1;
@@ -279,36 +324,26 @@ hr {
   user-select: none;
 
   @media (max-width: 900px) {
-    padding: 0.75rem 1.6rem;
+    padding: calc(0.75rem + var(--pill-padding-extra)) calc(1.6rem + var(--pill-padding-extra));
   }
 }
 
 // -----------------------------------------------------------------------------
 // 5. INTERAKTIVE ACCORDION-LISTEN & BEITRÃ„GE
 // -----------------------------------------------------------------------------
-.interactive-list {
-  border-top: 1px solid var(--color-brown);
-
-  &--pink { background-color: var(--color-pink); }
-  &--green { background-color: var(--color-green); }
-}
-
 .interactive-list-item,
 .aktuelles-item {
   position: relative;
-  padding: 1.2rem 4.5rem 1.2rem 1.5rem;
+  padding: 1.2rem var(--page-gutter);
   border-bottom: 1px solid var(--color-brown);
+  color: inherit;
   transition: background-color 0.35s ease, color 0.35s ease;
-
-  @media (max-width: 900px) {
-    padding-right: 5rem;
-  }
 
   .toggle-btn,
   .aktuelles-item__toggle {
     position: absolute;
     top: 1.2rem;
-    right: 1.5rem;
+    right: var(--page-gutter);
   }
 
   .list-item-header-row,
@@ -324,31 +359,10 @@ hr {
       gap: 1rem;
     }
 
-    .list-item-main {
-      cursor: pointer;
-
-      .item-date {
-        font-size: var(--font-size-large-serif);
-        margin-bottom: 0.2rem;
-        line-height: 1;
-        font-family: "HAL Timezone", serif;
-      }
-
-      .item-title {
-        font-size: var(--font-size-large-serif);
-        font-family: "HAL Timezone", serif;
-        font-weight: normal;
-        line-height: 1.15;
-        margin-bottom: 0.2rem;
-      }
-
-      .item-subinfo {
-        font-size: var(--font-size-large-serif);
-        font-family: "HAL Timezone", serif;
-        font-style: italic;
-      }
-    }
+    .list-item-main { cursor: pointer; }
   }
+
+  .list-item-header-row { padding-right: calc(var(--control-size) + var(--content-gap)); }
 
   .list-item-desc,
   .aktuelles-item__preview-desc {
@@ -365,11 +379,9 @@ hr {
   /* Grid-System fÃ¼r BeitrÃ¤ge und Content-BlÃ¶cke */
   .list-item-content-grid,
   .aktuelles-item__content-grid {
+    @include content-layout.grid;
     display: none;
-    margin-top: 1.5rem;
-    grid-template-columns: 20rem 1fr;
-    gap: 2.5rem;
-    align-items: start;
+    margin-top: var(--heading-content-gap);
     font-size: var(--font-size-large-serif);
 
     .left-col,
@@ -381,20 +393,10 @@ hr {
     .aktuelles-item__right-col {
       grid-column: 2;
 
-      .text-content p,
-      .aktuelles-item__full-desc p {
-        margin-bottom: 1.5rem;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
+      min-width: 0;
     }
 
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-
+    @media (max-width: 900px) {
       .right-col,
       .aktuelles-item__right-col {
         grid-column: 1;
@@ -415,14 +417,9 @@ hr {
     }
   }
 
-  &:not(.is-open):hover {
-    background-color: var(--color-brown);
-    color: #ffffff;
-
-    .toggle-btn,
-    .aktuelles-item__toggle {
-      color: #ffffff;
-      border-color: #ffffff;
+  @include interaction.desktop-hover {
+    &:not(.is-open):hover {
+      @include interaction.inverted-surface;
     }
   }
 
@@ -440,7 +437,7 @@ hr {
       display: grid;
     }
 
-    .toggle-btn,
+    .toggle-btn:not([aria-expanded]),
     .aktuelles-item__toggle {
       color: var(--color-brown);
       border-color: var(--color-brown);
@@ -451,14 +448,9 @@ hr {
       }
     }
 
-  &:hover {
-      background-color: var(--color-brown);
-      color: #ffffff;
-
-      .toggle-btn,
-      .aktuelles-item__toggle {
-        color: #ffffff;
-        border-color: #ffffff;
+    @include interaction.desktop-hover {
+      &:hover {
+        @include interaction.inverted-surface;
       }
     }
   }
@@ -466,6 +458,32 @@ hr {
 
 
 // -----------------------------------------------------------------------------
+// Keep event headings stable as their additional content opens underneath.
+.interactive-list-item[x-data="disclosure"] {
+  padding-bottom: var(--disclosure-bottom-gap);
+  transition: background-color 0.35s ease, color 0.35s ease, padding-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  .list-item-content-grid {
+    display: grid;
+    margin-top: 0;
+    padding-top: var(--heading-content-gap);
+  }
+
+  .list-item-desc { transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  &.is-open .list-item-header-row .list-item-desc {
+    opacity: 0;
+    pointer-events: none;
+
+    @media (min-width: 769px) { display: block; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    .list-item-desc { transition: none; }
+  }
+}
+
 // 7. FOTO & BILDUNTERSCHRIFT
 // -----------------------------------------------------------------------------
 .author-photo-wrapper {
@@ -476,88 +494,41 @@ hr {
 .author-photo {
   width: 100%;
   height: auto;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  filter: grayscale(100%);
   display: block;
 }
 
 .photo-caption {
   display: block;
-  margin-top: 0.8rem;
+  margin-top: var(--caption-gap);
   font-family: "HAL Timezone", serif;
   font-size: var(--font-size-small-sans-serif);
-  line-height: 1.25;
+  line-height: var(--line-height-text);
   color: currentColor;
 }
 
 // -----------------------------------------------------------------------------
-// 8. GLOBALER SEITENABSTAND & MOBIL-ABSTÃ„NDE (3rem)
+// 8. SHARED CONTENT IMAGES
 // -----------------------------------------------------------------------------
-@media (max-width: 900px) {
-  .site-header__title {
-    margin-top: 3.5rem !important;
-  }
+.content-image {
+  margin: 0;
+  width: 100%;
 
-  .beitraege-subtitle,
-  .seminarplaene-title {
-    margin-top: 1.5rem !important;
-  }
-
-  .site-header {
-    margin-left: 1rem !important;
-    margin-right: 1rem !important;
-  }
-
-  .category-banner {
-    padding-left: 2.5rem !important;
-    padding-right: 2.5rem !important;
-  }
-
-  .beitraege-subtitle,
-  .vergangene-headline,
-  .seminarplaene-section-header,
-  .ueber-uns-sections,
-  .seminarplaene-header,
-  .seminarplaene-blue-box {
-    padding-left: 2.5rem !important;
-    padding-right: 2.5rem !important;
-  }
-
-  .featured-post-card {
-    margin-left: 2.5rem !important;
-    margin-right: 2.5rem !important;
-  }
-
-  .interactive-list-item,
-  .aktuelles-item {
-    padding-left: 2.5rem !important;
-    padding-right: 6rem !important;
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 }
 
-// -----------------------------------------------------------------------------
-// 9. HOVER-EFFEKTE AUF MOBIL- / TOUCH-GERÃ„TEN DEAKTIVIEREN
-// -----------------------------------------------------------------------------
-@media (hover: none), (max-width: 900px) {
-  .site-header__nav a:hover > span {
-    font-style: normal;
-  }
+.content-image--event, .content-image--inline { margin-top: var(--heading-content-gap); }
 
-  .pdf-button:hover {
-    background-color: transparent !important;
-    color: var(--color-brown) !important;
-  }
+// Align side-by-side images with the visible top of HAL Timezone's letters.
+@media (min-width: 901px) {
+  .content-image--beside-text { margin-top: var(--image-text-offset); }
+}
 
-  .interactive-list-item:not(.is-open):hover,
-  .aktuelles-item:not(.is-open):hover {
-    background-color: transparent !important;
-    color: var(--color-brown) !important;
-
-    .toggle-btn,
-    .aktuelles-item__toggle {
-      color: var(--color-brown) !important;
-      border-color: var(--color-brown) !important;
-    }
+@media (max-width: 900px) {
+  .interactive-list-item .list-item-header-row {
+    padding-right: calc(var(--control-size) + 12px);
   }
 }

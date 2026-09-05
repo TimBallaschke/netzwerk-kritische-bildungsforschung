@@ -1,0 +1,26 @@
+// Enable hover effects only for desktop layouts with a precise hovering pointer.
+@mixin desktop-hover {
+  @media (hover: hover) and (pointer: fine) and (min-width: 901px) {
+    @content;
+  }
+}
+
+// Keep text, links and currentColor icons legible on brown interactive surfaces.
+@mixin inverted-surface {
+  background-color: var(--color-brown);
+  color: #ffffff;
+
+  :where(*) { color: inherit; }
+
+  .toggle-btn,
+  .aktuelles-item__toggle,
+  .aktuelles__card-info,
+  .pdf-button,
+  .accent-label {
+    color: inherit;
+    border-color: currentColor;
+  }
+
+  .pdf-button,
+  .accent-label { background-color: transparent; }
+}

@@ -3,9 +3,16 @@
 
   // Colors
   --color-brown: #733400;
-  --color-green: #A3FF98;
   --color-yellow: #E2FF6D;
   --color-pink: #FFB8FE;
   --color-blue: #6EF3FF;
+  --color-seminar-blue: #BCD8E2;
+
+  // Extra breathing room around all sans-serif pills.
+  --pill-padding-extra: 3px;
+
+  // The page fade follows the timing of each overlay direction.
+  --overlay-transition-duration: 700ms;
+  --overlay-exit-duration: 400ms;
 
 }

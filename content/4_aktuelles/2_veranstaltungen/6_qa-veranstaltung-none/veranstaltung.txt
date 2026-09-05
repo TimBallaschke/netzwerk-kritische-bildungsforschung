@@ -1,0 +1,69 @@
+Title: TEST · Veranstaltung – nur Teaser
+
+----
+
+Subinfo: Fiktiver Testtermin mit <em>Alex Beispiel</em> / Quelle: Testredaktion
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für nur Teaser. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: none
+
+----
+
+Externalurltitle: 
+
+----
+
+Externalurl: 
+
+----
+
+Body: 
+
+----
+
+Image: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 2026-11-18
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Ort: Testraum 2.03, Beispielcampus, Frankfurt am Main
+
+----
+
+Onlinehinweis: Hybrider Testtermin; der Zugangslink wird hier nur demonstriert.
+
+----
+
+Uuid: 3a7mqdemqcywv4hj
+
+----
+
+Feedorder: -97

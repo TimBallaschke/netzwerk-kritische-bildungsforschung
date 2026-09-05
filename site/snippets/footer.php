@@ -1,12 +1,4 @@
 </main>
-<?php $alpineJs = 'assets/script/vendor/alpine.min.js'; ?>
-<?= js($alpineJs . '?v=' . filemtime(kirby()->root('index') . '/' . $alpineJs), ['defer' => true]) ?>
-<?php $scriptFile = 'assets/script/script.js'; ?>
-<?= js($scriptFile . '?v=' . filemtime(kirby()->root('index') . '/' . $scriptFile)) ?>
-<?php $aktuellesJs = 'assets/script/aktuelles.js'; ?>
-<?= js($aktuellesJs . '?v=' . filemtime(kirby()->root('index') . '/' . $aktuellesJs), ['type' => 'module']) ?>
-</body>
-</html>
 
 <footer class="site-footer">
   
@@ -43,6 +35,15 @@
   <?php endif ?>
 
 </footer>
+
+<?php $scriptFile = 'assets/script/script.js'; ?>
+<?= js($scriptFile . '?v=' . filemtime(kirby()->root('index') . '/' . $scriptFile)) ?>
+<?php $alpineJs = 'assets/script/vendor/alpine.min.js'; ?>
+<?= js($alpineJs . '?v=' . filemtime(kirby()->root('index') . '/' . $alpineJs), ['defer' => true]) ?>
+<?php foreach (['aktuelles', 'dialogs', 'favicon'] as $module): ?>
+  <?php $moduleFile = 'assets/script/' . $module . '.js'; ?>
+  <?= js($moduleFile . '?v=' . filemtime(kirby()->root('index') . '/' . $moduleFile), ['type' => 'module']) ?>
+<?php endforeach ?>
 
 </body>
 </html>

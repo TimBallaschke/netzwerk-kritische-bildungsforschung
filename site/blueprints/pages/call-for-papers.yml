@@ -73,7 +73,8 @@ columns:
         label: Ausführlicher Call (PDF)
         type: files
         max: 1
-        accept: application/pdf
+        query: page.files.filterBy("extension", "pdf")
+        uploads: pdf
         when:
           linkType: self
       callUrlTitle:

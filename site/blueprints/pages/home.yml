@@ -28,4 +28,8 @@ columns:
       feed:
         type: aktuellesfeed
         headline: Aktuelles-Feed
-        help: Zeigt den Aktuelles-Feed der Startseite. Pro Eintrag über »In Aktuelles zeigen« aus-/einblenden, Reihenfolge per Drag & Drop.
+        help: >
+          Pro Eintrag über »In Aktuelles zeigen« aus-/einblenden, Reihenfolge per Drag & Drop.
+          Die Netzwerkansicht zeigt maximal 15 Karten auf Desktop und 12 auf Mobil –
+          jeweils passend zum aktiven Filter und in dieser Reihenfolge.
+          Die Listenansicht zeigt alle Einträge.

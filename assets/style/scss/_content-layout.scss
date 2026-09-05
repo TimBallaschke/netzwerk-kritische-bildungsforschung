@@ -1,0 +1,57 @@
+// Shared layout primitives for pages, articles and dialog content.
+@mixin body {
+  font-family: "HAL Timezone", serif;
+  font-size: var(--font-size-large-serif);
+  line-height: var(--line-height-text);
+}
+
+// Category bars and section labels share the same height and optical centering.
+@mixin section-label {
+  @include body;
+  margin: 0;
+  padding: calc(0.794rem - 1px) var(--page-gutter) calc(0.794rem + 1px);
+  font-weight: normal;
+  font-style: italic;
+}
+
+@mixin title {
+  max-width: var(--title-width);
+  margin: 0;
+  font-family: "HAL Timezone", serif;
+  font-size: var(--font-size-headline2);
+  font-weight: normal;
+  line-height: 1.05;
+  letter-spacing: normal;
+
+  @media (max-width: 900px) {
+    max-width: 100%;
+    hyphens: auto;
+  }
+}
+
+@mixin subheading {
+  @include body;
+  margin: 0 0 var(--heading-content-gap);
+  font-weight: normal;
+  font-style: italic;
+  text-decoration: underline 2px;
+  text-underline-position: from-font;
+}
+
+@mixin grid($controls: false) {
+  display: grid;
+  // Inset surfaces compensate their inner padding so copy stays on the page grid.
+  $rail: calc(var(--content-indent) - var(--content-gap) - var(--surface-content-inset, 0px));
+  @if $controls {
+    grid-template-columns: $rail minmax(0, var(--content-width)) minmax(var(--control-size), 1fr);
+  } @else {
+    grid-template-columns: $rail minmax(0, var(--content-width));
+  }
+  gap: var(--content-gap);
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--heading-content-gap);
+  }
+}

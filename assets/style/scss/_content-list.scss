@@ -1,0 +1,119 @@
+@use 'content-layout';
+
+// Shared content lists, including the filterable Aktuelles feed.
+.content-list {
+  --list-item-top-gap: 1.2rem;
+  --list-item-bottom-gap: max(24px, 1.4rem);
+  --list-line-height: 1.15;
+  --list-subline-gap: calc(var(--font-size-large-serif) * 0.1);
+  border-top: 1px solid var(--color-brown);
+  color: var(--color-brown);
+  font-family: "HAL Timezone", serif;
+
+  &__heading {
+    @include content-layout.section-label;
+  }
+
+  .interactive-list-item {
+    // Intrinsic row height keeps this padding below the last line after wrapping.
+    padding: var(--list-item-top-gap) var(--page-gutter) var(--list-item-bottom-gap);
+    min-height: calc(var(--list-item-top-gap) + var(--control-size) + var(--list-item-bottom-gap));
+
+    > .toggle-btn { top: var(--list-item-top-gap); }
+  }
+
+  .list-item-main,
+  .list-item-desc { min-width: 0; }
+
+  // Metadata flows like consecutive lines, including wrapped titles/authors.
+  .list-item-header-row .list-item-main {
+    font-size: var(--font-size-large-serif);
+    line-height: var(--list-line-height);
+
+    > :is(.item-date, .item-title, .item-subinfo) {
+      margin: 0;
+      font-size: inherit;
+      font-weight: normal;
+      line-height: inherit;
+    }
+
+    .item-subinfo { font-style: italic; }
+
+    > .item-title + .item-subinfo { margin-top: var(--list-subline-gap); }
+  }
+
+  .list-item-desc { line-height: 1.25; }
+
+  .item-type-label {
+    text-decoration: underline 2px;
+    text-underline-offset: 0.12em;
+  }
+
+  .item-type-label + .item-date-value { margin-left: 0.3em; }
+
+  .post-list-link {
+    display: block;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  &--events, &--feed {
+    .interactive-list-item { cursor: pointer; }
+  }
+
+  &--feed {
+    position: relative;
+    z-index: 1;
+    border-top: 0;
+
+    // Keep the emphasis authored in feed subtitles, e.g. a speaker's name.
+    .list-item-header-row .list-item-main > .item-subinfo {
+      font-size: var(--font-size-small-serif);
+      font-style: normal;
+      line-height: var(--list-line-height);
+    }
+  }
+
+  &--downloads {
+    .list-item-header-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding-right: 0;
+      cursor: default;
+    }
+
+    .list-item-header-row .list-item-main {
+      max-width: var(--content-width);
+      cursor: default;
+    }
+
+  }
+
+  @media (max-width: 900px) {
+    --list-item-top-gap: 16px;
+
+    &--downloads .list-item-header-row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+  }
+}
+
+.interactive-list {
+  border-top: 1px solid var(--color-brown);
+
+  &--pink { background-color: var(--color-pink); }
+  &--blue { background-color: var(--color-blue); }
+  &--seminar-blue { background-color: var(--color-seminar-blue); }
+}
+
+.content-list .interactive-list-item[data-link-type]:not([data-link-type="self"]) {
+  cursor: default;
+  .list-item-header-row { cursor: default; }
+  .item-title a { color: inherit; text-decoration: none; }
+  .item-title a:hover { text-decoration: underline 2px; }
+}
+
+.content-list .interactive-list-item[data-link-type="none"] .list-item-desc {
+  display: block;
+  cursor: default;
+}

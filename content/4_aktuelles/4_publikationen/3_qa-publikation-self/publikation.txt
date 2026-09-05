@@ -1,0 +1,63 @@
+Title: TEST · Publikation – alle Felder
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für alle Felder. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: self
+
+----
+
+Externalurltitle: 
+
+----
+
+Externalurl: 
+
+----
+
+Cover: - file://uizsrdlxgkbctnfr
+
+----
+
+Body:
+
+Dieser <em>ausführliche Testinhalt</em> prüft Absätze, Sonderzeichen und die Darstellung auf Desktop und Mobilgeräten. Alle hier genannten Testpersonen und Termine sind fiktiv. Forscher*innen, Lehrende und Studierende betrachten Bildung aus unterschiedlichen Perspektiven.
+
+Ein zweiter Absatz macht die Abstände und die gemeinsame Textspalte sichtbar. Im Mittelpunkt stehen Fragen nach Teilhabe, gesellschaftlichen Bedingungen und kritischer Reflexion. Auch längere Texte sollen im Overlay vollständig erreichbar bleiben.
+
+Für den Test werden Bilder mit Bildunterschriften, ein weiterführender Link und ein lesbares PDF ergänzt. Beim Öffnen und Schließen soll der Fokus zur auslösenden Schaltfläche zurückkehren.
+
+----
+
+Linktitle: Weiterführende Testinformationen
+
+----
+
+Linkurl: https://example.org/?test=detail&quelle=website
+
+----
+
+Downloadpdf: - file://np2j8wizq1iig2tt
+
+----
+
+Date: 2026-09-05
+
+----
+
+Uuid: dgqpcf2vdrowjwwk
+
+----
+
+Feedorder: -93

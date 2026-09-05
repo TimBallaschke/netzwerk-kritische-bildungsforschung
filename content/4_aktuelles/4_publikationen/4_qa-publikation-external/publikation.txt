@@ -1,0 +1,57 @@
+Title: TEST · Publikation – externer Link
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für externer Link. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: external
+
+----
+
+Externalurltitle: Externe Testseite öffnen
+
+----
+
+Externalurl: https://example.org/?test=publikation&quelle=website
+
+----
+
+Cover: 
+
+----
+
+Body: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 2026-09-05
+
+----
+
+Uuid: rnz4h6cu9qrjjnft
+
+----
+
+Feedorder: -92

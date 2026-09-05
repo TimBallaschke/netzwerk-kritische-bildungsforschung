@@ -1,0 +1,47 @@
+Title: TEST · Unveröffentlichter Entwurf
+
+----
+
+Authors: Testredaktion
+
+----
+
+Authorphoto: - file://ktd6fi4s23gfjgvu
+
+----
+
+Description: Fiktiver Testinhalt zur Kontrolle von Archiv, Veröffentlichung und Sichtbarkeit.
+
+----
+
+Inaktuelles: true
+
+----
+
+Body:
+
+Dieser <em>ausführliche Testinhalt</em> prüft Absätze, Sonderzeichen und die Darstellung auf Desktop und Mobilgeräten. Alle hier genannten Testpersonen und Termine sind fiktiv. Forscher*innen, Lehrende und Studierende betrachten Bildung aus unterschiedlichen Perspektiven.
+
+Ein zweiter Absatz macht die Abstände und die gemeinsame Textspalte sichtbar. Im Mittelpunkt stehen Fragen nach Teilhabe, gesellschaftlichen Bedingungen und kritischer Reflexion. Auch längere Texte sollen im Overlay vollständig erreichbar bleiben.
+
+Für den Test werden Bilder mit Bildunterschriften, ein weiterführender Link und ein lesbares PDF ergänzt. Beim Öffnen und Schließen soll der Fokus zur auslösenden Schaltfläche zurückkehren.
+
+----
+
+Downloadpdf: - file://ozkpafjl6wr6qrrx
+
+----
+
+Datemanual: false
+
+----
+
+Date: 2026-09-03
+
+----
+
+Uuid: tbbxjzedhxkimqvz
+
+----
+
+Feedorder: -85

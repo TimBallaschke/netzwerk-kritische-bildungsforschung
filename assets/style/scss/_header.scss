@@ -1,3 +1,13 @@
+@use 'interaction';
+
+.site-header-group {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 1000;
+
+  .site-header { position: relative; }
+}
+
 .site-header {
   position: fixed;
   top: 0;
@@ -8,36 +18,41 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 4rem;
-  margin: 0; 
-  padding: 1.5rem 1.5rem 1rem 1.5rem; 
+  margin: 0;
+  padding: 1.75rem var(--page-gutter) 1rem;
   color: var(--color-brown);
   font-family: "HAL Timezone", serif;
   font-style: normal;
-  font-size: var(--font-size-headline);
+  font-size: var(--font-size-large-serif);
   font-synthesis: none;
   background-color: #ffffff;
 
   @media (max-width: 900px) {
+    &::before { display: none; }
     flex-direction: column;
-    gap: 0.75rem;
-    padding: 1.5rem 1.5rem 0.75rem 1.5rem;
+    gap: 0;
+    padding: 12px var(--page-gutter) 0;
 
-    .site-header__nav {  
-      order: 1;   
-      width: 100%;  
-      padding-bottom: 0.75rem;  
-    }  
+    .site-header__nav {
+      order: 1;
+      width: 100%;
+      padding-bottom: 0;
+    }
 
-    .site-header__title {  
-      order: 2;   
-      margin: 0 0 2rem 0;
-    }  
+    .site-header__title {
+      order: 2;
+      width: 100%;
+      margin: 0;
+      // Balance the descenders against the visible space above the title.
+      padding: 6px 0 calc(6px + 0.1em);
+      font-size: clamp(32px, 9.8vw, 80px);
+    }
   }
 }
 
 /* Gezielte Steuerung der zwei <hr> Linien in der Navigation */
 .site-header__nav hr {
-  position: static; 
+  position: static;
   width: 100%;
   height: 1px;
   background-color: var(--color-brown);
@@ -54,12 +69,33 @@
 
     @media (max-width: 900px) {
       display: block;
-      margin-top: 0.5rem;
+      margin-top: 0;
     }
   }
 }
 
 
+
+.site-header__title {
+  padding-top: 4px;
+  font-size: var(--font-size-headline);
+  font-weight: normal;
+  line-height: 0.95;
+}
+
+.site-header::before {
+  content: "";
+  position: absolute;
+  top: 1.59rem;
+  left: var(--page-gutter);
+  right: var(--page-gutter);
+  border-top: 1px solid var(--color-brown);
+}
+
+@media (min-width: 901px) {
+  .site-header__nav { padding-top: 0.37rem; line-height: 1.02; }
+  .site-header__nav hr { display: none !important; }
+}
 
 .site-header__title-link {
   color: inherit;
@@ -68,16 +104,17 @@
 
 .site-header__nav ul {
   display: flex;
-  gap: 2rem; 
+  gap: 2rem;
   margin: 0;
-  padding: 0;
+  padding: 4px 0 0;
   list-style: none;
 
-  /* Nur das Menü auf Mobile rechtsbündig ausrichten */
+  /* Distribute the mobile menu across the full navigation width. */
   @media (max-width: 900px) {
-    gap: 3.5rem; 
-    justify-content: flex-end;
-    margin: 1rem 0;
+    gap: 0;
+    justify-content: space-between;
+    margin: 0;
+    padding: 4px 0;
 
   }
 }
@@ -103,14 +140,17 @@
     pointer-events: none;
   }
 
-  &::before { font-style: normal; } 
-  &::after  { font-style: italic; } 
+  &::before { font-style: normal; }
+  &::after  { font-style: italic; }
 }
 
 /* Greift auf <a> ODER <li> für alle aktiven Zustände */
 .site-header__nav {
-  a:hover > span,
-  a:focus > span,
+  @include interaction.desktop-hover {
+    a:hover > span { font-style: italic !important; }
+  }
+
+  a:focus-visible > span,
   a.is-active > span,
   a.active > span,
   a[aria-current] > span,

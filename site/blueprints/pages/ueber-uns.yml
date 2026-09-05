@@ -43,17 +43,8 @@ fields:
     extends: fields/italictext
     size: medium
   kontakte:
+    extends: fields/kontakte
     label: Ansprechpersonen (Netzwerk)
-    type: structure
-    fields:
-      name:
-        label: Name
-        type: text
-        width: 1/2
-      email:
-        label: E-Mail
-        type: email
-        width: 1/2
   akLinkTitle:
     label: Linktitel
     type: text
@@ -76,17 +67,14 @@ fields:
     label: Weitere Abschnitte
     type: structure
     empty: Noch keine weiteren Abschnitte angelegt
-    help: Abschnitte unterhalb des Logos. Die Zwischenüberschrift und der Fließtext sind Pflichtfelder; Ansprechperson und E-Mail/Link sind optional.
+    help: Abschnitte unterhalb des Logos, z. B. „Wer kann wie mitmachen?“. Jeder Abschnitt enthält eine Überschrift und Text sowie optional mehrere Ansprechpersonen und einen Link. Die Reihenfolge lässt sich per Drag-and-drop ändern.
     columns:
       zwischenueberschrift:
         label: Zwischenüberschrift
-        width: 2/5
+        width: 1/2
       fliesstext:
         label: Fließtext
-        width: 2/5
-      ansprechpersonName:
-        label: Ansprechperson
-        width: 1/5
+        width: 1/2
     fields:
       zwischenueberschrift:
         label: Zwischenüberschrift
@@ -97,22 +85,20 @@ fields:
         extends: fields/italictext
         size: medium
         required: true
-      ansprechpersonName:
-        label: Name
-        type: text
-        width: 1/2
-      ansprechpersonEmail:
-        label: E-Mail
-        type: email
-        width: 1/2
+      kontakte:
+        extends: fields/kontakte
+        help: Optional. Über „Hinzufügen“ können mehrere Personen für diesen Abschnitt eingetragen werden.
       kontaktLinkTitle:
         label: Linktitel
         type: text
         help: Wird als sichtbarer Linktext statt der URL angezeigt, z. B. „Weitere Informationen“.
       kontaktLink:
         label: E-Mail / Link
-        type: text
-        help: "Optional: zusätzliche E-Mail-Adresse oder URL"
+        type: link
+        options:
+          - url
+          - email
+        help: Optional. Linktyp „URL“ oder „E-Mail“ auswählen und das Ziel eintragen.
 
   # ── Vergangene Veranstaltungen ──
   lineVergangene:

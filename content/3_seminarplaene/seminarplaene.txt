@@ -37,6 +37,33 @@ Plaene:
   titel: Titel des Seminars
   pdf:
     - file://nz7i30oz4tscoozb
+- 
+  dozierende: >
+    Alex Beispiel und Robin Muster
+    (Testpersonen)
+  titel: >
+    TEST · Bildung, Subjekt, Gesellschaft
+    – Einführung in die kritische
+    Bildungstheorie
+  pdf:
+    - file://rvz04m6f1vwwqaie
+- 
+  dozierende: >
+    Alex Beispiel und Robin Muster
+    (Testpersonen)
+  titel: 'TEST · Vergleichen, Normieren und Messen: Zur Kritik standardisierter Leistungsbewertung'
+  pdf:
+    - file://rvz04m6f1vwwqaie
+- 
+  dozierende: >
+    Alex Beispiel und Robin Muster
+    (Testpersonen)
+  titel: >
+    TEST · Inklusion und Exklusion als
+    gesellschaftliche Verhältnisse – ein
+    interdisziplinäres Lektüreseminar
+  pdf:
+    - file://rvz04m6f1vwwqaie
 
 ----
 

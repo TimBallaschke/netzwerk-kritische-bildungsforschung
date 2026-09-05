@@ -1,0 +1,61 @@
+Title: TEST · Notiz – externer Link
+
+----
+
+Subinfo: Fiktiver Testtermin mit <em>Alex Beispiel</em> / Quelle: Testredaktion
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für externer Link. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: external
+
+----
+
+Externalurltitle: Externe Testseite öffnen
+
+----
+
+Externalurl: https://example.org/?test=notiz&quelle=website
+
+----
+
+Body: 
+
+----
+
+Image: 
+
+----
+
+Linktitle: 
+
+----
+
+Linkurl: 
+
+----
+
+Downloadpdf: 
+
+----
+
+Date: 2026-09-05
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Uuid: 2mxarzmltabngzgy
+
+----
+
+Feedorder: -89

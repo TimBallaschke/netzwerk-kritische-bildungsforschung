@@ -1,0 +1,45 @@
+Title: Platzhalter 04: Was bedeutet gerechte Bildung?
+
+----
+
+Authors: Platzhalter
+
+----
+
+Authorphoto: 
+
+----
+
+Description: Dies ist ein Platzhalter für die Vorschau des Aktuelles-Netzwerks. Er zeigt beispielhaft, wie ein weiterer Beitrag mit Titel, Kurzbeschreibung und ausführlichem Inhalt dargestellt wird.
+
+----
+
+Inaktuelles: true
+
+----
+
+Body: Dieser Beispielbeitrag dient ausschließlich dazu, die Darstellung mit zwanzig Karten zu prüfen. Die Inhalte sind Platzhalter und können im Panel bearbeitet, ausgeblendet oder gelöscht werden.
+
+----
+
+Downloadpdf: 
+
+----
+
+Datemanual: true
+
+----
+
+Date: 2026-09-05
+
+----
+
+Subinfo: Beispielbeitrag für die Layout-Vorschau
+
+----
+
+Feedorder: 17
+
+----
+
+Uuid: tbmpqni9srqvretk

@@ -1,0 +1,78 @@
+Title: TEST · Veranstaltung – alle Felder
+
+----
+
+Subinfo: Fiktiver Testtermin mit <em>Alex Beispiel</em> / Quelle: Testredaktion
+
+----
+
+Description: Erkennbarer <em>Testeintrag</em> für alle Felder. Hier lassen sich Text, Umlaute (ä, ö, ü), Anführungszeichen »so« und die jeweilige Darstellung prüfen.
+
+----
+
+Inaktuelles: true
+
+----
+
+Linktype: self
+
+----
+
+Externalurltitle: 
+
+----
+
+Externalurl: 
+
+----
+
+Body:
+
+Dieser <em>ausführliche Testinhalt</em> prüft Absätze, Sonderzeichen und die Darstellung auf Desktop und Mobilgeräten. Alle hier genannten Testpersonen und Termine sind fiktiv. Forscher*innen, Lehrende und Studierende betrachten Bildung aus unterschiedlichen Perspektiven.
+
+Ein zweiter Absatz macht die Abstände und die gemeinsame Textspalte sichtbar. Im Mittelpunkt stehen Fragen nach Teilhabe, gesellschaftlichen Bedingungen und kritischer Reflexion. Auch längere Texte sollen im Overlay vollständig erreichbar bleiben.
+
+Für den Test werden Bilder mit Bildunterschriften, ein weiterführender Link und ein lesbares PDF ergänzt. Beim Öffnen und Schließen soll der Fokus zur auslösenden Schaltfläche zurückkehren.
+
+----
+
+Image:
+
+- file://4mwg2nsrqckousdk
+- file://yocicazeeo2lmscj
+
+----
+
+Linktitle: Weiterführende Testinformationen
+
+----
+
+Linkurl: https://example.org/?test=detail&quelle=website
+
+----
+
+Downloadpdf: - file://qchebgyidwfsj2rx
+
+----
+
+Date: 2026-11-18
+
+----
+
+Authors: Alex Beispiel & Robin Muster (Testpersonen)
+
+----
+
+Ort: Testraum 2.03, Beispielcampus, Frankfurt am Main
+
+----
+
+Onlinehinweis: Hybrider Testtermin; der Zugangslink wird hier nur demonstriert.
+
+----
+
+Uuid: j3ubihbzgclitgeh
+
+----
+
+Feedorder: -99
