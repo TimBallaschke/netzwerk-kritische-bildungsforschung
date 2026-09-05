@@ -2,6 +2,7 @@
 (function () {
   "use strict";
 
+  
   // Always start at the top on (re)load. Without this the browser restores
   // the previous scroll position, leaving the page parked past the intro
   // (and re-triggering the scroll lock with the intro out of view).
