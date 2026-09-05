@@ -12,7 +12,15 @@
     <?php if ($logos = $site->footerLogos()->toFiles()): ?>
       <div class="site-footer__logos">
         <?php foreach ($logos as $logo): ?>
-          <img src="<?= $logo->url() ?>" alt="<?= $logo->alt()->or('Logo') ?>" class="site-footer__logo">
+          <?php snippet('responsive-image', [
+            'image' => $logo,
+            'alt' => $logo->alt()->or('Logo')->value(),
+            'class' => 'site-footer__logo',
+            'widths' => [160, 320, 480, 640, 960],
+            'defaultWidth' => 480,
+            'quality' => 90,
+            'sizes' => '(max-width: 900px) ' . (6 * $logo->ratio()) . 'vw, ' . (3.5 * $logo->ratio()) . 'vw',
+          ]) ?>
         <?php endforeach ?>
       </div>
     <?php endif ?>

@@ -69,7 +69,14 @@
             <!-- Logo -->
             <?php if ($logo = $page->rmuLogo()->toFile()): ?>
               <div class="rmu-logo-box">
-                <img src="<?= $logo->url() ?>" alt="<?= esc($logo->alt()->or('RMU Logo')->value(), 'attr') ?>" width="<?= $logo->width() ?>" height="<?= $logo->height() ?>" loading="lazy">
+                <?php snippet('responsive-image', [
+                  'image' => $logo,
+                  'alt' => $logo->alt()->or('RMU Logo')->value(),
+                  'widths' => [160, 320, 480, 640, 960],
+                  'defaultWidth' => 480,
+                  'quality' => 90,
+                  'sizes' => '(max-width: 900px) min(242px, calc(100vw - 24px)), clamp(168px, 18.45vw, 335px)',
+                ]) ?>
               </div>
             <?php endif ?>
 

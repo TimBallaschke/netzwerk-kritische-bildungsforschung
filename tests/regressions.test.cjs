@@ -1,7 +1,7 @@
 const { test, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
-const { spawn } = require('node:child_process');
+const { spawn, execFileSync } = require('node:child_process');
 const { once } = require('node:events');
 const net = require('node:net');
 const vm = require('node:vm');
@@ -60,6 +60,50 @@ for (const route of ['/', '/ueber-uns', '/seminarplaene', '/aktuelles/beitraege'
     }
   });
 }
+
+test('content images and logos serve decodable WebP variants without upscaling originals', async () => {
+  const checked = new Set();
+  for (const route of ['/', '/ueber-uns', '/aktuelles/beitraege']) {
+    const html = await (await fetch(baseUrl + route)).text();
+    const images = [...html.matchAll(/<img\s[^>]*>/g)];
+    assert.ok(images.length > 0, `${route} contains images`);
+    for (const [tag] of images) {
+      const attr = (name) => tag.match(new RegExp(`\\b${name}="([^"]*)"`))?.[1]
+        .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+        .replace(/&amp;/g, '&');
+      const src = attr('src');
+      if (/\.(svg|gif)$/.test(src)) continue;
+      assert.match(src, /\.webp$/);
+      assert.equal(attr('loading'), 'lazy');
+      assert.match(attr('sizes'), /^auto, /);
+      const originalWidth = Number(attr('width'));
+      const originalHeight = Number(attr('height'));
+      const candidates = attr('srcset').split(', ').map((entry) => {
+        const [url, descriptor] = entry.split(' ');
+        assert.match(descriptor, /^\d+w$/);
+        return [url, Number(descriptor.slice(0, -1))];
+      });
+      assert.equal(new Set(candidates.map(([, width]) => width)).size, candidates.length);
+      assert.ok(candidates.every(([, width]) => width <= originalWidth));
+      for (const [url, width] of [[src, null], ...candidates]) {
+        if (checked.has(url)) continue;
+        const response = await fetch(url);
+        assert.equal(response.status, 200, url);
+        assert.match(response.headers.get('content-type'), /^image\/webp/);
+        const bytes = Buffer.from(await response.arrayBuffer());
+        const info = JSON.parse(execFileSync('php', ['-r',
+          'echo json_encode(getimagesizefromstring(stream_get_contents(STDIN)));',
+        ], { input: bytes, encoding: 'utf8' }));
+        assert.equal(info.mime, 'image/webp');
+        assert.ok(info[0] <= originalWidth);
+        if (width !== null) assert.equal(info[0], width, 'srcset describes the actual file width');
+        assert.ok(Math.abs(info[1] - info[0] * originalHeight / originalWidth) <= 1, 'aspect ratio is preserved');
+        checked.add(url);
+      }
+    }
+  }
+  assert.ok(checked.size > 0, 'image files were generated and fetched');
+});
 
 test('Weitere Beiträge target shared overlays and keep working article URLs', async () => {
   const overviewUrl = baseUrl + '/aktuelles/beitraege';

@@ -48,6 +48,13 @@ Commit the generated `assets/style/style.css` and its source map with the SCSS.
 Run `npm test` for the page startup, HTML shell, and carousel regressions (PHP and Node.js required).
 Debug output is disabled in the shared configuration.
 
+Content images and logos use `site/snippets/responsive-image.php` to serve WebP
+variants with responsive `srcset` sizes (quality 82, or 90 for logos). Kirby generates
+and caches each variant in `media/` when requested; originals in `content/` stay
+untouched. Variants never exceed the original width. SVGs and GIFs retain their
+original format. Lazy loading uses the rendered image width via `sizes="auto"`,
+with layout-based fallback sizes for browsers without support.
+
 ### Shared content lists
 
 Use `snippet('content-list', ['title' => $title, 'items' => $items, 'variant' => $variant])`
