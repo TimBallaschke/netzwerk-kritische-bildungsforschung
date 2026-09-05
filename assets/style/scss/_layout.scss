@@ -76,7 +76,7 @@ body::before {
   background: var(--color-brown);
 }
 
-// The native dialog paints in the top layer, independently of these page effects.
+// The dialog is mounted beside main, independently of these page effects.
 main, .site-footer {
   transition:
     opacity var(--overlay-exit-duration) ease,

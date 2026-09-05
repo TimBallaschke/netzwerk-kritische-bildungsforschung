@@ -5,6 +5,8 @@
 // =============================================================================
 
 .aktuelles {
+  --feed-controls-gap: 8px;
+  --feed-controls-top: calc(0.75rem + 1px);
   --pill-padding-block: calc(0.5rem + var(--pill-padding-extra));
   --pill-padding-inline: calc(0.95rem + var(--pill-padding-extra));
   --pill-height: calc(var(--font-size-small-sans-serif) + 2 * var(--pill-padding-block) + 2px);
@@ -51,6 +53,12 @@ html.is-locked {
   }
 }
 
+// Once pinned, the scene handles swipes; pinch zoom remains native. Before
+// that point the user can scroll through the intro normally.
+.is-locked .aktuelles__stage {
+  touch-action: pinch-zoom;
+}
+
 .aktuelles__focus-backdrop {
   position: absolute;
   inset: 0;
@@ -88,6 +96,10 @@ html.is-locked {
 // -----------------------------------------------------------------------------
 .aktuelles__card {
   &[hidden] { display: none; }
+  &.is-filtered-out {
+    visibility: hidden;
+    pointer-events: none;
+  }
 
   // Main's desktop type proportions, with responsive readability limits.
   // Mobile retains the shared type sizes.
@@ -408,31 +420,33 @@ html.is-locked {
 // -----------------------------------------------------------------------------
 // FILTER BUTTONS & PILLS (Identisch zu Switch-Optionen)
 // -----------------------------------------------------------------------------
+.aktuelles__graph-filters,
+.aktuelles__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--feed-controls-gap);
+  // The upper separator occupies 1px; leave equal clear space on both sides.
+  padding: var(--feed-controls-top) calc(1.5rem + var(--switch-width, 9rem) + 0.8rem) 0.75rem 1.5rem;
+}
+
 .aktuelles__graph-filters {
-  display: contents;
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 300000;
+  pointer-events: none;
+
+  > .aktuelles__label--filter { pointer-events: auto; }
 
   @media (max-width: 900px) {
-    position: absolute;
     inset: auto 0 0;
-    z-index: 300000;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
     padding: 1.5rem var(--page-gutter) max(var(--page-gutter), env(safe-area-inset-bottom, 0px));
   }
 }
 
 .aktuelles__label--filter {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-
-  @media (max-width: 900px) {
-    // Keep the active filter's absolute close icon anchored to its own pill.
-    position: relative;
-    inset: auto;
-    transform: none !important;
-  }
+  // Anchor the active filter's close icon to its own pill in both views.
+  position: relative;
 }
 
 .aktuelles__filter {
@@ -535,32 +549,9 @@ html.is-locked {
 }
 
 .aktuelles__filters {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  align-items: center !important;
-  gap: 0.6rem !important; /* Garantiert sauberen Abstand auf Desktop */
-  padding: 0.75rem 1.5rem 1.25rem 1.5rem;
-
-  /* Flex-Spacer reserviert rechts den Platz für den Switch-Button */
-  &::before {
-    content: "" !important;
-    display: block !important;
-    order: 10 !important; /* Auf Desktop ganz rechts nach allen Buttons */
-    width: calc(var(--switch-width, 9rem) + 0.5rem) !important;
-    height: 1px !important;
-    flex-shrink: 0 !important;
-  }
-
   @media (max-width: 900px) {
-    display: none !important;
+    display: none;
   }
-}
-
-.aktuelles__filter {
-  position: relative !important;
-  margin: 0 !important; /* Entfernt alte Margins – Flex-Gap übernimmt die Abstände */
-  order: 1 !important;
-
 }
 
 // -----------------------------------------------------------------------------
@@ -569,7 +560,7 @@ html.is-locked {
 .aktuelles__switch {
   position: absolute;
   right: 1.5rem; 
-  top: 0.75rem; 
+  top: var(--feed-controls-top);
   z-index: 10; 
   display: grid;
   grid-auto-flow: column;
@@ -587,6 +578,20 @@ html.is-locked {
     top: var(--feed-controls-top);
     left: var(--page-gutter);
     right: auto;
+  }
+}
+
+// Native scroll positions round to device pixels. Anchor locked controls to
+// the header itself so switching to the list cannot introduce a subpixel jump.
+.is-locked .aktuelles__switch {
+  position: fixed;
+  top: calc(var(--header-height, 0px) + var(--feed-controls-top));
+}
+
+@media (min-width: 901px) {
+  .is-locked .aktuelles__graph-filters {
+    position: fixed;
+    top: var(--header-height, 0px);
   }
 }
 

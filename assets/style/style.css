@@ -18,6 +18,15 @@
 
 * {
   margin: 0;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+:focus {
+  outline: none;
 }
 
 html,
@@ -63,6 +72,8 @@ h6 {
 *,
 *::before,
 *::after {
+  font-weight: 400;
+  font-synthesis: none;
   text-decoration-thickness: 2px;
 }
 
@@ -70,12 +81,14 @@ h6 {
   font-family: "HAL Timezone";
   src: url("../fonts/HALTimezoneUnlicensed-Regular.otf") format("opentype");
   font-style: normal;
+  font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "HAL Timezone";
   src: url("../fonts/HALTimezoneUnlicensed-RegularItalic.otf") format("opentype");
   font-style: italic;
+  font-weight: 400;
   font-display: swap;
 }
 :root {
@@ -120,6 +133,10 @@ h6 {
     --control-size: 36px;
   }
 }
+a {
+  color: inherit;
+}
+
 em, i {
   font-style: italic;
 }
@@ -1124,6 +1141,8 @@ body.modal-is-open {
   max-width: 75%;
   font-size: var(--font-size-large-serif);
   line-height: 1.2;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 @media (max-width: 900px) {
   .intro-text__body {
@@ -1132,6 +1151,8 @@ body.modal-is-open {
 }
 
 .aktuelles {
+  --feed-controls-gap: 8px;
+  --feed-controls-top: calc(0.75rem + 1px);
   --pill-padding-block: calc(0.5rem + var(--pill-padding-extra));
   --pill-padding-inline: calc(0.95rem + var(--pill-padding-extra));
   --pill-height: calc(var(--font-size-small-sans-serif) + 2 * var(--pill-padding-block) + 2px);
@@ -1175,6 +1196,10 @@ html.is-locked .aktuelles {
   }
 }
 
+.is-locked .aktuelles__stage {
+  touch-action: pinch-zoom;
+}
+
 .aktuelles__focus-backdrop {
   position: absolute;
   inset: 0;
@@ -1209,6 +1234,10 @@ html.is-locked .aktuelles {
 
 .aktuelles__card[hidden] {
   display: none;
+}
+.aktuelles__card.is-filtered-out {
+  visibility: hidden;
+  pointer-events: none;
 }
 @media (min-width: 901px) {
   .aktuelles__card {
@@ -1514,32 +1543,33 @@ html.is-locked .aktuelles {
   }
 }
 
+.aktuelles__graph-filters,
+.aktuelles__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--feed-controls-gap);
+  padding: var(--feed-controls-top) calc(1.5rem + var(--switch-width, 9rem) + 0.8rem) 0.75rem 1.5rem;
+}
+
 .aktuelles__graph-filters {
-  display: contents;
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 300000;
+  pointer-events: none;
+}
+.aktuelles__graph-filters > .aktuelles__label--filter {
+  pointer-events: auto;
 }
 @media (max-width: 900px) {
   .aktuelles__graph-filters {
-    position: absolute;
     inset: auto 0 0;
-    z-index: 300000;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
     padding: 1.5rem var(--page-gutter) max(var(--page-gutter), env(safe-area-inset-bottom, 0px));
   }
 }
 
 .aktuelles__label--filter {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-}
-@media (max-width: 900px) {
-  .aktuelles__label--filter {
-    position: relative;
-    inset: auto;
-    transform: none !important;
-  }
+  position: relative;
 }
 
 .aktuelles__filter {
@@ -1633,38 +1663,16 @@ html.is-locked .aktuelles {
   overflow-y: auto;
 }
 
-.aktuelles__filters {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  align-items: center !important;
-  gap: 0.6rem !important; /* Garantiert sauberen Abstand auf Desktop */
-  padding: 0.75rem 1.5rem 1.25rem 1.5rem;
-  /* Flex-Spacer reserviert rechts den Platz für den Switch-Button */
-}
-.aktuelles__filters::before {
-  content: "" !important;
-  display: block !important;
-  order: 10 !important; /* Auf Desktop ganz rechts nach allen Buttons */
-  width: calc(var(--switch-width, 9rem) + 0.5rem) !important;
-  height: 1px !important;
-  flex-shrink: 0 !important;
-}
 @media (max-width: 900px) {
   .aktuelles__filters {
-    display: none !important;
+    display: none;
   }
-}
-
-.aktuelles__filter {
-  position: relative !important;
-  margin: 0 !important; /* Entfernt alte Margins – Flex-Gap übernimmt die Abstände */
-  order: 1 !important;
 }
 
 .aktuelles__switch {
   position: absolute;
   right: 1.5rem;
-  top: 0.75rem;
+  top: var(--feed-controls-top);
   z-index: 10;
   display: grid;
   grid-auto-flow: column;
@@ -1686,6 +1694,17 @@ html.is-locked .aktuelles {
   }
 }
 
+.is-locked .aktuelles__switch {
+  position: fixed;
+  top: calc(var(--header-height, 0px) + var(--feed-controls-top));
+}
+
+@media (min-width: 901px) {
+  .is-locked .aktuelles__graph-filters {
+    position: fixed;
+    top: var(--header-height, 0px);
+  }
+}
 .aktuelles__switch-thumb {
   position: absolute;
   inset: 0 auto 0 0;
@@ -1809,6 +1828,10 @@ html.is-locked .aktuelles {
   vector-effect: non-scaling-stroke;
 }
 
+.is-list-view.is-list-pinned .intro-text {
+  display: none;
+}
+
 .is-list-view .aktuelles {
   height: auto;
   overflow: visible;
@@ -1834,6 +1857,7 @@ html.is-locked .aktuelles {
   --surface-content-inset: var(--page-gutter);
   --overlay-fade-size: calc(var(--page-gutter) + var(--heading-content-gap));
   position: fixed;
+  z-index: 950;
   visibility: visible;
   top: calc(var(--header-height, 80px) + var(--section-inset));
   left: var(--page-gutter);
@@ -1936,8 +1960,6 @@ html.is-locked .aktuelles {
   padding-bottom: max(var(--page-gutter), env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-brown) transparent;
 }
 .aktuelles-modal__pill {
   margin-inline-start: -0.3em;

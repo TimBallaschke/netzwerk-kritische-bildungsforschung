@@ -1,11 +1,12 @@
 @use 'content-layout';
 @use 'interaction';
 
-// Native dialog in the top layer; the site header remains visible behind it.
+// Non-modal dialog above the page, with the site header still interactive.
 .aktuelles-modal-overlay {
   --surface-content-inset: var(--page-gutter);
   --overlay-fade-size: calc(var(--page-gutter) + var(--heading-content-gap));
   position: fixed;
+  z-index: 950;
   visibility: visible;
   top: calc(var(--header-height, 80px) + var(--section-inset));
   left: var(--page-gutter);
@@ -104,8 +105,6 @@
     padding-bottom: max(var(--page-gutter), env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-brown) transparent;
   }
 
   &__pill { margin-inline-start: -0.3em; }

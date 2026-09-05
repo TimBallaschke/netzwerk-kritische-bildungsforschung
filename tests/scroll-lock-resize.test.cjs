@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const vm = require('node:vm');
 
-test('locked carousel follows responsive and font-driven layout changes without revealing the intro', () => {
+test('one-way intro lock keeps Grafik aligned and Liste scrollable across resize and view changes', () => {
   const listeners = new Map();
   const documentListeners = new Map();
   const observers = [];
@@ -14,7 +14,9 @@ test('locked carousel follows responsive and font-driven layout changes without 
   let introHeight = 210;
   const header = { getBoundingClientRect: () => ({ bottom: headerBottom }) };
   const intro = {};
-  const stage = { getBoundingClientRect: () => ({ top: headerBottom + introHeight - window.scrollY }) };
+  const stage = { getBoundingClientRect: () => ({
+    top: headerBottom + (classes.has('is-list-view') && classes.has('is-list-pinned') ? 0 : introHeight) - window.scrollY,
+  }) };
   const documentElement = {
     style: { setProperty: (key, value) => properties.set(key, value) },
     classList: {
@@ -56,6 +58,30 @@ test('locked carousel follows responsive and font-driven layout changes without 
   emit('resize');
   assert.equal(scrollCalls.length, 0, 'resize must not skip the intro before the user scrolls');
 
+  emit('aktuelles:view', { detail: { list: true } });
+  assert.equal(classes.has('is-list-pinned'), false, 'switching views before the snap point keeps the intro');
+  window.scrollY = 100;
+  emit('scroll');
+  assert.equal(classes.has('is-list-pinned'), false, 'partial scrolling through the intro must remain possible');
+  classes.add('modal-is-open');
+  window.scrollY = introHeight + 50;
+  emit('scroll');
+  assert.equal(classes.has('is-list-pinned'), false, 'dialog layout changes must not dismiss the intro');
+  classes.delete('modal-is-open');
+  emit('scroll');
+  assert.ok(classes.has('is-list-pinned'), 'reaching the list start permanently removes the intro from its scroll range');
+  assert.equal(window.scrollY, 0, 'the list start becomes the native scroll origin');
+  assert.equal(stage.getBoundingClientRect().top, headerBottom);
+  assert.notEqual(documentElement.style.overflow, 'hidden', 'the list must stay scrollable');
+  const callsAfterListPin = scrollCalls.length;
+  window.scrollY = 2000;
+  emit('scroll');
+  assert.equal(scrollCalls.length, callsAfterListPin, 'scrolling down the feed must not be pulled back to the start');
+  window.scrollY = 0;
+  emit('scroll');
+  assert.equal(stage.getBoundingClientRect().top, headerBottom, 'returning to the native top cannot expose the intro');
+  emit('aktuelles:view', { detail: { list: false } });
+
   window.scrollY = introHeight;
   emit('scroll');
   assert.ok(classes.has('is-locked'));
@@ -72,6 +98,8 @@ test('locked carousel follows responsive and font-driven layout changes without 
   assert.equal(window.scrollY, 335, 'late font/layout changes update the pin');
 
   emit('aktuelles:view', { detail: { list: true } });
+  assert.equal(window.scrollY, 0, 'switching from a locked Grafik carries the intro lock into Liste');
+  assert.equal(documentElement.style.overflow, '');
   introHeight = 180;
   const listScrollY = window.scrollY;
   emit('resize');

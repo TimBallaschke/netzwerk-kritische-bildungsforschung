@@ -1,4 +1,8 @@
 // The feed rows use content-list; this file only controls page scrolling.
+.is-list-view.is-list-pinned .intro-text {
+  display: none;
+}
+
 .is-list-view .aktuelles {
   height: auto;
   overflow: visible;

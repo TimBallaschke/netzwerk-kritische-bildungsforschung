@@ -3,6 +3,9 @@
 *,
 *::before,
 *::after {
+  // Keep headings and rich-text emphasis in the regular cut, too.
+  font-weight: 400;
+  font-synthesis: none;
   text-decoration-thickness: 2px;
 }
 
@@ -10,6 +13,7 @@
   font-family: "HAL Timezone";
   src: url("../fonts/HALTimezoneUnlicensed-Regular.otf") format("opentype");
   font-style: normal;
+  font-weight: 400;
   font-display: swap;
 }
 
@@ -17,6 +21,7 @@
   font-family: "HAL Timezone";
   src: url("../fonts/HALTimezoneUnlicensed-RegularItalic.otf") format("opentype");
   font-style: italic;
+  font-weight: 400;
   font-display: swap;
 }
 
@@ -68,5 +73,8 @@
     --control-size: 36px;
   }
 }
+
+// Keep inline links in the surrounding text color, including visited links.
+a { color: inherit; }
 
 em, i { font-style: italic; }

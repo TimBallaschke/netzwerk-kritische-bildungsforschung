@@ -14,12 +14,24 @@ test('network caps preserve Panel order at 15 desktop and 12 mobile cards', () =
   assert.deepEqual(select(categories.slice(0, 7), [], true), [0, 1, 2, 3, 4, 5, 6]);
 });
 
-test('category filtering happens before capping so later entries remain reachable', () => {
-  const categories = [...Array(25).fill('event'), ...Array(25).fill('post')];
-  assert.deepEqual(select(categories, ['post'], true), Array.from({ length: 12 }, (_, i) => i + 25));
-  assert.deepEqual(select(categories, ['post'], false), Array.from({ length: 15 }, (_, i) => i + 25));
+test('filters only hide cards within the fixed cap and never refill the scene', () => {
+  const categories = Array.from({ length: 45 }, (_, i) => i % 2 ? 'post' : 'event');
+  assert.deepEqual(select(categories, ['post'], true), [1, 3, 5, 7, 9, 11]);
+  assert.deepEqual(select(categories, ['post'], false), [1, 3, 5, 7, 9, 11, 13]);
+  assert.deepEqual(select([...Array(15).fill('event'), 'post'], ['post'], false), []);
   assert.deepEqual(select(categories, ['missing'], true), []);
   assert.deepEqual(select([], [], false), []);
+});
+
+test('changing and clearing filters retains the same original orbit slots', () => {
+  const categories = Array.from({ length: 30 }, (_, i) => i % 3);
+  for (const mobile of [false, true]) {
+    const orbit = select(categories, [], mobile);
+    for (const active of [[0], [1], [2], [0, 2], [], [1]]) {
+      assert.deepEqual(select(categories, active, mobile), orbit.filter(i => !active.length || active.includes(categories[i])));
+    }
+    assert.deepEqual(select(categories, [], mobile), orbit);
+  }
 });
 
 test('expanding back to desktop restores the later cards without changing their order', () => {

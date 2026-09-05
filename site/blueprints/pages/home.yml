@@ -30,6 +30,7 @@ columns:
         headline: Aktuelles-Feed
         help: >
           Pro Eintrag über »In Aktuelles zeigen« aus-/einblenden, Reihenfolge per Drag & Drop.
-          Die Netzwerkansicht zeigt maximal 15 Karten auf Desktop und 12 auf Mobil –
-          jeweils passend zum aktiven Filter und in dieser Reihenfolge.
+          Die Netzwerkansicht verwendet die ersten 15 Karten auf Desktop und 12 auf Mobil
+          in dieser Reihenfolge. Filter blenden daraus unpassende Karten aus;
+          die übrigen Karten behalten ihre Positionen, weitere Einträge rücken nicht nach.
           Die Listenansicht zeigt alle Einträge.

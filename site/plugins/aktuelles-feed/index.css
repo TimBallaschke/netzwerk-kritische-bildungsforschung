@@ -27,7 +27,7 @@
 }
 
 .aktuelles-feed__title {
-  font-weight: var(--font-bold, 600);
+  font-weight: 400;
   line-height: 1.25;
 }
 

@@ -44,7 +44,7 @@ $pillLabel = $item->category()->or($typeLabels[$templateName] ?? ucfirst($templa
 
           <?php if ($item->deadline()->isNotEmpty()): ?>
             <p class="modal-deadline">
-              <strong>Deadline Call:</strong> <?= $item->deadline()->toDate('j.n.Y') ?>
+              Deadline Call: <?= $item->deadline()->toDate('j.n.Y') ?>
             </p>
           <?php endif ?>
 
@@ -81,11 +81,11 @@ $pillLabel = $item->category()->or($typeLabels[$templateName] ?? ucfirst($templa
             <?php if ($location->isNotEmpty() || $online->isNotEmpty()): ?>
               <div class="modal-location">
                 <?php if ($location->isNotEmpty()): ?>
-                  <p><strong>Ort:</strong> <?= $location->kti() ?></p>
+                  <p>Ort: <?= $location->kti() ?></p>
                 <?php endif ?>
                 
                 <?php if ($online->isNotEmpty()): ?>
-                  <p><strong>Hinweis:</strong> <?= $online->kti() ?></p>
+                  <p>Hinweis: <?= $online->kti() ?></p>
                 <?php endif ?>
               </div>
             <?php endif ?>
@@ -140,4 +140,3 @@ $pillLabel = $item->category()->or($typeLabels[$templateName] ?? ucfirst($templa
           </div>
         </div>
       </div>
-

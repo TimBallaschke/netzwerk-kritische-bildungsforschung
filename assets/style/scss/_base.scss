@@ -1,5 +1,5 @@
 // Base
-// Standard modern CSS reset only.
+// Shared resets and page defaults.
 
 *,
 *::before,
@@ -9,6 +9,17 @@
 
 * {
   margin: 0;
+  // Hide scrollbar chrome while preserving mouse, touch, and keyboard scrolling.
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+// Suppress native focus rings without changing keyboard navigation.
+:focus {
+  outline: none;
 }
 
 html,

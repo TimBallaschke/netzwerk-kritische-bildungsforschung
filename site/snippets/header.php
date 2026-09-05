@@ -6,7 +6,7 @@
   <?php foreach (['ico' => 'image/x-icon', 'svg' => 'image/svg+xml'] as $format => $mime): ?>
     <?php
     $faviconFrames = array_map(static function (string $suffix) use ($format): string {
-        $file = ($format === 'ico' ? 'assets/' : '') . 'favicon' . $suffix . '.' . $format;
+        $file = 'assets/favicons/favicon' . $suffix . '.' . $format;
         return url($file . '?v=' . filemtime(kirby()->root('index') . '/' . $file));
     }, ['', '-k', '-b']);
     ?>
@@ -14,7 +14,7 @@
       sizes="<?= $format === 'svg' ? 'any' : '16x16 32x32 48x48' ?>"
       data-favicon-frames="<?= esc(json_encode($faviconFrames), 'attr') ?>">
   <?php endforeach ?>
-  <link rel="apple-touch-icon" href="<?= url('apple-touch-icon.png?v=' . filemtime(kirby()->root('index') . '/apple-touch-icon.png')) ?>" sizes="180x180">
+  <link rel="apple-touch-icon" href="<?= url('assets/favicons/apple-touch-icon.png?v=' . filemtime(kirby()->root('index') . '/assets/favicons/apple-touch-icon.png')) ?>" sizes="180x180">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist&display=swap">

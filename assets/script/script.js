@@ -102,18 +102,16 @@
     document.documentElement.style.setProperty("--header-height", h + "px");
   }
 
-  // One-way scroll: once .aktuelles has snapped under the header, freeze
-  // the page so the user can't scroll back up to the intro text.
-  //
-  // Exception — the Liste view shares the normal page scroller (like the
-  // intro), so while it's active the lock is disabled and the page scrolls
-  // freely. Switching back to Grafik re-pins the carousel.
+  // Once Aktuelles reaches the header, the intro cannot be scrolled back into
+  // view. Grafik freezes the page; Liste removes the intro from the page flow
+  // so the feed retains native scrolling with its start as the upper limit.
   function initScrollLock() {
     var aktuelles = document.querySelector(".aktuelles");
     if (!aktuelles) return;
     var docEl = document.documentElement;
     var locked = false;
     var listView = false;
+    var listPinned = false;
 
     function headerHeight() {
       return (
@@ -166,9 +164,21 @@
       setCarouselInteractive(false);
     }
 
+    function pinList() {
+      listPinned = true;
+      docEl.classList.add("is-list-pinned");
+      window.removeEventListener("scroll", maybeLock);
+      // CSS removes the intro only in Liste. The new native scroll origin
+      // prevents wheel, touch, and keyboard input from revealing it again.
+      window.scrollTo({ top: Math.max(0, lockTargetY()), behavior: "instant" });
+    }
+
     function maybeLock() {
-      if (locked || listView || docEl.classList.contains("modal-is-open")) return;
-      if (window.scrollY >= lockTargetY() - 1) freeze();
+      if (locked || docEl.classList.contains("modal-is-open")) return;
+      if (window.scrollY >= lockTargetY() - 1) {
+        if (listView) pinList();
+        else freeze();
+      }
     }
 
     // Grafik/Liste switch (dispatched from aktuelles.php via Alpine).
@@ -179,9 +189,11 @@
       docEl.classList.toggle("is-list-view", list);
 
       if (list) {
-        // Join the page scroller: drop the freeze and stop locking.
+        // Carry the one-way intro lock over from Grafik, while freeing the feed.
+        var alreadySnapped = locked || listPinned;
         if (locked) unfreeze();
-        window.removeEventListener("scroll", maybeLock);
+        if (alreadySnapped) pinList();
+        else maybeLock();
       } else {
         // Back to Grafik: layout reverts to the fixed carousel — pin it.
         freeze();

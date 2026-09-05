@@ -50,10 +50,78 @@ function containCarouselCard(x, scale, cardWidth, stageWidth) {
 function selectCarouselCardIndices(categories, activeCategories, mobile) {
     const limit = mobile ? 12 : 15;
     const indices = [];
-    for (let i = 0; i < categories.length && indices.length < limit; i++) {
+    // The cap fixes the scene's membership before a filter hides any cards.
+    for (let i = 0; i < Math.min(categories.length, limit); i++) {
         if (activeCategories.size === 0 || activeCategories.has(categories[i])) indices.push(i);
     }
     return indices;
+}
+
+function createCarouselTouchMotion() {
+    const frictionMs = 380;
+    const minVelocity = 0.008; // degrees/ms
+    return {
+        active: false,
+        dragging: false,
+        velocity: 0,
+        begin(x, y, time, factor) {
+            this.cancel();
+            this.active = true;
+            this.x = this.startX = x;
+            this.y = this.startY = y;
+            this.time = time;
+            this.factor = factor;
+            this.axis = null;
+        },
+        move(x, y, time) {
+            if (!this.active) return 0;
+            const wasDragging = this.dragging;
+            if (!this.axis) {
+                const dx = this.startX - x;
+                const dy = this.startY - y;
+                if (Math.hypot(dx, dy) < 6) return 0;
+                // Keep one axis for the whole swipe; diagonal jitter must not
+                // change direction or suddenly double the rotation.
+                this.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+                this.dragging = true;
+            }
+            const delta = (this.axis === 'x' ? this.x - x : this.y - y) * this.factor;
+            const elapsed = Math.max(8, time - this.time);
+            const sample = Math.max(-0.9, Math.min(0.9, delta / elapsed));
+            const blend = 1 - Math.exp(-elapsed / 40);
+            this.velocity = !wasDragging || sample * this.velocity < 0
+                ? sample : this.velocity + (sample - this.velocity) * blend;
+            this.x = x;
+            this.y = y;
+            this.time = time;
+            return delta;
+        },
+        end(time) {
+            if (!this.active) return;
+            this.active = false;
+            this.dragging = false;
+            // Holding still before release is a stop, not another flick.
+            if (time - this.time > 80) this.velocity = 0;
+        },
+        cancel() {
+            this.active = false;
+            this.dragging = false;
+            this.velocity = 0;
+        },
+        step(elapsed) {
+            if (this.active || Math.abs(this.velocity) <= minVelocity) {
+                if (!this.active) this.velocity = 0;
+                return 0;
+            }
+            // Integrate friction over time so 60/120 Hz screens travel equally far.
+            const duration = Math.min(elapsed, frictionMs * Math.log(Math.abs(this.velocity) / minVelocity));
+            const decay = Math.exp(-duration / frictionMs);
+            const delta = this.velocity * frictionMs * (1 - decay);
+            this.velocity *= decay;
+            if (duration < elapsed) this.velocity = 0;
+            return delta;
+        },
+    };
 }
 
 function initCarousel() {
@@ -71,14 +139,12 @@ const HOVER_SCALE = 0.03;
 const MAX_OVERLAY = 0.2; // white veil opacity on the back-most card (0 at front)
 const BLUR_ENTER_DEPTH = 0.28; // 0 = back, 1 = front
 const BLUR_EXIT_DEPTH = 0.34;  // keep the class stable near the depth boundary
-const LABEL_STACK_GAP = 8; // px gap between filter pills in the row
 const SCENE_H = 100;     // scene height as % of the stage container
 const PERSPECTIVE = 1600;// must match `perspective` in stage CSS (px)
-const SCROLL_FACTOR = 0.1; // degrees of rotation per pixel of wheel/touch delta
 const AUTO_ROTATE_SPEED = 0.05; // deg per frame when idle (positive = leftward drift)
 const IDLE_BEFORE_AUTO_MS = 800;// ms of inactivity before auto-rotation resumes
 const EASE = 0.08;       // smoothing factor (lower = smoother)
-const FOCUS_EASE = 0.1;  // slightly quicker rotation and expansion after a card click
+const FOCUS_EASE = 0.12; // quicker rotation and expansion after a card click
 
 // mobile & desktop anpassung
 const isMobile = () => window.innerWidth <= 900;
@@ -116,8 +182,8 @@ svg.style.zIndex = 0;
 
 const jitterSeeds = Array.from({ length: CARDS }, () => Math.random() - 0.5);
 const jitterNorm = new Array(CARDS).fill(0);
-let visibleIndices = [];
-const visibleSlots = new Array(CARDS).fill(-1);
+let orbitIndices = [];
+const orbitSlots = new Array(CARDS).fill(-1);
 
 const cardColors = cardEls.map((el) => el.dataset.color || "#612c00");
 
@@ -192,13 +258,13 @@ function applyFilter(fromSync = false) {
     locked = false;
     hoveredIndex = null;
 
-    updateVisibleCards();
+    applyCardVisibility();
     cornerLabels.forEach((label, c) => {
         label.classList.toggle("aktuelles__label--active", activeCorners.has(c));
         label.setAttribute("aria-pressed", String(activeCorners.has(c)));
     });
 
-    recomputeFit();
+    layoutFilters();
 
     if (!fromSync) {
         const activeIdx = activeCorners.size > 0 ? Array.from(activeCorners)[0] : null;
@@ -239,22 +305,21 @@ const cornerLines = Array.from({ length: CORNERS }, (_, c) => {
     return arr;
 });
 
-function updateVisibleCards() {
-    const activeColors = new Set(Array.from(activeCorners, c => CORNER_COLORS[c]));
-    const next = selectCarouselCardIndices(cardColors, activeColors, isMobile());
-    if (next.length === visibleIndices.length && next.every((index, slot) => index === visibleIndices[slot])) return;
+function updateOrbitCards() {
+    const next = selectCarouselCardIndices(cardColors, new Set(), isMobile());
+    if (next.length === orbitIndices.length && next.every((index, slot) => index === orbitIndices[slot])) return;
 
     // Keep a focused card in place when its slot changes at a breakpoint.
     if (focusedIndex !== null && next.includes(focusedIndex)) {
-        const shift = 360 * visibleSlots[focusedIndex] / visibleIndices.length
+        const shift = 360 * orbitSlots[focusedIndex] / orbitIndices.length
             - 360 * next.indexOf(focusedIndex) / next.length;
         current += shift;
         target += shift;
     }
-    visibleIndices = next;
-    visibleSlots.fill(-1);
-    next.forEach((index, slot) => { visibleSlots[index] = slot; });
-    if (focusedIndex !== null && visibleSlots[focusedIndex] === -1) {
+    orbitIndices = next;
+    orbitSlots.fill(-1);
+    next.forEach((index, slot) => { orbitSlots[index] = slot; });
+    if (focusedIndex !== null && orbitSlots[focusedIndex] === -1) {
         clearFocus();
         locked = false;
     }
@@ -269,10 +334,8 @@ function updateVisibleCards() {
     });
 
     for (let i = 0; i < CARDS; i++) {
-        const visible = visibleSlots[i] !== -1;
+        const visible = orbitSlots[i] !== -1;
         cards[i].hidden = !visible;
-        cards[i].inert = !visible;
-        lines[i].style.display = visible ? "" : "none";
         if (!visible) {
             returnWidthAnimations[i]?.cancel();
             returnWidthAnimations[i] = null;
@@ -280,19 +343,32 @@ function updateVisibleCards() {
             cards[i].classList.remove("is-returning");
         }
     }
+}
+
+function applyCardVisibility() {
+    const activeColors = new Set(Array.from(activeCorners, c => CORNER_COLORS[c]));
+    const matching = new Set(selectCarouselCardIndices(cardColors, activeColors, isMobile()));
+    for (let i = 0; i < CARDS; i++) {
+        const visible = matching.has(i);
+        // Retain layout boxes and orbit slots for filtered cards, including
+        // during resize and font loading. Only cards beyond the cap use hidden.
+        cards[i].classList.toggle("is-filtered-out", !visible && orbitSlots[i] !== -1);
+        cards[i].inert = !visible;
+        lines[i].style.display = visible ? "" : "none";
+    }
     for (const cornerSet of cornerLines) {
         for (const { line, cardIndex } of cornerSet) {
-            line.style.display = visibleSlots[cardIndex] !== -1 ? "" : "none";
+            line.style.display = matching.has(cardIndex) ? "" : "none";
         }
     }
 }
 
 function computeVerticalBounds(Rz, jitter) {
-    if (visibleIndices.length === 0) return { height: 0, centerY: 0 };
+    if (orbitIndices.length === 0) return { height: 0, centerY: 0 };
     let minY = Infinity, maxY = -Infinity;
 
     const samples = 96;
-    for (const i of visibleIndices) {
+    for (const i of orbitIndices) {
         for (let s = 0; s < samples; s++) {
             const point = projectCarouselOrbit(s / samples * Math.PI * 2, 0, Rz, jitterNorm[i] * jitter, projection);
             const halfH = cardHeights[i] / 2 * (point.scale + HOVER_SCALE);
@@ -313,8 +389,6 @@ let autoOffsetX = 0;
 let autoOffsetY = 0;
 
 const cornerDotPositions = Array.from({ length: CORNERS }, () => ({ x: 0, y: 0 }));
-let filterTop = 0;
-let filterBottom = 0;
 
 function layoutFilters() {
     const rect = stage.getBoundingClientRect();
@@ -322,82 +396,75 @@ function layoutFilters() {
 
     const switchEl = document.querySelector(".aktuelles__switch");
     
-    // Nimm die echte Pixelbreite des Switches und übergib sie an CSS:
+    // Both filter rows reserve the same exact width for the view switch.
     if (switchEl) {
-        document.documentElement.style.setProperty("--switch-width", `${switchEl.offsetWidth}px`);
+        document.documentElement.style.setProperty("--switch-width", `${switchEl.getBoundingClientRect().width}px`);
     }
 
-    if (isMobile()) {
-        // CSS wraps the bottom controls and includes the device's safe area.
-        // Keep each connector attached to the visible top of its filter pill.
-        const filterRect = graphFilters.getBoundingClientRect();
-        filterTop = filterRect.top - rect.top;
-        filterBottom = filterRect.bottom - rect.top;
-        cornerLabels.forEach((label, c) => {
-            const labelRect = label.getBoundingClientRect();
-            cornerDotPositions[c].x = labelRect.left + labelRect.width / 2 - rect.left - rect.width / 2;
-            cornerDotPositions[c].y = labelRect.top + 6 - rect.top - rect.height / 2;
-        });
-        return;
-    }
-
-    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    const paddingX = rem * 1.5;
-    const paddingY = rem * 0.75;
-
-    const switchW = switchEl ? switchEl.offsetWidth + rem * 0.8 : 0;
-
-    const maxRow1X = rect.width / 2 - paddingX - switchW;
-    const maxFullX = rect.width / 2 - paddingX;
-
-    let isRow1 = true;
-    let rowY = paddingY - rect.height / 2;
-    let stackX = paddingX - rect.width / 2;
-
-    const sizes = cornerLabels.map((label) => {
-        const { width, height } = label.getBoundingClientRect();
-        return { w: width, h: height };
-    });
-
+    // CSS owns the shared row layout; connectors follow the rendered pills.
     cornerLabels.forEach((label, c) => {
-        const currentMaxX = isRow1 ? maxRow1X : maxFullX;
-
-        if (c > 0 && (stackX + sizes[c].w > currentMaxX)) {
-            isRow1 = false;
-            stackX = paddingX - rect.width / 2;
-            rowY += (sizes[c].h || 32) + 8;
-        }
-
-        label.style.transform = `translate3d(${stackX}px, ${rowY}px, 1px)`;
-
-        cornerDotPositions[c].x = stackX + sizes[c].w / 2;
-        cornerDotPositions[c].y = rowY + sizes[c].h - 6;
-
-        stackX += sizes[c].w + LABEL_STACK_GAP;
+        const labelRect = label.getBoundingClientRect();
+        cornerDotPositions[c].x = labelRect.left + labelRect.width / 2 - rect.left - rect.width / 2;
+        cornerDotPositions[c].y = (isMobile() ? labelRect.top + 6 : labelRect.bottom - 6) - rect.top - rect.height / 2;
     });
-    filterTop = paddingY;
-    filterBottom = rowY + sizes[sizes.length - 1].h + rect.height / 2;
 }
 
 // Follow the animated pill width so neighbours and connector anchors move
 // together. Observe the border box: the text width stays fixed as padding grows.
 const filterResizeObserver = new ResizeObserver(() => {
-    const previousTop = filterTop;
-    const previousBottom = filterBottom;
     layoutFilters();
-    if (Math.abs(filterTop - previousTop) > 1 || Math.abs(filterBottom - previousBottom) > 1) recomputeFit();
 });
 cornerLabels.forEach((label) => filterResizeObserver.observe(label, { box: "border-box" }));
 filterResizeObserver.observe(graphFilters);
 
+function measureFilterClearance(stageWidth) {
+    // Reserve enough room for every single-filter state, including the wider
+    // active pill. Wrapping controls must not move the cards on filter changes.
+    const probe = document.createElement("div");
+    probe.className = "aktuelles__label--filter";
+    probe.inert = true;
+    probe.style.cssText = "position:absolute;inset:0 auto auto 0;width:max-content;visibility:hidden;pointer-events:none;transition:none;transform:none";
+    graphFilters.appendChild(probe);
+    const sizes = cornerLabels.map(label => {
+        probe.textContent = label.textContent;
+        probe.classList.remove("aktuelles__label--active");
+        const inactive = probe.getBoundingClientRect();
+        probe.classList.add("aktuelles__label--active");
+        const active = probe.getBoundingClientRect();
+        return { normal: inactive.width, active: active.width, height: active.height };
+    });
+    probe.remove();
+
+    const css = getComputedStyle(graphFilters);
+    const paddingX = parseFloat(css.paddingLeft) + parseFloat(css.paddingRight);
+    const paddingY = parseFloat(css.paddingTop) + (isMobile() ? parseFloat(css.paddingBottom) : 0);
+    const gap = parseFloat(css.columnGap);
+    const rowGap = parseFloat(css.rowGap);
+    const fullWidth = stageWidth - paddingX;
+    let maxRows = 1;
+    for (let active = -1; active < sizes.length; active++) {
+        let rows = 1, used = 0;
+        sizes.forEach((size, i) => {
+            const width = i === active ? size.active : size.normal;
+            if (used > 0 && used + gap + width > fullWidth) {
+                rows++;
+                used = 0;
+            }
+            used += (used > 0 ? gap : 0) + width;
+        });
+        maxRows = Math.max(maxRows, rows);
+    }
+    return paddingY + maxRows * Math.max(...sizes.map(size => size.height)) + (maxRows - 1) * rowGap;
+}
+
 function measureCardWidths() {
-    for (const i of visibleIndices) {
+    for (const i of orbitIndices) {
         cardWidths[i] = parseFloat(getComputedStyle(cards[i]).width) || cards[i].offsetWidth;
     }
 }
 
 function measureClosedCardSizes() {
-    for (const i of visibleIndices) {
+    for (const i of orbitIndices) {
         if (!cards[i].classList.contains("is-open")) {
             // The description may still be collapsing. Exclude its current
             // height from the orbit bounds, but let the card itself keep its
@@ -420,16 +487,18 @@ function recomputeFit() {
     // Card widths and text wrapping change at responsive breakpoints.
     measureClosedCardSizes();
     layoutFilters();
-    const switchRect = document.querySelector(".aktuelles__switch")?.getBoundingClientRect();
-    const safeTop = isMobile() ? (switchRect ? switchRect.bottom - rect.top : 0) + 16 : filterBottom + 16;
-    const safeBottom = isMobile() ? rect.height - filterTop + 16 : 16;
+    const switchEl = document.querySelector(".aktuelles__switch");
+    const switchRect = switchEl?.getBoundingClientRect();
+    const filterClearance = measureFilterClearance(rect.width);
+    const safeTop = isMobile() ? (switchRect ? switchRect.bottom - rect.top : 0) + 16 : filterClearance + 16;
+    const safeBottom = isMobile() ? filterClearance + 16 : 16;
 
     const sceneH = Math.max(((rect.height - safeTop - safeBottom) * SCENE_H) / 100, 160);
 
-    let Rz = visibleIndices.length ? RADIUS : 0;
-    let j = visibleIndices.length ? JITTER_Y : 0;
+    let Rz = orbitIndices.length ? RADIUS : 0;
+    let j = orbitIndices.length ? JITTER_Y : 0;
 
-    for (let i = 0; i < 12 && visibleIndices.length; i++) {
+    for (let i = 0; i < 12 && orbitIndices.length; i++) {
         const b = computeVerticalBounds(Rz, j);
         const fy = sceneH / (b.height || 1);
         Rz *= fy;
@@ -439,8 +508,8 @@ function recomputeFit() {
 
     fitRz = Math.max(0, Rz);
     fitJitter = Math.max(0, j);
-    fitRx = fitCarouselHorizontalRadius(rect.width, visibleIndices.map(i => cardWidths[i]), fitRz,
-        visibleIndices.map(i => jitterNorm[i] * fitJitter), projection, HOVER_SCALE);
+    fitRx = fitCarouselHorizontalRadius(rect.width, orbitIndices.map(i => cardWidths[i]), fitRz,
+        orbitIndices.map(i => jitterNorm[i] * fitJitter), projection, HOVER_SCALE);
 
     const final = computeVerticalBounds(fitRz, fitJitter);
     autoOffsetX = 0;
@@ -451,6 +520,7 @@ function recomputeFit() {
 
 let target = 0;
 let current = 0;
+const touchMotion = createCarouselTouchMotion();
 
 let locked = false;
 let focusedIndex = null;
@@ -502,6 +572,7 @@ function setOpen(i, open) {
 }
 
 function clearFocus() {
+    touchMotion.cancel();
     if (pendingClose) cards[pendingClose.index].classList.remove("is-closing");
     pendingClose = null;
     setOpen(focusedIndex, false);
@@ -527,11 +598,11 @@ function closeFocusedCard() {
 }
 
 function focusCard(i) {
-    if (visibleSlots[i] === -1) return;
+    if (orbitSlots[i] === -1 || cards[i].inert) return;
     clearFocus();
     focusedIndex = i;
     stage.classList.add("has-focused-card");
-    const base = 90 - (360 / visibleIndices.length) * visibleSlots[i];
+    const base = 90 - (360 / orbitIndices.length) * orbitSlots[i];
     target = base + 360 * Math.round((current - base) / 360);
     locked = true;
 }
@@ -539,6 +610,10 @@ function focusCard(i) {
 let interactive = false;
 window.addEventListener("aktuelles:interactive", (e) => {
     interactive = !!(e.detail && e.detail.active);
+    if (!interactive) {
+        touchMotion.cancel();
+        if (!locked) target = current;
+    }
 });
 
 let lastUserInput = -Infinity;
@@ -549,11 +624,11 @@ function markInteraction() {
 // -----------------------------------------------------------------------------
 // WHEEL & TOUCH HANDLER
 // -----------------------------------------------------------------------------
-let lastTouchX = null;
-let lastTouchY = null;
+let suppressClickUntil = 0;
+const touchControls = ".aktuelles__card.is-open, .aktuelles__switch, .aktuelles__filter, .aktuelles__label--filter, .aktuelles__playpause";
 
 function onWheel(e) {
-    if (!interactive) return;
+    if (!interactive || e.ctrlKey) return;
     locked = false;
     clearFocus();
 
@@ -564,45 +639,63 @@ function onWheel(e) {
 }
 
 function onTouchStart(e) {
+    touchMotion.cancel();
     if (!interactive) return;
-    // Let a backdrop tap close through its click handler; do not expose a
-    // background card between touchstart and the synthesized click.
-    if (e.target.closest(".aktuelles__card.is-open, .aktuelles__focus-backdrop, .aktuelles__switch, .aktuelles__filter, .aktuelles__playpause")) {
-        return;
-    }
-    locked = false;
-    clearFocus();
-
-    lastTouchX = e.touches[0].clientX;
-    lastTouchY = e.touches[0].clientY;
+    if (!locked) target = current;
+    if (e.touches.length !== 1) return;
+    // A fresh intentional tap also re-enables filters immediately after a swipe.
+    suppressClickUntil = 0;
+    if (e.target.closest(touchControls)) return;
+    const touch = e.touches[0];
+    touchMotion.begin(touch.clientX, touch.clientY, performance.now(), isMobile() ? 0.4 : 0.25);
     markInteraction();
 }
 
 function onTouchMove(e) {
-    if (!interactive || lastTouchY === null || lastTouchX === null) return;
-    if (e.target.closest(".aktuelles__card.is-open, .aktuelles__switch, .aktuelles__filter, .aktuelles__playpause")) {
+    if (e.touches.length !== 1) {
+        onTouchCancel();
         return;
     }
-
-    const dx = lastTouchX - e.touches[0].clientX;
-    const dy = lastTouchY - e.touches[0].clientY;
-
-    const delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
-    target += delta * getScrollFactor();
-
-    lastTouchX = e.touches[0].clientX;
-    lastTouchY = e.touches[0].clientY;
+    if (!interactive || !touchMotion.active) return;
+    const touch = e.touches[0];
+    // Leave taps intact. Only a deliberate swipe closes a focused backdrop.
+    if (!touchMotion.dragging && Math.hypot(touchMotion.startX - touch.clientX, touchMotion.startY - touch.clientY) >= 6) {
+        if (focusedIndex !== null) {
+            const { startX, startY, time, factor } = touchMotion;
+            clearFocus();
+            touchMotion.begin(startX, startY, time, factor);
+        }
+        locked = false;
+        hoveredIndex = null;
+    }
+    const delta = touchMotion.move(touch.clientX, touch.clientY, performance.now());
+    if (!touchMotion.dragging) return;
+    if (e.cancelable) e.preventDefault();
+    current += delta;
+    target = current; // follow the finger immediately, without the idle easing lag
     markInteraction();
 }
 
 function onTouchEnd() {
-    lastTouchX = null;
-    lastTouchY = null;
+    if (touchMotion.dragging) suppressClickUntil = performance.now() + 400;
+    touchMotion.end(performance.now());
+    markInteraction();
 }
 
-function tick() {
+function onTouchCancel() {
+    if (touchMotion.dragging) suppressClickUntil = performance.now() + 400;
+    touchMotion.cancel();
+    markInteraction();
+}
+
+let lastFrameTime = performance.now();
+function tick(now = performance.now()) {
+    const elapsed = Math.min(50, Math.max(0, now - lastFrameTime));
+    const frameScale = elapsed / (1000 / 60);
+    lastFrameTime = now;
     // Avoid layout work while the carousel is hidden behind a dialog or list.
     if (document.hidden || document.documentElement.classList.contains("modal-is-open") || stage.offsetParent === null) {
+        touchMotion.cancel();
         requestAnimationFrame(tick);
         return;
     }
@@ -614,27 +707,34 @@ function tick() {
         locked = false;
         markInteraction();
     }
+    const momentum = touchMotion.step(elapsed);
+    if (momentum) {
+        current += momentum;
+        target = current;
+        markInteraction();
+    }
     if (
         !paused &&
         !locked &&
+        !touchMotion.active &&
         performance.now() - lastUserInput > IDLE_BEFORE_AUTO_MS
     ) {
-        target += getAutoRotateSpeed(); 
+        target += getAutoRotateSpeed() * frameScale;
     }
     const rotationEase = locked && focusedIndex !== null ? FOCUS_EASE : EASE;
-    current += (target - current) * rotationEase;
+    current += (target - current) * (1 - Math.pow(1 - rotationEase, frameScale));
 
     const scrolling =
         performance.now() - lastUserInput < IDLE_BEFORE_AUTO_MS;
 
-    const settled =
-        locked && focusedIndex !== null && Math.abs(target - current) < 0.4;
+    // Start centering, scaling and height expansion together on the first frame.
+    const focusReady = locked && focusedIndex !== null;
 
-    if (settled && !pendingClose && !cards[focusedIndex].classList.contains("is-open")) {
+    if (focusReady && !pendingClose && !cards[focusedIndex].classList.contains("is-open")) {
         setOpen(focusedIndex, true);
     }
 
-    if (settled && !pendingClose && descriptions[focusedIndex]
+    if (focusReady && !pendingClose && descriptions[focusedIndex]
         && !cards[focusedIndex].classList.contains("is-content-visible")) {
         // Reveal when the height finishes, without waiting for the scale's long tail.
         const ready = expansionAnimations[focusedIndex].every((animation) =>
@@ -646,7 +746,7 @@ function tick() {
         }
     }
 
-    const step = (Math.PI * 2) / Math.max(1, visibleIndices.length);
+    const step = (Math.PI * 2) / Math.max(1, orbitIndices.length);
     const baseRot = (current * Math.PI) / 180;
 
     const stageRect = stage.getBoundingClientRect();
@@ -670,18 +770,18 @@ function tick() {
     // or focus change, when CSS may already have changed the card widths.
     measureCardWidths();
 
-    for (const i of visibleIndices) {
+    for (const i of orbitIndices) {
         // Each card retains its own blend after losing focus, so closing is
         // the reverse of opening instead of a jump to the orbit coordinates.
-        const focusTarget = settled && i === focusedIndex ? 1 : 0;
+        const focusTarget = focusReady && i === focusedIndex ? 1 : 0;
         const focusEase = focusTarget ? FOCUS_EASE : EASE;
-        focusBlends[i] += (focusTarget - focusBlends[i]) * focusEase;
+        focusBlends[i] += (focusTarget - focusBlends[i]) * (1 - Math.pow(1 - focusEase, frameScale));
         if (Math.abs(focusTarget - focusBlends[i]) < 0.005) focusBlends[i] = focusTarget;
         const focusBlend = focusBlends[i];
         const returning = i !== focusedIndex && focusBlend > 0;
         cards[i].classList.toggle("is-returning", returning);
 
-        const t = step * visibleSlots[i] + baseRot;
+        const t = step * orbitSlots[i] + baseRot;
 
         const tNorm = (Math.sin(t) + 1) / 2;
         const point = projectCarouselOrbit(t, fitRx, fitRz, jitterNorm[i] * fitJitter, projection);
@@ -698,7 +798,7 @@ function tick() {
 
         const hoverTarget =
             i === hoveredIndex && i !== focusedIndex && !returning && !scrolling ? 1 : 0;
-        hoverBlend[i] += (hoverTarget - hoverBlend[i]) * EASE;
+        hoverBlend[i] += (hoverTarget - hoverBlend[i]) * (1 - Math.pow(1 - EASE, frameScale));
         renderScale += HOVER_SCALE * hoverBlend[i];
 
         // Also enforce the inset between sampled angles, during focus/hover,
@@ -755,7 +855,7 @@ function tick() {
     for (let c = 0; c < CORNERS; c++) {
         const { x: csx, y: csy } = cornerScreens[c];
         for (const { line, cardIndex } of cornerLines[c]) {
-            if (visibleSlots[cardIndex] === -1) continue;
+            if (orbitSlots[cardIndex] === -1) continue;
             line.setAttribute("x1", csx);
             line.setAttribute("y1", csy);
             line.setAttribute("x2", cardSX[cardIndex]);
@@ -768,8 +868,18 @@ function tick() {
 
 stage.addEventListener("wheel", onWheel, { passive: true });
 stage.addEventListener("touchstart", onTouchStart, { passive: true });
-stage.addEventListener("touchmove", onTouchMove, { passive: true });
+stage.addEventListener("touchmove", onTouchMove, { passive: false });
 stage.addEventListener("touchend", onTouchEnd, { passive: true });
+stage.addEventListener("touchcancel", onTouchCancel, { passive: true });
+stage.addEventListener("click", (e) => {
+    if (e.detail !== 0 && performance.now() < suppressClickUntil) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    }
+}, { capture: true });
+
+document.addEventListener("visibilitychange", onTouchCancel);
+window.addEventListener("blur", onTouchCancel);
 
 stage.querySelector(".aktuelles__focus-backdrop")?.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -834,6 +944,8 @@ window.addEventListener("aktuelles:open-item", (e) => {
 const playPauseBtn = document.querySelector(".aktuelles__playpause");
 if (playPauseBtn) {
     playPauseBtn.addEventListener("click", () => {
+        touchMotion.cancel();
+        if (!locked) target = current;
         paused = !paused;
         playPauseBtn.classList.toggle("is-paused", paused);
         playPauseBtn.setAttribute("aria-pressed", String(paused));
@@ -845,12 +957,14 @@ if (playPauseBtn) {
 }
 
 const resizeObserver = new ResizeObserver(() => {
-    updateVisibleCards();
+    updateOrbitCards();
+    applyCardVisibility();
     recomputeFit();
 });
 resizeObserver.observe(stage);
 
-updateVisibleCards();
+updateOrbitCards();
+applyCardVisibility();
 recomputeFit();
 if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(recomputeFit);
